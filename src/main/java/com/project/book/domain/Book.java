@@ -1,0 +1,55 @@
+package com.project.book.domain;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.validator.constraints.ISBN;
+import org.hibernate.validator.constraints.URL;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_id")
+    private Long id;
+
+    @ISBN
+    @NotNull
+    @Column(name = "book_isbn")
+    private String isbn;
+
+    @NotNull
+    @Column(name = "book_title")
+    private String title;
+
+    @NotNull
+    @Column(name = "book_publisher")
+    private String publisher;
+
+    @NotNull
+    @Column(name = "book_dateTime")
+    private ZonedDateTime dateTime;
+
+    @NotNull
+    @Column(name = "book_price")
+    private Long price;
+
+    @URL
+    @NotNull
+    @Column(name = "book_thumbnail")
+    private String thumbnail;
+
+    @OneToMany(mappedBy = "book")
+    private List<MemberBook> memberBooks = new ArrayList<>();
+}
