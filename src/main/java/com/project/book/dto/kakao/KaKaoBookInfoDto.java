@@ -13,6 +13,7 @@ public class KaKaoBookInfoDto {
 
     private String title;
     private List<String> authors;
+    private List<String> translator;
     private String isbn;
     private ZonedDateTime datetime;
     private String publisher;
