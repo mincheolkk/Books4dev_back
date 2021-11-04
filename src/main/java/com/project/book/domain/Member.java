@@ -1,9 +1,6 @@
 package com.project.book.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -13,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Builder
 @Getter
 @Entity
 @AllArgsConstructor

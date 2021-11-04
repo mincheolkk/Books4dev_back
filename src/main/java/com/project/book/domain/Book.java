@@ -1,9 +1,6 @@
 package com.project.book.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.ISBN;
 import org.hibernate.validator.constraints.URL;
 
@@ -13,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
 @Getter
 @Entity
 @AllArgsConstructor
