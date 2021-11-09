@@ -49,5 +49,8 @@ public class Book {
     private String thumbnail;
 
     @OneToMany(mappedBy = "book")
-    private List<MemberBook> memberBooks = new ArrayList<>();
+    private List<RegisterBook> registerBooks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<CommentBook> commentBooks = new ArrayList<>();
 }

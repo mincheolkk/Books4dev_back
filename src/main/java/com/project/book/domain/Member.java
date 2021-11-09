@@ -1,12 +1,10 @@
 package com.project.book.domain;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,5 +32,6 @@ public class Member {
     private MemberType type;
 
     @OneToMany(mappedBy = "member")
-    private List<MemberBook> memberBooks = new ArrayList<>();
+    private List<RegisterBook> registerBooks = new ArrayList<>();
+
 }
