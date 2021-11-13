@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 
 kakao.properties
+generated
 
 ### STS ###
 .apt_generated
