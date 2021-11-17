@@ -1,20 +1,29 @@
 package com.project.book.service;
 
 import com.project.book.domain.Book;
-import com.project.book.dto.kakao.KaKaoBookInfoDto;
+import com.project.book.domain.RegisterBook;
+import com.project.book.dto.book.BookRequsetDto;
+import com.project.book.dto.book.CreateBookRequestDto;
+import com.project.book.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
     // db 쪼개기
     // MemberBook -> registerBook
     // commentBook
+    private final BookRepository bookRepository;
 
-    public void createBook(@RequestBody @Valid KaKaoBookInfoDto request) {
+    public void createBook(@RequestBody @Valid BookRequsetDto request) {
         // request.toEntity 쓸지 말지. 다른 사람들은 dto 에서 엔티티로
         // dto::of
 
@@ -36,5 +45,60 @@ public class BookService {
         // 책 등록할 때, 이미 등록된 책이면 등록된 책 id 부여하는 로직
 
 
+        String isbn = request.getIsbn();
+        Book bookIsbn = bookRepository.findByIsbn(isbn);
+
+        if (bookIsbn == null) {
+            CreateBookRequestDto createbook = CreateBookRequestDto.builder()
+                    .authors(stringAuthors(request.getAuthors()))
+                    .translator(stringTranslator(request.getTranslator()))
+                    .title(request.getTitle())
+                    .publisher(request.getPublisher())
+                    .price(request.getPrice())
+                    .thumbnail(request.getThumbnail())
+                    .datetime(request.getDatetime())
+                    .isbn(isbn)
+                    .build();
+
+            Book book = bookRepository.save(createbook.toEntity());
+            Long bookId = book.getId();
+
+            RegisterBook.builder()
+                    .book(book)
+                    .readTime(request.getReadTime())
+                    .recommendTime(request.getRecommendTime())
+                    .star(request.getStar())
+                    .build();
+        } else if (bookIsbn != null) {
+            // 흠.. findByIsbn 의 반환 타입을 book 으로 잡아야겠다
+            RegisterBook.builder()
+                    .book(bookIsbn)
+                    .readTime(request.getReadTime())
+                    .recommendTime(request.getRecommendTime())
+                    .star(request.getStar())
+                    .build();
+        }
+    }
+
+    public void checkIsbn(String isbn) {
+
+    }
+
+    // isbn 으로 등록되어 있는지 확인
+    // 등록되어 있으면 책 아이디, 없으면 등록 후 책 아이디
+    // 그리고 registerBook 채우기
+
+    private String stringAuthors(List<String> authors) {
+        if (authors.isEmpty()) {
+            return Strings.EMPTY;
+        }
+        return String.join(",", authors);
+    }
+
+    private String stringTranslator(List<String> translator) {
+        if (translator.isEmpty()) {
+            return Strings.EMPTY;
+        }
+        return String.join(",", translator);
     }
 }

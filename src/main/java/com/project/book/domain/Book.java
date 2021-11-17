@@ -5,6 +5,7 @@ import org.hibernate.validator.constraints.ISBN;
 import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -23,31 +24,41 @@ public class Book {
     private Long id;
 
     @ISBN
-    @NotNull
+    @NotBlank
     @Column(name = "book_isbn")
     private String isbn;
 
-    @NotNull
+    @NotBlank
     @Column(name = "book_title")
     private String title;
 
-    @NotNull
+    @NotBlank
     @Column(name = "book_publisher")
     private String publisher;
 
-    @NotNull
+    @NotBlank
     @Column(name = "book_dateTime")
     private ZonedDateTime dateTime;
 
-    @NotNull
+    @NotBlank
     @Column(name = "book_price")
     private Long price;
 
     @URL
-    @NotNull
+    @NotBlank
     @Column(name = "book_thumbnail")
     private String thumbnail;
 
+    @NotBlank
+    @Column(name = "book_authors")
+    private String authors;
+
+    @Column(name = "book_translator")
+    private String translator;
+
     @OneToMany(mappedBy = "book")
-    private List<MemberBook> memberBooks = new ArrayList<>();
+    private List<RegisterBook> registerBooks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<CommentBook> commentBooks = new ArrayList<>();
 }
