@@ -5,10 +5,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
-@Builder
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CreateBookRequestDto {
@@ -17,10 +18,23 @@ public class CreateBookRequestDto {
     private String authors;
     private String translator;
     private String isbn;
-    private ZonedDateTime datetime;
+    private LocalDateTime datetime;
     private String publisher;
     private Long price;
     private String thumbnail;
+
+    @Builder
+    public CreateBookRequestDto(String title, String authors, String translator, String isbn,
+                                LocalDateTime datetime, String publisher, Long price, String thumbnail) {
+        this.title = title;
+        this.authors = authors;
+        this.translator = translator;
+        this.isbn = isbn;
+        this.datetime = datetime;
+        this.publisher = publisher;
+        this.price = price;
+        this.thumbnail = thumbnail;
+    }
 
     public Book toEntity() {
         return Book.builder()

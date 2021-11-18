@@ -26,12 +26,15 @@ public class Member {
     @Positive
     @Column(name = "member_number")
     private Integer number;
-2
+
     @Enumerated(EnumType.STRING)
     @Column(name = "member_type")
     private MemberType type;
 
     @OneToMany(mappedBy = "member")
     private List<RegisterBook> registerBooks = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    private List<CommentBook> commentBooks = new ArrayList<>();
 
 }

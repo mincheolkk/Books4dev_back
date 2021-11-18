@@ -22,12 +22,6 @@ public class BookRequsetDto {
     private Integer recommendTime;
     private Integer star;
 
-    public void create(
-            String title,
-    ) {
-
-    }
-
     public void addBookData() {
 
     }

@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.URL;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class Book {
 
     @NotBlank
     @Column(name = "book_dateTime")
-    private ZonedDateTime dateTime;
+    private LocalDateTime dateTime;
 
     @NotBlank
     @Column(name = "book_price")

@@ -22,8 +22,7 @@ public class BookController {
         // isbn 으로 검색해서 디비에 없으면 추가
 
         String isbn = request.getIsbn();
-        request.getAuthors()
-        bookService.checkIsbn(isbn);
+        request.getAuthors();
 
 
     }
