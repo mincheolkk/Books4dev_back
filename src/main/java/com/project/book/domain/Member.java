@@ -31,10 +31,16 @@ public class Member {
     @Column(name = "member_type")
     private MemberType type;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "member_language")
+    private Language language;
+
     @OneToMany(mappedBy = "member")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
     @OneToMany(mappedBy = "book")
     private List<CommentBook> commentBooks = new ArrayList<>();
 
+    @OneToMany(mappedBy = "book")
+    private List<SavedBook> savedBooks = new ArrayList<>();
 }
