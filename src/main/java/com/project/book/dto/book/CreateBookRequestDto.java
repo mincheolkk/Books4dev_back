@@ -20,12 +20,12 @@ public class CreateBookRequestDto {
     private String isbn;
     private LocalDateTime datetime;
     private String publisher;
-    private Long price;
+    private int price;
     private String thumbnail;
 
     @Builder
     public CreateBookRequestDto(String title, String authors, String translator, String isbn,
-                                LocalDateTime datetime, String publisher, Long price, String thumbnail) {
+                                LocalDateTime datetime, String publisher, int price, String thumbnail) {
         this.title = title;
         this.authors = authors;
         this.translator = translator;
