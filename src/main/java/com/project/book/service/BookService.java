@@ -5,6 +5,7 @@ import com.project.book.domain.RegisterBook;
 import com.project.book.dto.book.BookRequsetDto;
 import com.project.book.dto.book.CreateBookRequestDto;
 import com.project.book.repository.BookRepository;
+import com.project.book.repository.RegisterBookRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
@@ -18,13 +19,18 @@ import java.util.List;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final RegisterBookRepository registerBookRepository;
 
-    public void createBook(@RequestBody @Valid BookRequsetDto request) {
+    public Book createOrRegisterBook(@RequestBody @Valid BookRequsetDto request) {
 
         String isbn = request.getIsbn();
         Book bookIsbn = bookRepository.findByIsbn(isbn);
 
+        System.out.println("bookIsbn = " + bookIsbn);
+
+
         if (bookIsbn == null) {
+            System.out.println("in if");
             CreateBookRequestDto createbook = CreateBookRequestDto.builder()
                     .authors(listToString(request.getAuthors()))
                     .translator(listToString(request.getTranslator()))
@@ -36,28 +42,40 @@ public class BookService {
                     .isbn(isbn)
                     .build();
 
-            Book book = bookRepository.save(createbook.toEntity());
-            Long bookId = book.getId();
+            System.out.println("createbook = " + createbook);
 
-            RegisterBook.builder()
+            Book book = bookRepository.save(createbook.toEntity());
+            System.out.println("book = " + book);
+
+            RegisterBook building = RegisterBook.builder()
                     .book(book)
                     .readTime(request.getReadTime())
                     .recommendTime(request.getRecommendTime())
                     .star(request.getStar())
                     .build();
+
+            RegisterBook registerBook = registerBookRepository.save(building);
+
+            System.out.println("registerBook.getBook() = " + registerBook.getBook());
+            System.out.println("registerBook.getId() = " + registerBook.getId());
+
+            return book;
         }
         else if (bookIsbn != null) {
-            RegisterBook.builder()
+            RegisterBook building = RegisterBook.builder()
                     .book(bookIsbn)
                     .readTime(request.getReadTime())
                     .recommendTime(request.getRecommendTime())
                     .star(request.getStar())
                     .build();
+
+            RegisterBook registerBook = registerBookRepository.save(building);
         }
+        return bookIsbn;
     }
 
     private static String listToString(List<String> list) {
-        if (list.isEmpty()) {
+        if (Objects.isNull(list) || list.isEmpty()) {
             return Strings.EMPTY;
         }
         return String.join(",", list);
