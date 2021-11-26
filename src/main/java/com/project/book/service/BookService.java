@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -24,13 +25,9 @@ public class BookService {
     public Book createOrRegisterBook(@RequestBody @Valid BookRequsetDto request) {
 
         String isbn = request.getIsbn();
-        Book bookIsbn = bookRepository.findByIsbn(isbn);
+        Book savedBook = bookRepository.findByIsbn(isbn);
 
-        System.out.println("bookIsbn = " + bookIsbn);
-
-
-        if (bookIsbn == null) {
-            System.out.println("in if");
+        if (savedBook == null) {
             CreateBookRequestDto createbook = CreateBookRequestDto.builder()
                     .authors(listToString(request.getAuthors()))
                     .translator(listToString(request.getTranslator()))
@@ -42,36 +39,27 @@ public class BookService {
                     .isbn(isbn)
                     .build();
 
-            System.out.println("createbook = " + createbook);
+            Book newBook = bookRepository.save(createbook.toEntity());
 
-            Book book = bookRepository.save(createbook.toEntity());
-            System.out.println("book = " + book);
+            RegisterBook registerBook = requestRegisterBook(newBook, request);
+            registerBookRepository.save(registerBook);
 
-            RegisterBook building = RegisterBook.builder()
-                    .book(book)
-                    .readTime(request.getReadTime())
-                    .recommendTime(request.getRecommendTime())
-                    .star(request.getStar())
-                    .build();
-
-            RegisterBook registerBook = registerBookRepository.save(building);
-
-            System.out.println("registerBook.getBook() = " + registerBook.getBook());
-            System.out.println("registerBook.getId() = " + registerBook.getId());
-
-            return book;
+            return newBook;
         }
-        else if (bookIsbn != null) {
-            RegisterBook building = RegisterBook.builder()
-                    .book(bookIsbn)
-                    .readTime(request.getReadTime())
-                    .recommendTime(request.getRecommendTime())
-                    .star(request.getStar())
-                    .build();
-
-            RegisterBook registerBook = registerBookRepository.save(building);
+        else if (savedBook != null) {
+            RegisterBook registerBook = requestRegisterBook(savedBook, request);
+            registerBookRepository.save(registerBook);
         }
-        return bookIsbn;
+        return savedBook;
+    }
+
+    private static RegisterBook requestRegisterBook(Book book, BookRequsetDto request) {
+        return RegisterBook.builder()
+                .book(book)
+                .readTime(request.getReadTime())
+                .recommendTime(request.getRecommendTime())
+                .star(request.getStar())
+                .build();
     }
 
     private static String listToString(List<String> list) {
