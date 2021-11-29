@@ -13,7 +13,7 @@ import javax.validation.constraints.Positive;
 @Getter
 @Entity
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
-public class RegisterBook {
+public class RegisterBook extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
