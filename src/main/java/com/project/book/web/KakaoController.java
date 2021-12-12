@@ -17,6 +17,8 @@ public class KakaoController {
     public Mono<KakaoBookDto> search(@RequestParam String query) {
         return kakaoWebClient.get()
                 .uri(builder -> builder.path("/v3/search/book")
+                        .queryParam("page", "1")
+                        .queryParam("size", "10")
                         .queryParam("query", query)
                         .build())
                 .exchangeToMono(response -> {
