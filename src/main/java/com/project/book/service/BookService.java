@@ -2,7 +2,7 @@ package com.project.book.service;
 
 import com.project.book.domain.Book;
 import com.project.book.domain.RegisterBook;
-import com.project.book.dto.book.BookRequsetDto;
+import com.project.book.dto.book.BookRequestDto;
 import com.project.book.dto.book.CreateBookRequestDto;
 import com.project.book.repository.BookRepository;
 import com.project.book.repository.RegisterBookRepository;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -22,7 +23,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final RegisterBookRepository registerBookRepository;
 
-    public Book createOrRegisterBook(@RequestBody @Valid BookRequsetDto request) {
+    public Book createOrRegisterBook(@RequestBody @Valid BookRequestDto request) {
 
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
@@ -53,7 +54,7 @@ public class BookService {
         return savedBook;
     }
 
-    private static RegisterBook requestRegisterBook(Book book, BookRequsetDto request) {
+    private static RegisterBook requestRegisterBook(Book book, BookRequestDto request) {
         return RegisterBook.builder()
                 .book(book)
                 .readTime(request.getReadTime())
@@ -67,5 +68,11 @@ public class BookService {
             return Strings.EMPTY;
         }
         return String.join(",", list);
+    }
+
+    public List<Map> getDetailBook(Long id) {
+        List<Map> detailBook = bookRepository.getDetailBook(id);
+
+        return detailBook;
     }
 }

@@ -3,14 +3,13 @@ package com.project.book.dto.book;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class BookRequsetDto {
+public class BookRequestDto {
 
     private String title;
     private List<String> authors;
@@ -25,7 +24,7 @@ public class BookRequsetDto {
     private Integer star;
 
     @Builder
-    public BookRequsetDto(String title, List<String> authors, List<String> translator, String isbn, ZonedDateTime datetime, String publisher, int price, String thumbnail, Integer readTime, Integer recommendTime, Integer star) {
+    public BookRequestDto(String title, List<String> authors, List<String> translator, String isbn, ZonedDateTime datetime, String publisher, int price, String thumbnail, Integer readTime, Integer recommendTime, Integer star) {
         this.title = title;
         this.authors = authors;
         this.translator = translator;

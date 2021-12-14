@@ -1,17 +1,13 @@
 package com.project.book.service;
 
 import com.project.book.domain.Book;
-import com.project.book.domain.RegisterBook;
-import com.project.book.dto.book.BookRequsetDto;
-import com.project.book.dto.book.CreateBookRequestDto;
+import com.project.book.dto.book.BookRequestDto;
 import com.project.book.repository.BookRepository;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +30,7 @@ public class BookServiceTest {
         System.out.println("testAuthors = " + testAuthors);
 
 
-        BookRequsetDto requsetDto = BookRequsetDto.builder()
+        BookRequestDto requsetDto = BookRequestDto.builder()
                 .datetime(ZonedDateTime.now())
                 .authors(testAuthors)
                 .translator(null)
