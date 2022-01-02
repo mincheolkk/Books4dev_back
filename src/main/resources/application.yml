@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:h2:tcp://localhost/~/book
+#    url: jdbc:h2:tcp://localhost/~/book
+    url: jdbc:h2:mem:book
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -13,9 +14,6 @@ spring:
         #        show_sql: true
         format_sql: true
         default_batch_fetch_size: 1000
-
-  profiles:
-    include: oauth
 
 logging:
   level:
