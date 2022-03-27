@@ -14,17 +14,17 @@ public enum CustomOAuth2Provider {
         public ClientRegistration.Builder getBuilder(String registrationId) {
             ClientRegistration.Builder builder = getBuilder(registrationId, ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
             return getBuilder("kakao", ClientAuthenticationMethod.CLIENT_SECRET_POST, DEFAULT_REDIRECT_URL)
-                    .scope("profile")
+//                    .scope("profile_nickname")
                     .authorizationUri("https://kauth.kakao.com/oauth/authorize")
                     .tokenUri("https://kauth.kakao.com/oauth/token")
                     .userInfoUri("https://kapi.kakao.com/v2/user/me")
                     .userNameAttributeName("id")
-                    .clientName("Kakao");
+                    .clientName("kakao");
         }
     };
 
-    private static final String BASE_URL = "https://localhost:8080";
-    private static final String DEFAULT_REDIRECT_URL = BASE_URL + "/login/oauth2/code/{registrationId}";
+    private static final String BASE_URL = "http://localhost:8080";
+    private static final String DEFAULT_REDIRECT_URL = BASE_URL + "/login/oauth2/code/kakao";
 
     protected final Builder getBuilder(String registrationId, ClientAuthenticationMethod method, String redirectUri) {
         Builder builder = ClientRegistration.withRegistrationId(registrationId);

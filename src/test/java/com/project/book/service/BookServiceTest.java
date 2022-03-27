@@ -2,7 +2,7 @@ package com.project.book.service;
 
 import com.project.book.domain.Book;
 import com.project.book.dto.book.BookRequestDto;
-import com.project.book.repository.BookRepository;
+import com.project.book.repository.book.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

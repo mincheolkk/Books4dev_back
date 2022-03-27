@@ -1,8 +1,8 @@
-package com.project.book.repository.service;
+package com.project.book.repository.book.service;
 
 import com.project.book.domain.Book;
 import com.project.book.domain.QBook;
-import com.project.book.repository.BookRepositoryCustom;
+import com.project.book.repository.book.BookRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

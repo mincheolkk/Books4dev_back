@@ -35,6 +35,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
              HttpServletResponse response,
              Authentication authentication) throws IOException, ServletException {
 
+        System.out.println("url = " + url);
+
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String id = String.valueOf(oauth2User.getAttributes().get("id"));
         String token = jwtTokenProvider.createToken(id);

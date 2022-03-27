@@ -32,15 +32,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-        http
-                .authorizeRequests()
-                .antMatchers("/login").authenticated()
-                .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                    .userService(customOAuth2UserService)
-                .and()
-                .successHandler(loginSuccessHandler); // 로그인 성공 후 부가작업
+//        http
+//                .authorizeRequests()
+//                .antMatchers("/ii").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .oauth2Login()
+//                .loginPage("/oauth2/authorization/kakao")
+//                .userInfoEndpoint()
+//                    .userService(customOAuth2UserService);
+//              .and()
+//                .successHandler(loginSuccessHandler); // 로그인 성공 후 부가작업
 
     }
 }

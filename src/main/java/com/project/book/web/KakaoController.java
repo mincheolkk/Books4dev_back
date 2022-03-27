@@ -7,13 +7,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/kakao/*")
+//@RequestMapping("/kakao/*")
 @RequiredArgsConstructor
 public class KakaoController {
 
     private final WebClient kakaoWebClient;
 
-    @GetMapping("/search")
+    @GetMapping("/todo")
     public Mono<KakaoBookDto> search(@RequestParam String query) {
         return kakaoWebClient.get()
                 .uri(builder -> builder.path("/v3/search/book")

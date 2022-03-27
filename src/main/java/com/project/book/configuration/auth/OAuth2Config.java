@@ -9,16 +9,9 @@ import org.springframework.security.oauth2.client.registration.InMemoryClientReg
 
 import java.util.Collections;
 
-import static com.project.book.configuration.auth.CustomOAuth2Provider.KAKAO;
 
 @Configuration
 public class OAuth2Config {
-//
-//    @Value("${security.oauth2.registration.kakao.client-id}")
-//    private static String clientId;
-//
-//    @Value("${security.oauth2.registration.kakao.client-secret}")
-//    private static String clientSecret;
 
 
     @Bean
@@ -34,6 +27,8 @@ public class OAuth2Config {
                 .clientId(clientId)
                 .clientSecret(clientSecret)
                 .build();
+
+        System.out.println("clientRegistration = " + clientRegistration);
 
         return new InMemoryClientRegistrationRepository(Collections.singletonList(
                 clientRegistration

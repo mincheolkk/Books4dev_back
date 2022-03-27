@@ -23,6 +23,9 @@ public class Member extends BaseEntity {
     @Column(name = "member_nickname")
     private String nickname;
 
+    @Column(name = "member_oAuth", unique = true)
+    private String oAuth;
+
     @Positive
     @Column(name = "member_number")
     private Integer number;
@@ -35,12 +38,15 @@ public class Member extends BaseEntity {
     @Column(name = "member_language")
     private Language language;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "book")
     private List<CommentBook> commentBooks = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "book")
     private List<SavedBook> savedBooks = new ArrayList<>();
 }
