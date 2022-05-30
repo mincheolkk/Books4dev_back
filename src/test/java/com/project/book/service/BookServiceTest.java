@@ -1,8 +1,9 @@
 package com.project.book.service;
 
-import com.project.book.domain.Book;
-import com.project.book.dto.book.BookRequestDto;
-import com.project.book.repository.book.BookRepository;
+import com.project.book.book.domain.Book;
+import com.project.book.book.dto.book.BookRequestDto;
+import com.project.book.book.repository.BookRepository;
+import com.project.book.book.service.BookService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +17,8 @@ import java.util.List;
 @SpringBootTest
 public class BookServiceTest {
 
-    @Autowired BookService bookService;
+    @Autowired
+    BookService bookService;
     @Autowired BookRepository repository;
 
     @Test
