@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -25,27 +26,30 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http
+                .httpBasic().disable()
                 .cors().and()
-                .csrf()
-                .disable()
-                .headers()
-                .frameOptions()
-                .disable();
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        //.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
         http
-                    .authorizeRequests()
-                    .antMatchers("/member/login/**").authenticated()
-                    .antMatchers("/book/login/**").authenticated()
-                    .anyRequest().permitAll()
+                //url별 권한설정
+                .authorizeRequests()
+                .antMatchers("/member/login/**").authenticated()
+                .antMatchers("/book/login/**").authenticated()
+                .anyRequest().permitAll()
+
                 .and()
-                    .oauth2Login()
-//                    .loginPage("/oauth2/authorization/kakao")
-//                    .userInfoEndpoint()
-//                    .userService(customOAuth2UserService)
-//                .and()
-                    .successHandler(loginSuccessHandler); // 로그인 성공 후 부가작업
+                .oauth2Login()
+                .loginPage("/oauth2/authorization/kakao")
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService)
+
+                .and()
+                .successHandler(loginSuccessHandler) // 로그인 성공 후 부가작업
+
+                .and()
+                .logout();
 
     }
 }

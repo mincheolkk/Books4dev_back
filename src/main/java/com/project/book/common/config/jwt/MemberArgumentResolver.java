@@ -31,7 +31,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
             MethodParameter parameter, ModelAndViewContainer mavContainer,
             NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
 
-        System.out.println("in MemberArgumentResolver");
+        System.out.println("in MemberArgumentResolver on resolveArgument");
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         System.out.println("request = " + request);
@@ -42,6 +42,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
                 .map(memberRepository::findByoAuth)
                 .orElseThrow(MemberNotFoundException::new);
 
+        System.out.println("end on resolveArgument");
         return member;
     }
 }

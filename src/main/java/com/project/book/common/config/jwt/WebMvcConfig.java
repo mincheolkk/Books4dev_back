@@ -27,6 +27,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
                "/todo", "/member/login/**", "/book/login/**");
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns(pathPatterns);
 
-        System.out.println("in WebMvcConfig");
+        System.out.println("in WebMvcConfig on addInterceptors");
     }
 }

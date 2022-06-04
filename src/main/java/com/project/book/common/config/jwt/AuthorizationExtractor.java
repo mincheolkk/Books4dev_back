@@ -19,7 +19,8 @@ public class AuthorizationExtractor {
     public static String extract(HttpServletRequest request) {
         System.out.println("request = " + request.toString());
         Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
-        System.out.println("headers = " + headers);
+        System.out.println("request.getHeader(\"refreshToken\") = " + request.getHeader("refreshToken"));
+        System.out.println("headers.nextElement = " + headers.nextElement());
         while (headers.hasMoreElements()) {
             String value = headers.nextElement();
             if ((value.toLowerCase().startsWith(BEARER_TYPE.toLowerCase()))) {
@@ -38,22 +39,4 @@ public class AuthorizationExtractor {
         return Strings.EMPTY;
     }
 
-//    private static final String AUTHORIZATION_HEADER = "Authorization";
-//    private static final String TOKEN_TYPE = "Bearer";
-//    private static final int TOKEN_TYPE_INDEX = 0;
-//    private static final int TOKEN_INDEX = 1;
-//    private static final int VALID_AUTHORIZATION_LENGTH = 2;
-//
-//    public String extract(final HttpServletRequest request) {
-//        final String authorization = request.getHeader(AUTHORIZATION_HEADER);
-//        if (Objects.isNull(authorization)) {
-//            System.out.println("로그인 필요");
-//        }
-//        final String[] splitToken = authorization.split(" ");
-//
-//        if (splitToken.length != VALID_AUTHORIZATION_LENGTH || !splitToken[TOKEN_TYPE_INDEX].equals(TOKEN_TYPE)) {
-//            System.out.println("유효하지 않은 토큰입니다.");
-//        }
-//        return splitToken[TOKEN_INDEX];
-//    }
 }

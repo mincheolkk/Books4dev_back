@@ -10,9 +10,9 @@ public enum CustomOAuth2Provider {
     KAKAO {
         @Override
         public ClientRegistration.Builder getBuilder(String registrationId) {
-            ClientRegistration.Builder builder = getBuilder(registrationId, ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
+//            ClientRegistration.Builder builder = getBuilder(registrationId, ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
             return getBuilder("kakao", ClientAuthenticationMethod.CLIENT_SECRET_POST, DEFAULT_REDIRECT_URL)
-//                    .scope("profile_nickname")
+                    .scope("profile_nickname")
                     .authorizationUri("https://kauth.kakao.com/oauth/authorize")
                     .tokenUri("https://kauth.kakao.com/oauth/token")
                     .userInfoUri("https://kapi.kakao.com/v2/user/me")
@@ -29,6 +29,8 @@ public enum CustomOAuth2Provider {
         builder.clientAuthenticationMethod(method);
         builder.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);
         builder.redirectUri(redirectUri);
+        System.out.println("customOauth2 Provider .. getBuilder");
+        System.out.println("builder = " + builder);
         return builder;
     }
 
