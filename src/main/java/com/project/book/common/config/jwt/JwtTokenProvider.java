@@ -1,5 +1,6 @@
 package com.project.book.common.config.jwt;
 
+import com.project.book.member.domain.Token;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,32 +19,26 @@ public class JwtTokenProvider {
 //    @Value("${security.oauth2.resource.jwt.key-value}")
     private static String secretKey = "sdsfadsfewqrgewqrgavsyhyjmyfur5tym5346234gbbh3e4r5fq324453254";
 
-    private static long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;
-    private static long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
+    public static long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;
+    public static long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
 
-    public String createAccessToken(String payload) {
-        System.out.println("in JwtTokenProvider on createToken");
-
+    public Token createAccessToken(String payload) {
         Claims claims = Jwts.claims().setSubject(payload);
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + ACCESS_TOKEN_VALID_TIME);
+        String jwtToken = createJwtToken(claims, ACCESS_TOKEN_VALID_TIME);
 
-        System.out.println("secretKey = " + secretKey);
-        System.out.println("validity = " + validity);
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
-                .compact();
+        return new Token(jwtToken, ACCESS_TOKEN_VALID_TIME);
     }
 
-    public String createRefreshToken(String value) {
-        Claims claims = Jwts.claims();
-        claims.put("value", value);
+    public Token createRefreshToken(String payload) {
+        Claims claims = Jwts.claims().setSubject(payload);
+        String jwtToken = createJwtToken(claims, REFRESH_TOKEN_VALID_TIME);
+
+        return new Token(jwtToken, REFRESH_TOKEN_VALID_TIME);
+    }
+
+    public String createJwtToken(Claims claims, long time) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME);
+        Date validity = new Date(now.getTime() + time);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -55,8 +50,6 @@ public class JwtTokenProvider {
 
 
     public String getPayload(String token) {
-        System.out.println("in JwtTokenProvider on getPayload");
-
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
@@ -65,8 +58,6 @@ public class JwtTokenProvider {
     }
 
     public boolean validateToken(String token) {
-        System.out.println("in JwtTokenProvider on validateToken");
-
         try {
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(secretKey)

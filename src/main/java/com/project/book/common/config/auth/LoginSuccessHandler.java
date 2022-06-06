@@ -1,9 +1,10 @@
 package com.project.book.common.config.auth;
 
 import com.project.book.common.config.jwt.JwtTokenProvider;
+import com.project.book.common.config.jwt.RedisUtil;
+import com.project.book.member.domain.Token;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.parser.Authorization;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Component
@@ -29,6 +31,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final JwtTokenProvider jwtTokenProvider;
     private final RequestCache requestCache = new HttpSessionRequestCache();
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+    private final RedisUtil redisUtil;
 
     private static String url= "http://localhost:8080";
 
@@ -42,22 +45,17 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String oAuth = String.valueOf(oauth2User.getAttributes().get("id"));
-        String token = jwtTokenProvider.createAccessToken(oAuth);
+        String token = jwtTokenProvider.createAccessToken(oAuth).getValue();
 
         System.out.println("oauth2User = " + oauth2User);
         System.out.println("oAuth = " + oAuth);
+        System.out.println("token = " + token);
 
 
         String randomValue = UUID.randomUUID().toString();
-        String refreshToken = jwtTokenProvider.createRefreshToken(randomValue);
+        Token refreshToken = jwtTokenProvider.createRefreshToken(randomValue);
 
-        System.out.println("response = " + response.getHeader("id"));
-        System.out.println("response = " + response.getHeader("Bearer"));
-        System.out.println("response = " + response.getHeader("Authorization"));
-
-        System.out.println("token = " + token);
-        System.out.println("refreshToken = " + refreshToken);
-
+        redisUtil.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
 
         System.out.println("end onAuthenticationSuccess");
 
@@ -69,7 +67,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
         response.addHeader("accessToken",token);
-        response.addHeader("refreshToken",refreshToken);
+        response.addHeader("refreshToken",refreshToken.getValue());
 //        response.addCookie("refreshToken",refreshToken);
 
         System.out.println("response.getHeader(\"refreshToken\") = " + response.getHeader("refreshToken"));

@@ -24,7 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
         final List<String> pathPatterns = Arrays.asList(
-               "/todo", "/member/login/**", "/book/login/**");
+               "/todo", "/member/login/**", "/book/login/**","/update/token");
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns(pathPatterns);
 
         System.out.println("in WebMvcConfig on addInterceptors");

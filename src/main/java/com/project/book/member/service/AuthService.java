@@ -1,36 +1,50 @@
 package com.project.book.member.service;
 
+import com.project.book.common.config.jwt.AuthorizationExtractor;
 import com.project.book.common.config.jwt.JwtTokenProvider;
+import com.project.book.common.config.jwt.RedisUtil;
 import com.project.book.common.exception.InvalidRefreshTokenException;
 import com.project.book.member.dto.TokenRequest;
-import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+
+import static com.project.book.common.config.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_TIME;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final MemberRepository memberRepository;
-
+    private final RedisUtil redisUtil;
 
     @Transactional
-    public String updateAccessToken(String accessToken, TokenRequest refreshTokenRequest) {
-        if (!jwtTokenProvider.validateToken(refreshTokenRequest.getRefreshToken())) {
+    public String updateAccessToken(TokenRequest tokenRequest, HttpServletRequest request) {
+        String oAuth = (String) request.getAttribute("oAuth");
+
+        if (!jwtTokenProvider.validateToken(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
         }
 
-        String id = jwtTokenProvider.getPayload(accessToken);
-        String refreshToken = memberRepository.findByoAuth(id).getRefreshToken();
+        String refreshToken = redisUtil.getRefreshTokenData(oAuth);
 
-        if (!refreshToken.equals(refreshTokenRequest.getRefreshToken())) {
+        if (!refreshToken.equals(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
         }
 
-        return jwtTokenProvider.createAccessToken(id);
+        return jwtTokenProvider.createAccessToken(oAuth).getValue();
     }
 
-//    public void logOut(String accessToken)
+    @Transactional
+    public void logOut(HttpServletRequest request) {
+        String oAuth = (String) request.getAttribute("oAuth");
+        String accessToken = AuthorizationExtractor.extract(request);
+        System.out.println("logOut == ");
+        System.out.println("accessToken = " + accessToken);
+
+        redisUtil.setBlackList(accessToken,"blackList",ACCESS_TOKEN_VALID_TIME);
+
+    }
 }

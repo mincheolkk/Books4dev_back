@@ -19,8 +19,7 @@ public class AuthorizationExtractor {
     public static String extract(HttpServletRequest request) {
         System.out.println("request = " + request.toString());
         Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
-        System.out.println("request.getHeader(\"refreshToken\") = " + request.getHeader("refreshToken"));
-        System.out.println("headers.nextElement = " + headers.nextElement());
+        System.out.println("headers = " + headers);
         while (headers.hasMoreElements()) {
             String value = headers.nextElement();
             if ((value.toLowerCase().startsWith(BEARER_TYPE.toLowerCase()))) {

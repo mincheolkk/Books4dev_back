@@ -15,6 +15,7 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
 
     private final AuthorizationExtractor authExtractor;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisUtil redisUtil;
 
     @Override
     public boolean preHandle (
@@ -23,18 +24,18 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
             Object handler
     ) {
         System.out.println("in preHandle");
+
         String token = authExtractor.extract(request);
+        if (redisUtil.getBlackListData(token) != null) {
+            return false;
+        }
 
-        System.out.println("request = " + request.getHeader("accessToken"));
-        System.out.println("request = " + request.getHeader("accessRefresh"));
-
-        System.out.println("token = " + token);
-        String id = Optional.ofNullable(token)
+        String oAuth = Optional.ofNullable(token)
                 .filter(t -> jwtTokenProvider.validateToken(t))
                 .map(t -> jwtTokenProvider.getPayload(t))
                 .orElseThrow(InvalidAccessTokenException::new);
 
-        request.setAttribute("id",id);
+        request.setAttribute("oAuth",oAuth);
 
         System.out.println("end preHandle");
         return true;

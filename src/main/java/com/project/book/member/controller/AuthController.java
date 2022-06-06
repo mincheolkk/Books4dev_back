@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,8 +23,17 @@ public class AuthController {
     @PostMapping(value = "/update/token")
     public ResponseEntity<?> updateAccessToken(@RequestBody TokenRequest tokenRequest, HttpServletRequest request) {
         String accessToken = AuthorizationExtractor.extract(request);
-        String newAccessToken = authService.updateAccessToken(accessToken, tokenRequest);
+        String oAuth = (String) request.getAttribute("oAuth");
+        String newAccessToken = authService.updateAccessToken(tokenRequest, request);
 
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/logoutt")
+    public ResponseEntity<?> logOut(HttpServletRequest request) {
+        System.out.println("223123123");
+        authService.logOut(request);
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

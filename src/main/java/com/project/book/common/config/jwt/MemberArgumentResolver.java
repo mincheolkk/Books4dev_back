@@ -1,5 +1,6 @@
 package com.project.book.common.config.jwt;
 
+import com.project.book.common.exception.InvalidAccessTokenException;
 import com.project.book.common.exception.MemberNotFoundException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
@@ -20,6 +21,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberRepository memberRepository;
 
+    private final RedisUtil redisUtil;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -35,10 +37,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         System.out.println("request = " + request);
-        String id = (String) request.getAttribute("id");
-        System.out.println("id = " + id);
+        String oAuth = (String) request.getAttribute("oAuth");
+        System.out.println("oAuth = " + oAuth);
 
-        Member member = Optional.ofNullable(id)
+        Member member = Optional.ofNullable(oAuth)
                 .map(memberRepository::findByoAuth)
                 .orElseThrow(MemberNotFoundException::new);
 
