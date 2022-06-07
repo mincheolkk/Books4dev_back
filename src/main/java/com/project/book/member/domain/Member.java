@@ -45,9 +45,6 @@ public class Member extends BaseEntity {
     @Column(name = "member_language")
     private Language language;
 
-    @Column(name = "member_refreshToken")
-    private String refreshToken;
-
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RegisterBook> registerBooks = new ArrayList<>();
@@ -59,8 +56,4 @@ public class Member extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "book")
     private List<SavedBook> savedBooks = new ArrayList<>();
-
-    public void deleteRefreshToken() {
-        this.refreshToken = null;
-    }
 }
