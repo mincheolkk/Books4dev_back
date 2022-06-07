@@ -7,7 +7,7 @@ import com.project.book.member.domain.Member;
 import javax.persistence.*;
 
 @Entity
-public class SavedBook extends BaseEntity {
+public class WishBook extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,7 +2,7 @@ package com.project.book.member.domain;
 
 import com.project.book.book.domain.CommentBook;
 import com.project.book.book.domain.RegisterBook;
-import com.project.book.book.domain.SavedBook;
+import com.project.book.book.domain.WishBook;
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
 
@@ -45,9 +45,6 @@ public class Member extends BaseEntity {
     @Column(name = "member_language")
     private Language language;
 
-    @Column(name = "member_refreshToken")
-    private String refreshToken;
-
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<RegisterBook> registerBooks = new ArrayList<>();
@@ -58,9 +55,5 @@ public class Member extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "book")
-    private List<SavedBook> savedBooks = new ArrayList<>();
-
-    public void deleteRefreshToken() {
-        this.refreshToken = null;
-    }
+    private List<WishBook> WishBooks = new ArrayList<>();
 }

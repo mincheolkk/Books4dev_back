@@ -30,13 +30,10 @@ public class RegisterBook extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Positive
     private Integer readTime;
 
-    @Positive
     private Integer recommendTime;
 
-    @Positive
     private Integer star;
 
     @Builder
