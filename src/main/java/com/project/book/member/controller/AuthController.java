@@ -23,17 +23,16 @@ public class AuthController {
     @PostMapping(value = "/update/token")
     public ResponseEntity<?> updateAccessToken(@RequestBody TokenRequest tokenRequest, HttpServletRequest request) {
         String accessToken = AuthorizationExtractor.extract(request);
-        String oAuth = (String) request.getAttribute("oAuth");
         String newAccessToken = authService.updateAccessToken(tokenRequest, request);
 
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/logoutt")
+    @PostMapping(value = "/out")
     public ResponseEntity<?> logOut(HttpServletRequest request) {
         System.out.println("223123123");
         authService.logOut(request);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }
