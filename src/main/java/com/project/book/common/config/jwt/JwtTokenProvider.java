@@ -22,21 +22,14 @@ public class JwtTokenProvider {
     public static long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;
     public static long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
 
-    public Token createAccessToken(String payload) {
+    public Token createToken(String payload, long time) {
         Claims claims = Jwts.claims().setSubject(payload);
-        String jwtToken = createJwtToken(claims, ACCESS_TOKEN_VALID_TIME);
+        String value = createTokenValue(claims, time);
 
-        return new Token(jwtToken, ACCESS_TOKEN_VALID_TIME);
+        return new Token(value, time);
     }
 
-    public Token createRefreshToken(String payload) {
-        Claims claims = Jwts.claims().setSubject(payload);
-        String jwtToken = createJwtToken(claims, REFRESH_TOKEN_VALID_TIME);
-
-        return new Token(jwtToken, REFRESH_TOKEN_VALID_TIME);
-    }
-
-    public String createJwtToken(Claims claims, long time) {
+    public String createTokenValue(Claims claims, long time) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + time);
 

@@ -4,7 +4,6 @@ import com.project.book.common.config.jwt.JwtTokenProvider;
 import com.project.book.common.config.jwt.RedisUtil;
 import com.project.book.member.domain.Token;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -22,7 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+
+import static com.project.book.common.config.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_TIME;
+import static com.project.book.common.config.jwt.JwtTokenProvider.REFRESH_TOKEN_VALID_TIME;
 
 @RequiredArgsConstructor
 @Component
@@ -45,7 +46,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String oAuth = String.valueOf(oauth2User.getAttributes().get("id"));
-        String token = jwtTokenProvider.createAccessToken(oAuth).getValue();
+        String token = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
 
         System.out.println("oauth2User = " + oauth2User);
         System.out.println("oAuth = " + oAuth);
@@ -53,7 +54,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
         String randomValue = UUID.randomUUID().toString();
-        Token refreshToken = jwtTokenProvider.createRefreshToken(randomValue);
+        Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
         redisUtil.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
 

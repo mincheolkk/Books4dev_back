@@ -34,7 +34,7 @@ public class AuthService {
             throw new InvalidRefreshTokenException();
         }
 
-        return jwtTokenProvider.createAccessToken(oAuth).getValue();
+        return jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
     }
 
     @Transactional
