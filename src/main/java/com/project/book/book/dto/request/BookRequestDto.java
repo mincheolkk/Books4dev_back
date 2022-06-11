@@ -1,5 +1,6 @@
-package com.project.book.book.dto.book;
+package com.project.book.book.dto.request;
 
+import com.project.book.book.domain.BookTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,14 +18,14 @@ public class BookRequestDto {
     private String isbn;
     private ZonedDateTime datetime;
     private String publisher;
-    private int price;
+    private Long price;
     private String thumbnail;
-    private Integer readTime;
-    private Integer recommendTime;
+    private BookTime readTime;
+    private BookTime recommendTime;
     private Integer star;
 
     @Builder
-    public BookRequestDto(String title, List<String> authors, List<String> translator, String isbn, ZonedDateTime datetime, String publisher, int price, String thumbnail, Integer readTime, Integer recommendTime, Integer star) {
+    public BookRequestDto(String title, List<String> authors, List<String> translator, String isbn, ZonedDateTime datetime, String publisher, Long price, String thumbnail, BookTime readTime, BookTime recommendTime, Integer star) {
         this.title = title;
         this.authors = authors;
         this.translator = translator;

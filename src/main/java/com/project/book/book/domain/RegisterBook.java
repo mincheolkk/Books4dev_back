@@ -1,6 +1,9 @@
 package com.project.book.book.domain;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.book.common.domain.BaseEntity;
 import com.project.book.member.domain.Member;
 import lombok.AccessLevel;
@@ -9,7 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Positive;
+
 
 @Getter
 @Entity
@@ -30,19 +33,21 @@ public class RegisterBook extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private Integer readTime;
+    @Enumerated(EnumType.STRING)
+    public BookTime readBookTime;
 
-    private Integer recommendTime;
+    @Enumerated(EnumType.STRING)
+    public BookTime recommendBookTime;
 
     private Integer star;
 
     @Builder
-    public RegisterBook(Long id, Book book, Member member, Integer readTime, Integer recommendTime, Integer star) {
+    public RegisterBook(Long id, Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
         this.id = id;
         this.book = book;
         this.member = member;
-        this.readTime = readTime;
-        this.recommendTime = recommendTime;
+        this.readBookTime = readBookTime;
+        this.recommendBookTime = recommendBookTime;
         this.star = star;
     }
 }

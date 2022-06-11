@@ -30,10 +30,10 @@ public class Book extends BaseEntity {
     private String publisher;
 
     @Column(name = "book_dateTime")
-    private LocalDateTime dateTime;
+    private LocalDateTime releaseDate;
 
     @Column(name = "book_price")
-    private int price;
+    private Long price;
 
     @Column(name = "book_thumbnail")
     private String thumbnail;

@@ -1,4 +1,4 @@
-package com.project.book.book.dto;
+package com.project.book.book.dto.kakao;
 
 import lombok.AccessLevel;
 import lombok.Getter;

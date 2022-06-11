@@ -1,6 +1,6 @@
 package com.project.book.member.controller;
 
-import com.project.book.book.dto.KakaoBookDto;
+import com.project.book.book.dto.kakao.KakaoBookDto;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.domain.Member;
 import lombok.RequiredArgsConstructor;

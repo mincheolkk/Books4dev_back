@@ -1,4 +1,4 @@
-package com.project.book.book.dto.book;
+package com.project.book.book.dto.request;
 
 
 import lombok.AccessLevel;
