@@ -10,6 +10,9 @@ import com.project.book.book.domain.BookTime;
 import com.project.book.book.domain.RegisterBook;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepositoryCustom;
+import com.project.book.member.domain.Member;
+import com.project.book.member.domain.MemberType;
+import com.project.book.member.domain.QMember;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
@@ -26,6 +29,8 @@ import java.util.*;
 
 import static com.project.book.book.domain.QBook.*;
 import static com.project.book.book.domain.QRegisterBook.registerBook;
+import static com.project.book.book.repository.QuerydslUtils.enumEqCheck;
+import static com.project.book.member.domain.QMember.member;
 
 
 @Repository
@@ -45,8 +50,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     @Override
     public Map<String, Object> getDetailBook(Book reqBook) throws JsonProcessingException {
 
-        List<Map> resultList = new ArrayList<>();
-
         DetailBookResponseDto detailBookResponseDto = queryFactory.select(new QDetailBookResponseDto(
                 book.title, book.authors, book.translator,
                 book.publisher, book.thumbnail, book.isbn,
@@ -55,10 +58,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
 
         detailBookResponseDto.updateAvgStar();
-        System.out.println("detailBookResponseDto.getAvgStar() = " + detailBookResponseDto.getAvgStar());
-        Map result = new HashMap();
 
-        result.put("책 데이터", detailBookResponseDto);
 
         List<Tuple> fetch1 = queryFactory.select(
                         registerBook.readBookTime,
@@ -84,8 +84,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         resultMap.put("readTimeMap", readTimeMap);
         resultMap.put("recommendTimeMap", recommendTimeMap);
 
-
-        resultList.add(result);
         return resultMap;
     }
 
@@ -130,12 +128,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         resultMap.put("readTimeMap", readTimeMap);
         resultMap.put("recommendTimeMap", recommendTimeMap);
 
-        System.out.println("resultMap = " + resultMap);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        ResDto dto = new ResDto("readTimeMap", readTimeMap);
-//        ResDto dto2 = new ResDto("recommendTimeMap", recommendTimeMap);
-//        String s = objectMapper.writeValueAsString(dto);
-//        System.out.println("s = " + s);
         return resultMap;
     }
 
@@ -153,5 +145,41 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public void howToSolve(Book reqBook, MemberType type) {
+        //
+        List<Tuple> tupleList = queryFactory.select(
+                        book.title,
+                        book.authors,
+                        registerBook.readBookTime,
+                        registerBook.readBookTime.count(),
+                        registerBook.recommendBookTime,
+                        registerBook.recommendBookTime.count(),
+                        registerBook.star.avg()
+                ).from(registerBook)
+                .join(registerBook.member, member)
+                .join(registerBook.book, book)
+                .where(
+//                        registerBook.readBookTime.eq(BookTime.before)
+//                        registerBook.book.eq(reqBook)
+//                        enumEqCheck(member.type, type)
+//                        ,registerBook.member.eq(member)
+                ).groupBy(
+                        book.id,
+                        member.type,
+                        registerBook.readBookTime,
+                        registerBook.recommendBookTime
+                ,registerBook.id)
+                .orderBy(registerBook.star.avg().asc())
+                .fetch();
+
+        System.out.println("tupleList = " + tupleList);
+        System.out.println("tupleList.get(0).get(4,int.class) = " + tupleList.get(0).get(4,int.class));
+
+//        System.out.println("jpaQuery.fetchOne().get(0,long.class) = " + jpaQuery.fetchOne().get(0,long.class));
+//        System.out.println("jpaQuery.fetchOne().get(0,long.class) = " + jpaQuery.fetchOne().get(1,double.class));
+
+
+    }
 }
 

@@ -7,6 +7,7 @@ import com.project.book.book.dto.request.BookRequestDto;
 import com.project.book.book.dto.request.CreateBookRequestDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
+import com.project.book.member.domain.MemberType;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -92,5 +93,12 @@ public class BookService {
         Optional<Book> book = bookRepository.findById(id);
 
         return bookRepository.maybetuple(book.get());
+    }
+
+    public void hepll(Long id) {
+        Optional<Book> book = bookRepository.findById(id);
+
+        bookRepository.howToSolve(book.get(), MemberType.BACK);
+
     }
 }

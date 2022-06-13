@@ -2,6 +2,7 @@ package com.project.book.book.repository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.Book;
+import com.project.book.member.domain.MemberType;
 import com.querydsl.core.Tuple;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface BookRepositoryCustom {
     Map<String, Map> testListCount(Book reqBook) throws JsonProcessingException;
 
     List<Tuple> maybetuple(Book reqBook);
+
+    void howToSolve(Book reqBook, MemberType type);
 }
