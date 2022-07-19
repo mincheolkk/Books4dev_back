@@ -2,7 +2,9 @@ package com.project.book.common.config.auth;
 
 import com.project.book.common.config.jwt.JwtTokenProvider;
 import com.project.book.common.config.jwt.RedisUtil;
+import com.project.book.member.domain.Member;
 import com.project.book.member.domain.Token;
+import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,7 +36,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final RedisUtil redisUtil;
 
-    private static String url= "http://localhost:8080";
+    private final MemberRepository memberRepository;
+
+
+    private static String url= "http://localhost:8081/home";
+    private static String typeUrl= "http://localhost:8081/search";
 
     @Override
     public void onAuthenticationSuccess(
@@ -46,6 +52,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String oAuth = String.valueOf(oauth2User.getAttributes().get("id"));
+        System.out.println("oAuth = " + oAuth);
         String token = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
 
         System.out.println("oauth2User = " + oauth2User);
@@ -61,7 +68,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         System.out.println("end onAuthenticationSuccess");
 
 //
-//        resultRedirectStrategy(request, response, authentication);
 //
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -76,23 +82,48 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 //                .write(objectMapper.writeValueAsString(
 //                        AuthTokenResponse.of(member.getId(), member.getNickname(),
 //                                member.getAvatar(), token, AuthorizationType.BEARER)));
+        resultRedirectStrategy(request, response, authentication, oAuth);
+
     }
 
     protected void resultRedirectStrategy(
                                             HttpServletRequest request,
                                             HttpServletResponse response,
-                                            Authentication authentication) throws IOException, ServletException {
+                                            Authentication authentication,
+                                            String oAuth) throws IOException, ServletException {
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
+        System.out.println("request = " + request);
+        System.out.println("response = " + response);
         System.out.println("savedRequest = " + savedRequest);
         System.out.println("in resultRedirectStrategy");
+        System.out.println("authentication = " + authentication);
 
-        if(savedRequest!=null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            redirectStrategy.sendRedirect(request, response, targetUrl);
+
+        Member member = memberRepository.findByoAuth(oAuth);
+        System.out.println("member = " + member);
+        if (member.getType() == null) {
+            System.out.println("member.getType() = " + member.getType());
+            System.out.println("2222");
+            redirectStrategy.sendRedirect(request, response, typeUrl);
         } else {
-            redirectStrategy.sendRedirect(request, response, url);
+            if(savedRequest!=null) {
+                String targetUrl = savedRequest.getRedirectUrl();
+                System.out.println("targetUrl = " + targetUrl);
+                redirectStrategy.sendRedirect(request, response, targetUrl);
+            } else {
+                redirectStrategy.sendRedirect(request, response, url);
+            }
         }
+
+        // 가입 시키고 여기서 분기처리하자. 개발자 포지션 체크 안 되있으면 개발자 포지션 고르는 화면으로 이동시키기.
+//        if(savedRequest!=null) {
+//            String targetUrl = savedRequest.getRedirectUrl();
+//            System.out.println("targetUrl = " + targetUrl);
+//            redirectStrategy.sendRedirect(request, response, targetUrl);
+//        } else {
+//            redirectStrategy.sendRedirect(request, response, url);
+//        }
 
     }
 
