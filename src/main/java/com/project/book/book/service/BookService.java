@@ -4,17 +4,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.Book;
 import com.project.book.book.domain.RegisterBook;
 import com.project.book.book.domain.WishBook;
+import com.project.book.book.domain.WishMember;
 import com.project.book.book.dto.request.BookRequestDto;
 import com.project.book.book.dto.request.CreateBookRequestDto;
 import com.project.book.book.dto.request.WishBookRequestDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
 import com.project.book.book.repository.WishBookRepository;
+import com.project.book.book.repository.WishMemberRepository;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +36,7 @@ public class BookService {
     private final BookRepository bookRepository;
     private final RegisterBookRepository registerBookRepository;
     private final WishBookRepository wishBookRepository;
-
+    private final WishMemberRepository wishMemberRepository;
     @Transactional
     public Book createOrRegisterBook(@RequestBody @Valid BookRequestDto request) {
 
@@ -89,17 +92,42 @@ public class BookService {
         return detailBook;
     }
 
-    public void saveWishBook(WishBookRequestDto request, Member member) {
-        WishBook wish = WishBook.builder()
-                .isbn(request.getIsbn())
-                .title(request.getTitle())
-                .thumbnail(request.getThumbnail())
+    public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
+        WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());
+        System.out.println("wishBook = " + wishBook);
+
+        if (wishBook == null) {
+            WishBook wish = WishBook.builder()
+                    .isbn(request.getIsbn())
+                    .title(request.getTitle())
+                    .thumbnail(request.getThumbnail())
+                    .build();
+            wishBookRepository.save(wish);
+
+           saveWishMember(member, wish);
+           return new ResponseEntity(HttpStatus.ACCEPTED);
+        }
+
+        boolean flag = wishMemberRepository.findByWishBook(wishBook, member);
+        if (flag) {
+            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        saveWishMember(member, wishBook);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
+    }
+
+    public void saveWishMember(Member member, WishBook wishBook) {
+        WishMember wishMember = WishMember.builder()
+                .wishBook(wishBook)
                 .member(member)
                 .build();
-
-        wishBookRepository.save(wish);
-
+        wishMemberRepository.save(wishMember);
     }
+
+
+
+
 
     public Map<String, Map> testListCount(Long id) throws JsonProcessingException {
         Optional<Book> book = bookRepository.findById(id);
@@ -118,6 +146,5 @@ public class BookService {
         Optional<Book> book = bookRepository.findById(id);
 
         bookRepository.howToSolve(book.get(), MemberType.BACK);
-
     }
 }

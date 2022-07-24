@@ -14,22 +14,14 @@ public class WishBook extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
     private String isbn;
     private String title;
     private String thumbnail;
 
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     @Builder
-    public WishBook(String isbn, String title, String thumbnail, Member member) {
+    public WishBook(String isbn, String title, String thumbnail) {
         this.isbn = isbn;
         this.title = title;
         this.thumbnail = thumbnail;
-        this.member = member;
     }
 }

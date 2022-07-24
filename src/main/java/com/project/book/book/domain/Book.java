@@ -47,6 +47,4 @@ public class Book extends BaseEntity {
     @OneToMany(mappedBy = "book")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
-    private List<CommentBook> commentBooks = new ArrayList<>();
 }

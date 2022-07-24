@@ -53,9 +53,9 @@ public class BookController {
         System.out.println("request.getIsbn() = " + request.getIsbn());
 
         Optional<Member> tempMember = memberRepository.findById(1L);
-        bookService.saveWishBook(request, tempMember.get());
+        ResponseEntity responseEntity = bookService.saveWishBook(request, tempMember.get());
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
 
 
