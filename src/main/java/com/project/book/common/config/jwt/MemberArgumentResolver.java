@@ -27,6 +27,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisUtil redisUtil;
+    private final AuthorizationExtractor authExtractor;
+
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -42,9 +44,8 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        String authorization = request.getHeader("Authorization");
-        String bearer = authorization.split("Bearer ")[1];
-        String oAuth = jwtTokenProvider.getPayload(bearer);
+        String token = authExtractor.extract(request);
+        String oAuth = jwtTokenProvider.getPayload(token);
 
         Member member = Optional.ofNullable(oAuth)
                 .map(memberRepository::findByoAuth)
