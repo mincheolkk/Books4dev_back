@@ -1,18 +1,18 @@
 package com.project.book.member.controller;
 
 import com.project.book.common.config.jwt.AuthorizationExtractor;
+import com.project.book.common.config.jwt.LoginMember;
+import com.project.book.member.domain.Member;
 import com.project.book.member.dto.TokenRequest;
 import com.project.book.member.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RequiredArgsConstructor
 @RestController
@@ -34,5 +34,18 @@ public class AuthController {
         authService.logOut(request);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping(value = "/select")
+    public ResponseEntity<?> dda(HttpServletRequest request) {
+        String authorization = request.getHeader("refreshToken");
+        System.out.println("authorization = " + authorization);
+        String temp = "tmep temp!";
+        return ResponseEntity.ok(temp);
+    }
+
+    @GetMapping(value = "/test/token")
+    public void kk(@LoginMember Member member) {
+        System.out.println("member = " + member.getId());
     }
 }

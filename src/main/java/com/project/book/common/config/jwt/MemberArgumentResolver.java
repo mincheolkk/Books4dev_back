@@ -6,9 +6,13 @@ import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
@@ -20,6 +24,7 @@ import java.util.Optional;
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     private final RedisUtil redisUtil;
 
@@ -36,9 +41,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         System.out.println("in MemberArgumentResolver on resolveArgument");
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
-        System.out.println("request = " + request);
-        String oAuth = (String) request.getAttribute("oAuth");
-        System.out.println("oAuth = " + oAuth);
+
+        String authorization = request.getHeader("Authorization");
+        String bearer = authorization.split("Bearer ")[1];
+        String oAuth = jwtTokenProvider.getPayload(bearer);
 
         Member member = Optional.ofNullable(oAuth)
                 .map(memberRepository::findByoAuth)
