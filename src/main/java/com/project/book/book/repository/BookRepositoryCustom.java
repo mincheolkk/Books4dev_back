@@ -14,9 +14,5 @@ public interface BookRepositoryCustom {
 
     Map<String, Object> getDetailBook(Book book) throws JsonProcessingException;
 
-    Map<String, Map> testListCount(Book reqBook) throws JsonProcessingException;
 
-    List<Tuple> maybetuple(Book reqBook);
-
-    void howToSolve(Book reqBook, MemberType type);
 }

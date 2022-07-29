@@ -8,5 +8,5 @@ public enum BookTime {
     after,
     twoYear,
     fiveYear,
-    sevenYear
+    tenYear
 }

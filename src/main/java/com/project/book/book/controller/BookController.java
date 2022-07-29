@@ -3,9 +3,11 @@ package com.project.book.book.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.Book;
-import com.project.book.book.dto.request.BookRequestDto;
+import com.project.book.book.dto.request.RegisterBySearchDto;
+import com.project.book.book.dto.request.RegisterByHomeListDto;
 import com.project.book.book.dto.request.WishBookRequestDto;
 import com.project.book.book.service.BookService;
+import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
 import com.querydsl.core.Tuple;
@@ -27,15 +29,20 @@ public class BookController {
 
     private final BookService bookService;
 
-    private final MemberRepository memberRepository;
-
     // 책 저장 로직
-    @PostMapping("/books")
-    public ResponseEntity saveBook(@RequestBody @Valid BookRequestDto request) {
-        Book book = bookService.createOrRegisterBook(request);
-        URI uri = URI.create("/books/" + book.getIsbn());
+    @PostMapping("/bySearch")
+    public ResponseEntity registerBySearch(@LoginMember Member member, @RequestBody @Valid RegisterBySearchDto request) {
+        Book book = bookService.registerBySearch(request, member);
+        return new ResponseEntity<>(book.getId(), HttpStatus.OK);
+    }
 
-        return ResponseEntity.created(uri).build();
+    @PostMapping("/bylist")
+    public ResponseEntity registerByHomeList(@LoginMember Member member, @RequestBody @Valid RegisterByHomeListDto request) {
+        System.out.println("request = " + request.getIsbn());
+        Book book = bookService.registerByHomeList(request, member);
+
+        return new ResponseEntity<>(book.getId(), HttpStatus.OK);
+
     }
 
     @GetMapping("/books/{book_id}")
@@ -48,31 +55,15 @@ public class BookController {
 
     //@LoginMember member 로 멤버도 함께 받기
     @PostMapping("/book/wish")
-    public ResponseEntity<?> saveWishBook(@RequestBody WishBookRequestDto request) {
-        System.out.println("request = " + request);
-        System.out.println("request.getIsbn() = " + request.getIsbn());
-
-        Optional<Member> tempMember = memberRepository.findById(1L);
-        ResponseEntity responseEntity = bookService.saveWishBook(request, tempMember.get());
+    public ResponseEntity<?> saveWishBook(@LoginMember Member member, @RequestBody WishBookRequestDto request) {
+        ResponseEntity responseEntity = bookService.saveWishBook(request, member);
 
         return new ResponseEntity<>(responseEntity, HttpStatus.OK);
     }
 
+    @GetMapping()
+    public void allBooks() {
 
-    @ResponseBody
-    @GetMapping("/login/kakao")
-    public void kakaoCallBack(@RequestParam String code) {
-        System.out.println("code = " + code);
-    }
-
-    @GetMapping("/book/{book_id}")
-    public ResponseEntity<Map<String, Map>> getBook(@PathVariable("book_id") @Valid Long id) throws JsonProcessingException {
-        return ResponseEntity.ok(bookService.testListCount(id));
-    }
-
-    @GetMapping("/bookss/{book_id}")
-    public ResponseEntity<List<Tuple>> getTuple(@PathVariable("book_id") @Valid Long id) {
-        return ResponseEntity.ok(bookService.maybetuple(id));
     }
 
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.Book;
 import com.project.book.book.domain.BookTime;
 import com.project.book.book.domain.RegisterBook;
-import com.project.book.book.dto.request.BookRequestDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
 import com.project.book.book.service.BookService;
@@ -16,9 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Transactional
@@ -41,42 +37,42 @@ public class BookServiceTest {
 
         //given
 
-        List<String> testAuthors = new ArrayList<>();
-        testAuthors.add("test");
-        testAuthors.add("test2");
-        System.out.println("testAuthors = " + testAuthors);
-
-
-        BookRequestDto requsetDto = BookRequestDto.builder()
-                .datetime(ZonedDateTime.now())
-                .authors(testAuthors)
-                .translator(null)
-                .isbn("123131313")
-                .title("test")
-                .price(0L)
-                .thumbnail("url:test")
-                .publisher("tes")
-                .readTime(BookTime.fiveYear)
-                .recommendTime(BookTime.before)
-                .star(1)
-                .build();
-
-        BookRequestDto requsetDto2 = BookRequestDto.builder()
-                .datetime(ZonedDateTime.now())
-                .authors(testAuthors)
-                .translator(null)
-                .isbn("999999")
-                .title("test2")
-                .price(0L)
-                .thumbnail("url:test")
-                .publisher("tes")
-                .readTime(BookTime.before)
-                .recommendTime(BookTime.after)
-                .star(5)
-                .build();
-
-        Book orRegisterBook = bookService.createOrRegisterBook(requsetDto);
-        bookService.createOrRegisterBook(requsetDto2);
+//        List<String> testAuthors = new ArrayList<>();
+//        testAuthors.add("김작가1");
+//        testAuthors.add("이작가2");
+//        System.out.println("testAuthors = " + testAuthors);
+//
+//
+//        BookRequestDto requsetDto = BookRequestDto.builder()
+//                .datetime(ZonedDateTime.now())
+//                .authors(testAuthors)
+//                .translator(null)
+//                .isbn("123131313")
+//                .title("모던 자바 인 액션")
+//                .price(30000L)
+//                .thumbnail("url:test")
+//                .publisher("한빛미디어")
+//                .readTime(BookTime.fiveYear)
+//                .recommendTime(BookTime.before)
+//                .star(1)
+//                .build();
+//
+//        BookRequestDto requsetDto2 = BookRequestDto.builder()
+//                .datetime(ZonedDateTime.now())
+//                .authors(testAuthors)
+//                .translator(null)
+//                .isbn("999999")
+//                .title("객체지향의 사실과 오해")
+//                .price(20000L)
+//                .thumbnail("url:test")
+//                .publisher("위키북스")
+//                .readTime(BookTime.before)
+//                .recommendTime(BookTime.after)
+//                .star(5)
+//                .build();
+//
+//        Book orRegisterBook = bookService.createOrRegisterBook(requsetDto);
+//        bookService.createOrRegisterBook(requsetDto2);
 
         //when
 
@@ -92,13 +88,13 @@ public class BookServiceTest {
 //        repository.testListCount(byId.get());
     }
 
-    @Test
-    void 읽은시간리스트뽑기() throws JsonProcessingException {
-        Optional<Book> byId = repository.findById(1L);
-        System.out.println("++++++++++++");
-
-        repository.testListCount(byId.get());
-    }
+//    @Test
+//    void 읽은시간리스트뽑기() throws JsonProcessingException {
+//        Optional<Book> byId = repository.findById(1L);
+//        System.out.println("++++++++++++");
+//
+//        repository.testListCount(byId.get());
+//    }
 
     @Test
     @Commit
@@ -123,7 +119,7 @@ public class BookServiceTest {
                 .member(member1.get())
                 .book(book2.get())
                 .recommendBookTime(BookTime.twoYear)
-                .readBookTime(BookTime.after)
+                .readBookTime(BookTime.fiveYear)
                 .star(3)
                 .build());
 
@@ -131,7 +127,7 @@ public class BookServiceTest {
                 .member(member2.get())
                 .book(book1.get())
                 .recommendBookTime(BookTime.twoYear)
-                .readBookTime(BookTime.after)
+                .readBookTime(BookTime.twoYear)
                 .star(5)
                 .build());
 
@@ -160,7 +156,7 @@ public class BookServiceTest {
                 .build());
 
         registerBookRepository.save(RegisterBook.builder()
-                .member(member4.get())
+                .member(member3.get())
                 .book(book1.get())
                 .recommendBookTime(BookTime.after)
                 .readBookTime(BookTime.after)
@@ -168,7 +164,7 @@ public class BookServiceTest {
                 .build());
 
         registerBookRepository.save(RegisterBook.builder()
-                .member(member4.get())
+                .member(member1.get())
                 .book(book2.get())
                 .recommendBookTime(BookTime.before)
                 .readBookTime(BookTime.after)
