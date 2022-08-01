@@ -54,7 +54,12 @@ public class BookService {
                     .isbn(isbn)
                     .build();
 
-            Book newBook = bookRepository.save(createbook.toEntity());
+            Book temppbook = createbook.toEntity();
+            System.out.println("request = " + request.getReview().getStar());
+            starCountRecommend(temppbook, request.getReview());
+
+            Book newBook = bookRepository.save(temppbook);
+
 
             RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
             registerBookRepository.save(registerBook);
@@ -64,16 +69,26 @@ public class BookService {
         else if (savedBook != null) {
             RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
             registerBookRepository.save(registerBook);
+            starCountRecommend(savedBook, request.getReview());
         }
         return savedBook;
     }
 
+    @Transactional
     public Book registerByHomeList(RegisterByHomeListDto request, Member member) {
         Book savedBook = bookRepository.findByIsbn(request.getIsbn());
         RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
         registerBookRepository.save(registerBook);
+        starCountRecommend(savedBook, request.getReview());
 
         return savedBook;
+    }
+
+    public void starCountRecommend(Book book, BookReviewDto request) {
+        book.calculateAvgStar(request.getStar());
+        book.plusRegisterCount();
+        book.plusRecommendTime(request.getRecommendTime());
+
     }
 
     private static RegisterBook requestRegisterBook(Book book, BookReviewDto request, Member member) {
@@ -86,6 +101,7 @@ public class BookService {
                 .build();
     }
 
+    @Transactional
     public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
         WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());
         System.out.println("wishBook = " + wishBook);
@@ -123,7 +139,7 @@ public class BookService {
         Optional<Book> book = bookRepository.findById(id);
         System.out.println("book = " + book);
         Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
-        System.out.println("detailBook = " + detailBook);
+        System.out.println("in service detailBook = " + detailBook);
 
         return detailBook;
     }

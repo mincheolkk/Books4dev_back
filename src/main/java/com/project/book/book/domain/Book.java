@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Getter
 @Entity
 @AllArgsConstructor
@@ -44,7 +43,45 @@ public class Book extends BaseEntity {
     @Column(name = "book_translator")
     private String translator;
 
+    @Embedded
+    private StarAndCount starAndCount;
+
+    @Embedded
+    private RecommendTime recommendTime;
+
     @OneToMany(mappedBy = "book")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
+    public void plusRegisterCount() {
+        starAndCount.plusRegisterCount();
+    }
+
+    public void plusWishCount() {
+        starAndCount.plusWishCount();
+    }
+
+    public void calculateAvgStar(Integer star) {
+        starAndCount.calculateAvgStar(star);
+    }
+
+    public void plusRecommendTime(BookTime time) {
+        System.out.println("time = " + time);
+        recommendTime.plusRecommendTime(time);
+        System.out.println("222");
+    }
+
+
+    @Builder
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translator) {
+        this.isbn = isbn;
+        this.title = title;
+        this.publisher = publisher;
+        this.releaseDate = releaseDate;
+        this.price = price;
+        this.thumbnail = thumbnail;
+        this.authors = authors;
+        this.translator = translator;
+        this.starAndCount = StarAndCount.init();
+        this.recommendTime = RecommendTime.init();
+    }
 }
