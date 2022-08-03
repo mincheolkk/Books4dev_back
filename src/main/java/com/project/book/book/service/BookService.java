@@ -6,6 +6,8 @@ import com.project.book.book.domain.RegisterBook;
 import com.project.book.book.domain.WishBook;
 import com.project.book.book.domain.WishMember;
 import com.project.book.book.dto.request.*;
+import com.project.book.book.dto.response.AllBookResponseDto;
+import com.project.book.book.dto.response.WishBookResponseDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
 import com.project.book.book.repository.WishBookRepository;
@@ -15,6 +17,8 @@ import com.project.book.member.domain.MemberType;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,10 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,6 @@ public class BookService {
 
         String isbn = request.getItem().getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
-        System.out.println("savedBook = " + savedBook);
 
         if (savedBook == null) {
             CreateBookRequestDto createbook = CreateBookRequestDto.builder()
@@ -55,7 +55,6 @@ public class BookService {
                     .build();
 
             Book temppbook = createbook.toEntity();
-            System.out.println("request = " + request.getReview().getStar());
             starCountRecommend(temppbook, request.getReview());
 
             Book newBook = bookRepository.save(temppbook);
@@ -104,7 +103,6 @@ public class BookService {
     @Transactional
     public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
         WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());
-        System.out.println("wishBook = " + wishBook);
 
         if (wishBook == null) {
             WishBook wish = WishBook.builder()
@@ -137,9 +135,7 @@ public class BookService {
 
     public Map<String, Object> getDetailBook(Long id) throws JsonProcessingException {
         Optional<Book> book = bookRepository.findById(id);
-        System.out.println("book = " + book);
         Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
-        System.out.println("in service detailBook = " + detailBook);
 
         return detailBook;
     }
@@ -150,4 +146,14 @@ public class BookService {
         }
         return String.join(",", list);
     }
+
+    public ResponseEntity<?> getAllBook(AllBookFilterDto condition, Pageable pageRequest) {
+        return new ResponseEntity<>(bookRepository.getAllBooks(condition, pageRequest), HttpStatus.ACCEPTED);
+    }
+
+    public ResponseEntity<?> getAllWishBook(Member member) {
+        List<WishBookResponseDto> allWishBook = wishMemberRepository.getAllWishBook(member);
+        return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
+    }
+
 }

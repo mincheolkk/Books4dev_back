@@ -9,8 +9,6 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
-@EqualsAndHashCode
 public class StarAndCount {
 
     private double avgStar;
