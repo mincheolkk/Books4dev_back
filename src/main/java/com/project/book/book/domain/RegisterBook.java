@@ -50,4 +50,8 @@ public class RegisterBook extends BaseEntity {
         this.recommendBookTime = recommendBookTime;
         this.star = star;
     }
+
+    public void updateRegisterBook(Integer star) {
+        this.star = star;
+    }
 }

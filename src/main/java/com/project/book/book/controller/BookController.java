@@ -42,7 +42,6 @@ public class BookController {
 
     @PostMapping("/bylist")
     public ResponseEntity registerByHomeList(@LoginMember Member member, @RequestBody @Valid RegisterByHomeListDto request) {
-        System.out.println("request = " + request.getIsbn());
         Book book = bookService.registerByHomeList(request, member);
 
         return new ResponseEntity<>(book.getId(), HttpStatus.OK);

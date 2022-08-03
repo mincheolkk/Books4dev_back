@@ -55,30 +55,45 @@ public class BookService {
                     .isbn(isbn)
                     .build();
 
-            Book temppbook = createbook.toEntity();
-            starCountRecommend(temppbook, request.getReview());
+            Book tempbook = createbook.toEntity();
+            starCountRecommend(tempbook, request.getReview());
 
-            Book newBook = bookRepository.save(temppbook);
+            Book newBook = bookRepository.save(tempbook);
 
-
-            RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
-            registerBookRepository.save(registerBook);
+            findRegisterBookForUpdate(member, newBook, request.getReview());
+//            RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
+//            registerBookRepository.save(registerBook);
 
             return newBook;
         }
         else if (savedBook != null) {
-            RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
-            registerBookRepository.save(registerBook);
+            findRegisterBookForUpdate(member, savedBook, request.getReview());
             starCountRecommend(savedBook, request.getReview());
         }
         return savedBook;
     }
 
+    public void findRegisterBookForUpdate(Member member, Book book, BookReviewDto reviewDto) {
+        RegisterBook findedBook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
+        System.out.println("findedBook = " + findedBook);
+        if (findedBook != null) {
+            findedBook.updateRegisterBook(reviewDto.getStar());
+            registerBookRepository.save(findedBook);
+            return;
+        } else if (findedBook == null) {
+            RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
+            registerBookRepository.save(registerBook);
+
+            return;
+        }
+    }
+
     @Transactional
     public Book registerByHomeList(RegisterByHomeListDto request, Member member) {
         Book savedBook = bookRepository.findByIsbn(request.getIsbn());
-        RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
-        registerBookRepository.save(registerBook);
+//        RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
+//        registerBookRepository.save(registerBook);
+        findRegisterBookForUpdate(member, savedBook, request.getReview());
         starCountRecommend(savedBook, request.getReview());
 
         return savedBook;

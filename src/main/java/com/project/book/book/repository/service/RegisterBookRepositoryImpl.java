@@ -1,8 +1,6 @@
 package com.project.book.book.repository.service;
 
-import com.project.book.book.domain.BookTime;
-import com.project.book.book.domain.QBook;
-import com.project.book.book.domain.QRegisterBook;
+import com.project.book.book.domain.*;
 import com.project.book.book.dto.response.QReadBookResponseDto;
 import com.project.book.book.dto.response.ReadBookResponseDto;
 import com.project.book.book.repository.RegisterBookRepositoryCustom;
@@ -12,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.project.book.book.domain.BookTime.tenYear;
 import static com.project.book.book.domain.BookTime.twoYear;
@@ -36,6 +35,16 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
                         enumEqCheck(registerBook.recommendBookTime, readTime)
                 )
                 .fetch();
+    }
 
+    public RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime) {
+        RegisterBook findedBook = queryFactory.selectFrom(registerBook)
+                .where(
+                        registerBook.member.eq(member),
+                        registerBook.book.eq(savedBook),
+                        enumEqCheck(registerBook.readBookTime, readTime)
+                ).fetchOne();
+
+        return findedBook;
     }
 }
