@@ -76,4 +76,11 @@ public class BookController {
         return bookService.getAllWishBook(member);
     }
 
+    @GetMapping("/test/readBook")
+    public ResponseEntity<?> testReadBook() {
+        Member member = memberRepository.findById(1L).get();
+        return bookService.testReadBook(member);
+    }
+
+
 }

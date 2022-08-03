@@ -1,12 +1,10 @@
 package com.project.book.book.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.project.book.book.domain.Book;
-import com.project.book.book.domain.RegisterBook;
-import com.project.book.book.domain.WishBook;
-import com.project.book.book.domain.WishMember;
+import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.AllBookResponseDto;
+import com.project.book.book.dto.response.ReadBookResponseDto;
 import com.project.book.book.dto.response.WishBookResponseDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
@@ -14,6 +12,7 @@ import com.project.book.book.repository.WishBookRepository;
 import com.project.book.book.repository.WishMemberRepository;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
+import com.project.book.member.repository.MemberRepository;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -27,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.util.*;
+
+import static com.project.book.book.domain.BookTime.*;
 
 @Service
 @RequiredArgsConstructor
@@ -154,6 +155,16 @@ public class BookService {
     public ResponseEntity<?> getAllWishBook(Member member) {
         List<WishBookResponseDto> allWishBook = wishMemberRepository.getAllWishBook(member);
         return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
+    }
+
+    public ResponseEntity<?> testReadBook(Member member) {
+        HashMap readTimeMap = new HashMap<>();
+        List<BookTime> enumList = Arrays.asList(before, after, twoYear, fiveYear, tenYear);
+        for (BookTime bookTime : enumList) {
+            List<ReadBookResponseDto> responseDtoList = registerBookRepository.testReadbook(member, bookTime);
+            readTimeMap.put(bookTime, responseDtoList);
+        }
+        return new ResponseEntity<>(readTimeMap, HttpStatus.ACCEPTED);
     }
 
 }
