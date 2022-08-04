@@ -114,8 +114,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                         enumEqCheck(registerBook.recommendBookTime, condition.getRecommendType())
                 )
                 .orderBy(
-                        getBookSortByTime(condition.getRecommendType()),
-                        getBookSortType(condition.getSortType())
+                        getBookSortType(condition.getSortType()),
+                        getBookSortByTime(condition.getRecommendType())
                 )
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
