@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,32 +21,30 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping(value = "/update/token")
-    public ResponseEntity<?> updateAccessToken(@RequestBody TokenRequest tokenRequest, HttpServletRequest request) {
-        String accessToken = AuthorizationExtractor.extract(request);
-        String newAccessToken = authService.updateAccessToken(tokenRequest, request);
 
-        return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
+    @PostMapping(value = "/update/token")
+    public ResponseEntity<?> updateAccessToken(@RequestBody TokenRequest tokenRequest) {
+        System.out.println("in updateAccessToken");
+        System.out.println("tokenRequest = " + tokenRequest.getRefreshToken());
+
+        return new ResponseEntity<>("ssff",HttpStatus.OK);
     }
 
     @PostMapping(value = "/out")
-    public ResponseEntity<?> logOut(HttpServletRequest request) {
+    public ResponseEntity<?> logOut(@LoginMember Member member, HttpServletRequest request) {
         System.out.println("223123123");
         authService.logOut(request);
 
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping(value = "/select")
-    public ResponseEntity<?> dda(HttpServletRequest request) {
-        String authorization = request.getHeader("refreshToken");
-        System.out.println("authorization = " + authorization);
-        String temp = "tmep temp!";
-        return ResponseEntity.ok(temp);
-    }
 
     @GetMapping(value = "/test/token")
-    public void kk(@LoginMember Member member) {
+    public ResponseEntity<?> kk(@LoginMember Member member) {
+        ResponseEntity refresh = authService.getRefresh(member);
         System.out.println("member = " + member.getId());
+        System.out.println("refresh = " + refresh);
+        return ResponseEntity.ok(refresh.getBody());
+
     }
 }

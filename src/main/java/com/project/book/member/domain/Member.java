@@ -43,10 +43,6 @@ public class Member extends BaseEntity {
     @Column(name = "member_type")
     private MemberType type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "member_language")
-    private Language language;
-
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private Set<RegisterBook> registerBooks = new HashSet<>();
@@ -54,4 +50,8 @@ public class Member extends BaseEntity {
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private Set<WishMember> WishBooks = new HashSet<>();
+
+    public void updateMemberPosition(MemberType position) {
+        this.type = position;
+    }
 }
