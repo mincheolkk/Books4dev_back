@@ -75,7 +75,7 @@ public class BookService {
 
     public void findRegisterBookForUpdate(Member member, Book book, BookReviewDto reviewDto) {
         RegisterBook findedBook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
-        System.out.println("findedBook = " + findedBook);
+
         if (findedBook != null) {
             findedBook.updateRegisterBook(reviewDto.getStar());
             registerBookRepository.save(findedBook);
@@ -164,11 +164,19 @@ public class BookService {
     }
 
     public ResponseEntity<?> getAllBook(AllBookFilterDto condition, Pageable pageRequest) {
+        if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {
+            condition.setMemberType(null);
+        }
+        if (condition.getRecommendType() == null || condition.getRecommendType().equals(BookTime.All)) {
+            condition.setRecommendType(null);
+        }
+        System.out.println("condition.getMemberType() = " + condition.getMemberType());
         return new ResponseEntity<>(bookRepository.getAllBooks(condition, pageRequest), HttpStatus.ACCEPTED);
     }
 
     public ResponseEntity<?> getAllWishBook(Member member) {
         List<WishBookResponseDto> allWishBook = wishMemberRepository.getAllWishBook(member);
+        System.out.println("allWishBook = " + allWishBook);
         return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
     }
 

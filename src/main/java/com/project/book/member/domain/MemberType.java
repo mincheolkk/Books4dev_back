@@ -4,8 +4,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 public enum MemberType {
-    BackEnd, FrontEnd, DevOps, AInML,DATA, ETC
+    BackEnd,
+    FrontEnd,
+    DevOps,
+    AInML,
+    DATA,
+    ETC,
+    All;
 
 }
 

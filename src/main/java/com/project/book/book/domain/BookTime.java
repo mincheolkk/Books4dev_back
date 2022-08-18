@@ -8,5 +8,6 @@ public enum BookTime {
     after,
     twoYear,
     fiveYear,
-    tenYear
+    tenYear,
+    All;
 }
