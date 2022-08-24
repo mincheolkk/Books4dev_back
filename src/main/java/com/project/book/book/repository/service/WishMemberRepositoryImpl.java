@@ -43,8 +43,16 @@ public class WishMemberRepositoryImpl implements WishMemberRepositoryCustom {
                 .where(wishMember.member.eq(member))
                 .fetch();
 
-
-        System.out.println("fetch = " + fetch);
         return fetch;
+    }
+
+    @Override
+    public long findWishBookCount(String isbn) {
+        long fetchCount = queryFactory.selectFrom(wishMember)
+                .join(wishMember.wishBook, wishBook)
+                .where(wishBook.isbn.eq(isbn))
+                .fetchCount();
+
+        return fetchCount;
     }
 }

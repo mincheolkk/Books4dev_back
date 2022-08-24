@@ -13,4 +13,6 @@ public interface WishMemberRepositoryCustom {
 
     List<WishBookResponseDto> getAllWishBook(Member member);
 
+    long findWishBookCount(String isbn);
+
 }
