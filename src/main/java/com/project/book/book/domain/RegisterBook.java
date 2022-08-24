@@ -39,7 +39,7 @@ public class RegisterBook extends BaseEntity {
     @Enumerated(EnumType.STRING)
     public BookTime recommendBookTime;
 
-    private Integer star;
+    private double star;
 
     @Builder
     public RegisterBook(Long id, Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
@@ -48,10 +48,11 @@ public class RegisterBook extends BaseEntity {
         this.member = member;
         this.readBookTime = readBookTime;
         this.recommendBookTime = recommendBookTime;
-        this.star = star;
+        this.star = (double) star;
     }
 
-    public void updateRegisterBook(Integer star) {
-        this.star = star;
+    public void updateRegisterBook(Integer star, BookTime recommendBookTime) {
+        this.star = (double) star;
+        this.recommendBookTime = recommendBookTime;
     }
 }

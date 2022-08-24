@@ -52,24 +52,25 @@ public class Book extends BaseEntity {
     @OneToMany(mappedBy = "book")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
-    public void plusRegisterCount() {
-        starAndCount.plusRegisterCount();
+    public void plusRegisterCount(long count) {
+        starAndCount.plusRegisterCount((int) count);
     }
 
-    public void plusWishCount() {
-        starAndCount.plusWishCount();
+    public void plusWishCount(int count) {
+        starAndCount.plusWishCount(count);
     }
 
-    public void calculateAvgStar(Integer star) {
+    public void calculateAvgStar(double star) {
         starAndCount.calculateAvgStar(star);
     }
 
-    public void plusRecommendTime(BookTime time) {
-        System.out.println("time = " + time);
-        recommendTime.plusRecommendTime(time);
-        System.out.println("222");
+    public void plusRecommendTime(BookTime time, long count) {
+        recommendTime.plusRecommendTime(time, (int) count);
     }
 
+    public void zeroRecommendTime() {
+        recommendTime.makeZero();
+    }
 
     @Builder
     public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translator) {
