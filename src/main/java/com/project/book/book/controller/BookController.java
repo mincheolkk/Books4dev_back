@@ -76,8 +76,7 @@ public class BookController {
     }
 
     @GetMapping("/test/readBook")
-    public ResponseEntity<?> testReadBook() {
-        Member member = memberRepository.findById(1L).get();
+    public ResponseEntity<?> testReadBook(@LoginMember Member member) {
         return bookService.testReadBook(member);
     }
 

@@ -1,8 +1,6 @@
 package com.project.book.member.controller;
 
 import com.project.book.book.dto.kakao.KakaoBookDto;
-import com.project.book.common.config.jwt.LoginMember;
-import com.project.book.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -16,11 +14,13 @@ public class KakaoController {
     private final WebClient kakaoWebClient;
 
     @GetMapping("/todo")
-    public Mono<KakaoBookDto> search(@RequestParam String query, @LoginMember Member member) {
+//    public Mono<KakaoBookDto> search(@RequestParam String query, @LoginMember Member member) {
+    public Mono<KakaoBookDto> search(@RequestParam String query) {
+        System.out.println("query = " + query);
         return kakaoWebClient.get()
                 .uri(builder -> builder.path("/v3/search/book")
                         .queryParam("page", "1")
-                        .queryParam("size", "10")
+                        .queryParam("size", "20")
                         .queryParam("query", query)
                         .build())
                 .exchangeToMono(response -> {

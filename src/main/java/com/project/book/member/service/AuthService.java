@@ -56,9 +56,10 @@ public class AuthService {
     public void logOut(HttpServletRequest request) {
         String accessToken = authExtractor.extract(request);
         System.out.println("logOut == ");
-//        System.out.println("accessToken = " + accessToken);
+        System.out.println("accessToken = " + accessToken);
 
         redisUtil.setBlackList(accessToken,"blackList",ACCESS_TOKEN_VALID_TIME);
+        System.out.println("goooood");
     }
 
     //

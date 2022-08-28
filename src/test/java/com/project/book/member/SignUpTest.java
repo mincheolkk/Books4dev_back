@@ -24,7 +24,7 @@ public class SignUpTest {
                 CreateMemberRequest.builder()
                 .type(MemberType.BACK)
                 .oAuth("2")
-                .nickname("BACK_TESTER2")
+                .nickname("백엔드 테스터")
                 .build()
                         .toMember());
 
@@ -32,7 +32,7 @@ public class SignUpTest {
                 CreateMemberRequest.builder()
                         .type(MemberType.FRONT)
                         .oAuth("3")
-                        .nickname("FRONT_TESTER")
+                        .nickname("프론트 테스터")
                         .build()
                         .toMember());
 
@@ -40,7 +40,7 @@ public class SignUpTest {
                 CreateMemberRequest.builder()
                         .type(MemberType.FRONT)
                         .oAuth("4")
-                        .nickname("FRONT_TESTER2")
+                        .nickname("잡다한 테스터")
                         .build()
                         .toMember());
 

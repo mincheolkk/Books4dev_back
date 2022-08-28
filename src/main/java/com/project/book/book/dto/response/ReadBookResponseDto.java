@@ -11,10 +11,10 @@ public class ReadBookResponseDto {
     private String title;
     private String isbn;
     private String thumbnail;
-    private Integer star;
+    private double star;
 
     @QueryProjection
-    public ReadBookResponseDto(String title, String isbn, String thumbnail, Integer star) {
+    public ReadBookResponseDto(String title, String isbn, String thumbnail, double star) {
         this.title = title;
         this.isbn = isbn;
         this.thumbnail = thumbnail;

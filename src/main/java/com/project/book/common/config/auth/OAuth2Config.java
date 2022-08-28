@@ -13,16 +13,11 @@ import java.util.Collections;
 @Configuration
 public class OAuth2Config {
 
-
     @Bean
     public ClientRegistrationRepository clientRegistrationRepository(
             @Value("${security.oauth2.registration.kakao.client-id}") String clientId,
             @Value("${security.oauth2.registration.kakao.client-secret}") String clientSecret
             ) {
-
-        System.out.println("in OAuth2Config");
-        System.out.println("clientId = " + clientId);
-        System.out.println("clientSecret = " + clientSecret);
 
         final ClientRegistration clientRegistration = CustomOAuth2Provider.KAKAO.getBuilder("kakao")
                 .clientId(clientId)

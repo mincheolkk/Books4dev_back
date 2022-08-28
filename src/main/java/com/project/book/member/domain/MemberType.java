@@ -8,9 +8,12 @@ import lombok.RequiredArgsConstructor;
 public enum MemberType {
     BackEnd,
     FrontEnd,
+    iOS,
+    Android,
     DevOps,
     AInML,
     DATA,
+    BlockChian,
     ETC,
     All;
 

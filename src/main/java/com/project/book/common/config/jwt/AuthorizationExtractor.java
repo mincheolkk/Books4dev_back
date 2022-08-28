@@ -17,9 +17,7 @@ public class AuthorizationExtractor {
 
 
     public static String extract(HttpServletRequest request) {
-        System.out.println("request = " + request.toString());
         Enumeration<String> headers = request.getHeaders(AUTHORIZATION);
-        System.out.println("headers = " + headers);
         while (headers.hasMoreElements()) {
             String value = headers.nextElement();
             if ((value.toLowerCase().startsWith(BEARER_TYPE.toLowerCase()))) {
@@ -30,7 +28,6 @@ public class AuthorizationExtractor {
                 if (commaIndex > 0) {
                     authHeaderValue = authHeaderValue.substring(0, commaIndex);
                 }
-                System.out.println("authHeaderValue = " + authHeaderValue);
                 return authHeaderValue;
             }
         }

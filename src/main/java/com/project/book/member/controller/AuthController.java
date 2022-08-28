@@ -30,10 +30,10 @@ public class AuthController {
         return new ResponseEntity<>("ssff",HttpStatus.OK);
     }
 
-    @PostMapping(value = "/out")
+    @GetMapping(value = "/out")
     public ResponseEntity<?> logOut(@LoginMember Member member, HttpServletRequest request) {
-        System.out.println("223123123");
         authService.logOut(request);
+        System.out.println("223123123");
 
         return ResponseEntity.noContent().build();
     }

@@ -1,14 +1,10 @@
 package com.project.book.common.config.jwt;
 
 import com.project.book.member.domain.Token;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.Jwts;
 
 
 import java.util.Date;
@@ -42,12 +38,18 @@ public class JwtTokenProvider {
     }
 
 
-    public String getPayload(String token) {
+//    public String getPayload(String token) {
+//        return Jwts.parser()
+//                .setSigningKey(secretKey)
+//                .parseClaimsJws(token)
+//                .getBody()
+//                .getSubject();
+//    }
+    public Claims getPayload(String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .getBody();
     }
 
     public boolean validateToken(String token) {

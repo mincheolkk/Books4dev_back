@@ -4,6 +4,7 @@ import com.project.book.common.exception.InvalidAccessTokenException;
 import com.project.book.common.exception.MemberNotFoundException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -45,8 +47,10 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         String token = authExtractor.extract(request);
-        String oAuth = jwtTokenProvider.getPayload(token);
+        Claims payload = jwtTokenProvider.getPayload(token);
+        String oAuth = payload.getSubject();
 
+        System.out.println("oAuth = " + oAuth);
         Member member = Optional.ofNullable(oAuth)
                 .map(memberRepository::findByoAuth)
                 .orElseThrow(MemberNotFoundException::new);
