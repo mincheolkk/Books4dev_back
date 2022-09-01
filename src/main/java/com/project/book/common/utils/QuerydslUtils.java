@@ -37,6 +37,8 @@ public class QuerydslUtils {
             return book.starAndCount.registerCount.desc();
         } else if (sortType == STAR) {
             return book.starAndCount.avgStar.desc();
+        } else if (sortType == WISH) {
+            return book.starAndCount.wishCount.desc();
         }
         return book.starAndCount.registerCount.desc();
     }

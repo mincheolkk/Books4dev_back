@@ -106,7 +106,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return queryFactory.select(new QAllBookResponseDto(
                         book.title, book.authors, book.publisher, book.thumbnail,
                         book.isbn, book.price, book.starAndCount.avgStar, book.starAndCount.registerCount,
-                        book.recommendTime))
+                        book.recommendTime, book.starAndCount.wishCount))
                 .from(book)
                 .join(book.registerBooks, registerBook)
                 .where(

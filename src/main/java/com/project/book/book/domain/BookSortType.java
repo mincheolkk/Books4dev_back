@@ -4,5 +4,5 @@ import org.springframework.data.domain.Sort;
 
 public enum BookSortType {
 
-    COUNT, STAR
+    COUNT, STAR, WISH
 }
