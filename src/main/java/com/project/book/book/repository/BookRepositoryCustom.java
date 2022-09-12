@@ -19,4 +19,6 @@ public interface BookRepositoryCustom {
 
     List<AllBookResponseDto> getAllBooks(AllBookFilterDto condition, Pageable pageable);
 
+    List<AllBookResponseDto> findByTitle(String title);
+
 }

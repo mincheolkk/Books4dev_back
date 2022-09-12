@@ -30,8 +30,7 @@ public class MemberController {
 
     @PostMapping("/selectPosition")
     public ResponseEntity<?> selectPosition(@LoginMember Member member, @RequestBody PositionResponseDto request) {
-        System.out.println("request = " + request);
-        System.out.println("request = " + request.getPosition());
+        System.out.println("request.getPosition = " + request.getPosition());
         return memberService.addPosition(member, request.getPosition());
     }
 }

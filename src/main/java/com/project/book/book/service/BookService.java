@@ -3,6 +3,7 @@ package com.project.book.book.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
+import com.project.book.book.dto.response.AllBookResponseDto;
 import com.project.book.book.dto.response.ReadBookResponseDto;
 import com.project.book.book.dto.response.RecommendCountDto;
 import com.project.book.book.dto.response.WishBookResponseDto;
@@ -211,6 +212,10 @@ public class BookService {
         System.out.println("wishBookCount = " + wishBookCount);
 
         savedBook.plusWishCount((int) wishBookCount);
+    }
+
+    public  List<AllBookResponseDto> findRegisteredBook(String title) {
+        return bookRepository.findByTitle(title);
     }
 
 

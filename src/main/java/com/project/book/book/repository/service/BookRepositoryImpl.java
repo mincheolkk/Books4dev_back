@@ -123,6 +123,19 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 .fetch();
     }
 
+    public List<AllBookResponseDto> findByTitle(String title) {
+        return queryFactory.select(new QAllBookResponseDto(
+                        book.title, book.authors, book.publisher, book.thumbnail,
+                        book.isbn, book.price, book.starAndCount.avgStar, book.starAndCount.registerCount,
+                        book.recommendTime))
+                .from(book)
+                .join(book.registerBooks, registerBook)
+                .where(
+                        book.title.contains(title)
+                ).fetch();
+
+    }
+
 
 
 }

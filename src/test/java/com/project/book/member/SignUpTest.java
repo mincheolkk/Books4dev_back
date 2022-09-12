@@ -11,38 +11,38 @@ import org.springframework.test.annotation.Commit;
 
 @SpringBootTest
 public class SignUpTest {
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Test
-    @Commit
-    void 멤버데이터() {
-
-
-        memberRepository.save(
-                CreateMemberRequest.builder()
-                .type(MemberType.BACK)
-                .oAuth("2")
-                .nickname("백엔드 테스터")
-                .build()
-                        .toMember());
-
-        memberRepository.save(
-                CreateMemberRequest.builder()
-                        .type(MemberType.FRONT)
-                        .oAuth("3")
-                        .nickname("프론트 테스터")
-                        .build()
-                        .toMember());
-
-        memberRepository.save(
-                CreateMemberRequest.builder()
-                        .type(MemberType.FRONT)
-                        .oAuth("4")
-                        .nickname("잡다한 테스터")
-                        .build()
-                        .toMember());
-
-    }
+//
+//    @Autowired
+//    MemberRepository memberRepository;
+//
+//    @Test
+//    @Commit
+//    void 멤버데이터() {
+//
+//
+//        memberRepository.save(
+//                CreateMemberRequest.builder()
+//                .type(MemberType.BACK)
+//                .oAuth("2")
+//                .nickname("백엔드 테스터")
+//                .build()
+//                        .toMember());
+//
+//        memberRepository.save(
+//                CreateMemberRequest.builder()
+//                        .type(MemberType.FRONT)
+//                        .oAuth("3")
+//                        .nickname("프론트 테스터")
+//                        .build()
+//                        .toMember());
+//
+//        memberRepository.save(
+//                CreateMemberRequest.builder()
+//                        .type(MemberType.FRONT)
+//                        .oAuth("4")
+//                        .nickname("잡다한 테스터")
+//                        .build()
+//                        .toMember());
+//
+//    }
 }

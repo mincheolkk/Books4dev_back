@@ -174,6 +174,5 @@ public class BookServiceTest {
 
     @Test
     void help() {
-        bookService.hepll(1L);
     }
 }
