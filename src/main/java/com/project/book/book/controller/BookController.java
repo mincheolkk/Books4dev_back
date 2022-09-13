@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class BookController {
 
@@ -78,6 +78,12 @@ public class BookController {
     @GetMapping("/test/readBook")
     public ResponseEntity<?> testReadBook(@LoginMember Member member) {
         return bookService.testReadBook(member);
+    }
+
+    @GetMapping("/search/readbook")
+    public List<AllBookResponseDto>tt(@RequestParam String query) {
+        System.out.println("readbook query = " + query);
+        return bookService.findRegisteredBook(query);
     }
 
 
