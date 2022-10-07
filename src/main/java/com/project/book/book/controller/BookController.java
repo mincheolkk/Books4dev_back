@@ -48,12 +48,12 @@ public class BookController {
 
     }
 
-    @GetMapping("/books/{book_id}")
-    public ResponseEntity<Map<String, Object>> getDetailBook(@PathVariable("book_id") @Valid Long id) throws JsonProcessingException {
-        Map<String, Object> detailBook = bookService.getDetailBook(id);
-
-        return ResponseEntity.ok(detailBook);
-    }
+//    @GetMapping("/books/{book_id}")
+//    public ResponseEntity<Map<String, Object>> getDetailBook(@PathVariable("book_id") @Valid Long id) throws JsonProcessingException {
+//        Map<String, Object> detailBook = bookService.getDetailBook(id);
+//
+//        return ResponseEntity.ok(detailBook);
+//    }
 
     @PostMapping("/book/wish")
     public ResponseEntity<?> saveWishBook(@LoginMember Member member, @RequestBody WishBookRequestDto request) {
@@ -82,7 +82,6 @@ public class BookController {
 
     @GetMapping("/search/readbook")
     public List<AllBookResponseDto>tt(@RequestParam String query) {
-        System.out.println("readbook query = " + query);
         return bookService.findRegisteredBook(query);
     }
 

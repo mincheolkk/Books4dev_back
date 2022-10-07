@@ -23,7 +23,7 @@ public class KakaoController {
     public Mono<KakaoBookDto> search(@RequestParam String query) {
         System.out.println("query = " + query);
 
-        List<AllBookResponseDto> registeredBook = bookService.findRegisteredBook(query);
+//        List<AllBookResponseDto> registeredBook = bookService.findRegisteredBook(query);
 
 
         Mono<KakaoBookDto> kakaoBookDtoMono = kakaoWebClient.get()

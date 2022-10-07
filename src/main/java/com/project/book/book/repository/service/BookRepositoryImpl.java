@@ -43,62 +43,62 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return book;
     }
 
-    @Override
-    public Map<String, Object> getDetailBook(Book reqBook) {
+//    @Override
+//    public Map<String, Object> getDetailBook(Book reqBook) {
+//
+//        DetailBookResponseDto detailBookResponseDto = queryFactory.select(new QDetailBookResponseDto(
+//                book.title, book.authors, book.translator,
+//                book.publisher, book.thumbnail, book.isbn,
+//                book.releaseDate, book.price, findAvgStar(reqBook)
+//        )).from(book).where(book.eq(reqBook)).fetchOne();
+//
+//
+//        detailBookResponseDto.updateAvgStar();
+//
+//
+//        List<Tuple> fetch1 = queryFactory.select(
+//                        registerBook.readBookTime,
+//                        registerBook.readBookTime.count(),
+//                        registerBook.recommendBookTime,
+//                        registerBook.recommendBookTime.count()
+//                ).from(registerBook)
+//                .where(registerBook.book.eq(reqBook))
+//                .groupBy(registerBook.readBookTime
+//                        , registerBook.recommendBookTime)
+//                .fetch();
+//
+//
+//        Map readTimeMap = new HashMap();
+//        Map recommendTimeMap = new HashMap();
+//        for (Tuple tuple : fetch1) {
+//            readTimeMap.put(tuple.get(0, BookTime.class), tuple.get(1, int.class));
+//            recommendTimeMap.put(tuple.get(2, BookTime.class), tuple.get(3, int.class));
+//        }
+//
+//        Map<String, Object> resultMap = new HashMap();
+//        resultMap.put("detailData",  detailBookResponseDto);
+//        resultMap.put("readTimeMap", readTimeMap);
+//        resultMap.put("recommendTimeMap", recommendTimeMap);
+//
+//        return resultMap;
+//    }
 
-        DetailBookResponseDto detailBookResponseDto = queryFactory.select(new QDetailBookResponseDto(
-                book.title, book.authors, book.translator,
-                book.publisher, book.thumbnail, book.isbn,
-                book.releaseDate, book.price, findAvgStar(reqBook)
-        )).from(book).where(book.eq(reqBook)).fetchOne();
 
-
-        detailBookResponseDto.updateAvgStar();
-
-
-        List<Tuple> fetch1 = queryFactory.select(
-                        registerBook.readBookTime,
-                        registerBook.readBookTime.count(),
-                        registerBook.recommendBookTime,
-                        registerBook.recommendBookTime.count()
-                ).from(registerBook)
-                .where(registerBook.book.eq(reqBook))
-                .groupBy(registerBook.readBookTime
-                        , registerBook.recommendBookTime)
-                .fetch();
-
-
-        Map readTimeMap = new HashMap();
-        Map recommendTimeMap = new HashMap();
-        for (Tuple tuple : fetch1) {
-            readTimeMap.put(tuple.get(0, BookTime.class), tuple.get(1, int.class));
-            recommendTimeMap.put(tuple.get(2, BookTime.class), tuple.get(3, int.class));
-        }
-
-        Map<String, Object> resultMap = new HashMap();
-        resultMap.put("detailData",  detailBookResponseDto);
-        resultMap.put("readTimeMap", readTimeMap);
-        resultMap.put("recommendTimeMap", recommendTimeMap);
-
-        return resultMap;
-    }
-
-
-    private Expression<Double> findAvgStar(Book request) {
-        return ExpressionUtils.as(JPAExpressions.select(registerBook.star.avg())
-                        .from(registerBook)
-                        .where(registerBook.book.eq(request))
-                , "avgStar");
-    }
-
-    private Expression<Long> findBookTimeCount(Book request) {
-        return ExpressionUtils.as(
-                JPAExpressions
-                        .select(registerBook.readBookTime.count())
-                        .from(registerBook)
-                        .where(registerBook.book.eq(request))
-                        .groupBy(registerBook.readBookTime), "findCount");
-    }
+//    private Expression<Double> findAvgStar(Book request) {
+//        return ExpressionUtils.as(JPAExpressions.select(registerBook.star.avg())
+//                        .from(registerBook)
+//                        .where(registerBook.book.eq(request))
+//                , "avgStar");
+//    }
+//
+//    private Expression<Long> findBookTimeCount(Book request) {
+//        return ExpressionUtils.as(
+//                JPAExpressions
+//                        .select(registerBook.readBookTime.count())
+//                        .from(registerBook)
+//                        .where(registerBook.book.eq(request))
+//                        .groupBy(registerBook.readBookTime), "findCount");
+//    }
 
     @Override
     public List<AllBookResponseDto> getAllBooks(AllBookFilterDto condition, Pageable pageRequest) {

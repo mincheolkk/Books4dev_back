@@ -15,7 +15,7 @@ public interface BookRepositoryCustom {
 
     Book findByIsbn(String isbn);
 
-    Map<String, Object> getDetailBook(Book book) throws JsonProcessingException;
+//    Map<String, Object> getDetailBook(Book book) throws JsonProcessingException;
 
     List<AllBookResponseDto> getAllBooks(AllBookFilterDto condition, Pageable pageable);
 
