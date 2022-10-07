@@ -39,12 +39,11 @@ public class BookService {
 
         String isbn = request.getItem().getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
-        findWishBookCount(isbn);
 
         if (savedBook == null) {
             CreateBookRequestDto createbook = CreateBookRequestDto.builder()
                     .authors(listToString(request.getItem().getAuthors()))
-                    .translator(listToString(request.getItem().getTranslator()))
+                    .translators(listToString(request.getItem().getTranslators()))
                     .title(request.getItem().getTitle())
                     .publisher(request.getItem().getPublisher())
                     .price(request.getItem().getPrice())
@@ -62,6 +61,7 @@ public class BookService {
             Book newBook = bookRepository.save(tempbook);
 
             findRegisterBookForUpdate(member, newBook, request.getReview());
+            findWishBookCount(isbn);
 //            RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
 //            registerBookRepository.save(registerBook);
 
@@ -70,6 +70,7 @@ public class BookService {
         else if (savedBook != null) {
             findRegisterBookForUpdate(member, savedBook, request.getReview());
             starCountRecommend(savedBook, request.getReview());
+            findWishBookCount(isbn);
         }
         return savedBook;
     }
@@ -80,11 +81,12 @@ public class BookService {
         if (findedBook != null) {
             findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
             registerBookRepository.save(findedBook);
+            System.out.println("findBook != null");
             return;
         } else if (findedBook == null) {
             RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
             registerBookRepository.save(registerBook);
-
+            System.out.println("findBook == null");
             return;
         }
     }
@@ -132,7 +134,7 @@ public class BookService {
     @Transactional
     public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
         WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());
-        findWishBookCount(request.getIsbn());
+
 
         if (wishBook == null) {
             WishBook wish = WishBook.builder()
@@ -143,15 +145,16 @@ public class BookService {
             wishBookRepository.save(wish);
 
            saveWishMember(member, wish);
+           findWishBookCount(request.getIsbn());
            return new ResponseEntity(HttpStatus.ACCEPTED);
         }
-
         boolean flag = wishMemberRepository.findByWishBook(wishBook, member);
         if (flag) {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
         saveWishMember(member, wishBook);
+        findWishBookCount(request.getIsbn());
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
@@ -163,12 +166,12 @@ public class BookService {
         wishMemberRepository.save(wishMember);
     }
 
-    public Map<String, Object> getDetailBook(Long id) throws JsonProcessingException {
-        Optional<Book> book = bookRepository.findById(id);
-        Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
-
-        return detailBook;
-    }
+//    public Map<String, Object> getDetailBook(Long id) throws JsonProcessingException {
+//        Optional<Book> book = bookRepository.findById(id);
+//        Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
+//
+//        return detailBook;
+//    }
 
     private static String listToString(List<String> list) {
         if (Objects.isNull(list) || list.isEmpty()) {
@@ -212,6 +215,8 @@ public class BookService {
         System.out.println("wishBookCount = " + wishBookCount);
 
         savedBook.plusWishCount((int) wishBookCount);
+        System.out.println("wwwwwerwerwerwrwrwerewrwrewrwerewrwerwerwerwerwerwerewrwrwerwr2");
+        System.out.println("savedBook = " + savedBook.getStarAndCount().getWishCount());
     }
 
     public  List<AllBookResponseDto> findRegisteredBook(String title) {
