@@ -14,7 +14,7 @@ public class CreateBookRequestDto {
 
     private String title;
     private String authors;
-    private String translator;
+    private String translators;
     private String isbn;
     private LocalDateTime releaseDate;
     private String publisher;
@@ -22,11 +22,11 @@ public class CreateBookRequestDto {
     private String thumbnail;
 
     @Builder
-    public CreateBookRequestDto(String title, String authors, String translator, String isbn,
+    public CreateBookRequestDto(String title, String authors, String translators, String isbn,
                                 LocalDateTime datetime, String publisher, Long price, String thumbnail) {
         this.title = title;
         this.authors = authors;
-        this.translator = translator;
+        this.translators = translators;
         this.isbn = isbn;
         this.releaseDate = datetime;
         this.publisher = publisher;
@@ -38,7 +38,7 @@ public class CreateBookRequestDto {
         return Book.builder()
                 .title(title)
                 .authors(authors)
-                .translator(translator)
+                .translators(translators)
                 .isbn(isbn)
                 .releaseDate(releaseDate)
                 .publisher(publisher)

@@ -41,7 +41,7 @@ public class Book extends BaseEntity {
     private String authors;
 
     @Column(name = "book_translator")
-    private String translator;
+    private String translators;
 
     @Embedded
     private StarAndCount starAndCount;
@@ -73,7 +73,7 @@ public class Book extends BaseEntity {
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translator) {
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators) {
         this.isbn = isbn;
         this.title = title;
         this.publisher = publisher;
@@ -81,7 +81,7 @@ public class Book extends BaseEntity {
         this.price = price;
         this.thumbnail = thumbnail;
         this.authors = authors;
-        this.translator = translator;
+        this.translators = translators;
         this.starAndCount = StarAndCount.init();
         this.recommendTime = RecommendTime.init();
     }
