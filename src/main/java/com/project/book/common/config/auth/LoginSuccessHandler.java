@@ -1,8 +1,11 @@
 package com.project.book.common.config.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.book.common.config.jwt.JwtTokenProvider;
 import com.project.book.common.config.jwt.RedisUtil;
+import com.project.book.member.domain.Member;
 import com.project.book.member.domain.Token;
+import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,11 +18,15 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.UUID;
 
 import static com.project.book.common.config.jwt.JwtTokenProvider.ACCESS_TOKEN_VALID_TIME;
@@ -34,7 +41,11 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
     private final RedisUtil redisUtil;
 
-    private static String url= "http://localhost:8080";
+    private final MemberRepository memberRepository;
+
+
+    private static String url= "http://localhost:8081/home";
+    private static String typeUrl= "http://localhost:8081/selectPosition";
 
     @Override
     public void onAuthenticationSuccess(
@@ -42,58 +53,49 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
                                         HttpServletResponse response,
                                         Authentication authentication) throws IOException, ServletException {
 
-        System.out.println("in LoginSuccessHandler , onAuth~");
-
+        System.out.println("authentication = " + authentication);
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String oAuth = String.valueOf(oauth2User.getAttributes().get("id"));
-        String token = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
-
-        System.out.println("oauth2User = " + oauth2User);
-        System.out.println("oAuth = " + oAuth);
-        System.out.println("token = " + token);
-
+        String accessToken = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
 
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
         redisUtil.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
 
-        System.out.println("end onAuthenticationSuccess");
-
-//
-//        resultRedirectStrategy(request, response, authentication);
-//
-
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpStatus.OK.value());
         response.setCharacterEncoding("utf-8");
-        response.addHeader("accessToken",token);
+        response.addHeader("accessToken",accessToken);
         response.addHeader("refreshToken",refreshToken.getValue());
-//        response.addCookie("refreshToken",refreshToken);
+        System.out.println("accessToken = " + accessToken);
 
-        System.out.println("response.getHeader(\"refreshToken\") = " + response.getHeader("refreshToken"));
-//        response.getWriter()
-//                .write(objectMapper.writeValueAsString(
-//                        AuthTokenResponse.of(member.getId(), member.getNickname(),
-//                                member.getAvatar(), token, AuthorizationType.BEARER)));
+
+        redirectStrategy.sendRedirect(request,response,"http://localhost:8083/init?token="+accessToken);
+
     }
 
     protected void resultRedirectStrategy(
                                             HttpServletRequest request,
                                             HttpServletResponse response,
-                                            Authentication authentication) throws IOException, ServletException {
+                                            Authentication authentication,
+                                            String oAuth) throws IOException, ServletException {
 
         SavedRequest savedRequest = requestCache.getRequest(request, response);
-        System.out.println("savedRequest = " + savedRequest);
-        System.out.println("in resultRedirectStrategy");
 
-        if(savedRequest!=null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            redirectStrategy.sendRedirect(request, response, targetUrl);
+
+        Member member = memberRepository.findByoAuth(oAuth);
+        if (member.getType() == null) {
+            redirectStrategy.sendRedirect(request, response, typeUrl);
+
         } else {
-            redirectStrategy.sendRedirect(request, response, url);
+            if(savedRequest!=null) {
+                String targetUrl = savedRequest.getRedirectUrl();
+                redirectStrategy.sendRedirect(request, response, targetUrl);
+            } else {
+                redirectStrategy.sendRedirect(request, response, url);
+            }
         }
-
     }
 
 

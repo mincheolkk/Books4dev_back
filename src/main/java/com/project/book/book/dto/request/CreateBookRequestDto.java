@@ -1,4 +1,4 @@
-package com.project.book.book.dto.book;
+package com.project.book.book.dto.request;
 
 import com.project.book.book.domain.Book;
 import lombok.AccessLevel;
@@ -14,21 +14,21 @@ public class CreateBookRequestDto {
 
     private String title;
     private String authors;
-    private String translator;
+    private String translators;
     private String isbn;
-    private LocalDateTime datetime;
+    private LocalDateTime releaseDate;
     private String publisher;
-    private int price;
+    private Long price;
     private String thumbnail;
 
     @Builder
-    public CreateBookRequestDto(String title, String authors, String translator, String isbn,
-                                LocalDateTime datetime, String publisher, int price, String thumbnail) {
+    public CreateBookRequestDto(String title, String authors, String translators, String isbn,
+                                LocalDateTime datetime, String publisher, Long price, String thumbnail) {
         this.title = title;
         this.authors = authors;
-        this.translator = translator;
+        this.translators = translators;
         this.isbn = isbn;
-        this.datetime = datetime;
+        this.releaseDate = datetime;
         this.publisher = publisher;
         this.price = price;
         this.thumbnail = thumbnail;
@@ -38,9 +38,9 @@ public class CreateBookRequestDto {
         return Book.builder()
                 .title(title)
                 .authors(authors)
-                .translator(translator)
+                .translators(translators)
                 .isbn(isbn)
-                .dateTime(datetime)
+                .releaseDate(releaseDate)
                 .publisher(publisher)
                 .price(price)
                 .thumbnail(thumbnail)

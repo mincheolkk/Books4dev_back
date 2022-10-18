@@ -1,8 +1,8 @@
 package com.project.book.member.domain;
 
-import com.project.book.book.domain.CommentBook;
 import com.project.book.book.domain.RegisterBook;
 import com.project.book.book.domain.WishBook;
+import com.project.book.book.domain.WishMember;
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
 
@@ -10,7 +10,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -25,7 +27,7 @@ public class Member extends BaseEntity {
 
     private String kakaoId;
 
-    @NotEmpty
+//    @NotEmpty
     @Column(name = "member_nickname")
     private String nickname;
 
@@ -41,19 +43,15 @@ public class Member extends BaseEntity {
     @Column(name = "member_type")
     private MemberType type;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "member_language")
-    private Language language;
+    @Builder.Default
+    @OneToMany(mappedBy = "member")
+    private Set<RegisterBook> registerBooks = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "member")
-    private List<RegisterBook> registerBooks = new ArrayList<>();
+    private Set<WishMember> WishBooks = new HashSet<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "book")
-    private List<CommentBook> commentBooks = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "book")
-    private List<WishBook> WishBooks = new ArrayList<>();
+    public void updateMemberPosition(MemberType position) {
+        this.type = position;
+    }
 }

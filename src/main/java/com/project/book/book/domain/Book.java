@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @Getter
 @Entity
 @AllArgsConstructor
@@ -30,10 +29,10 @@ public class Book extends BaseEntity {
     private String publisher;
 
     @Column(name = "book_dateTime")
-    private LocalDateTime dateTime;
+    private LocalDateTime releaseDate;
 
     @Column(name = "book_price")
-    private int price;
+    private Long price;
 
     @Column(name = "book_thumbnail")
     private String thumbnail;
@@ -42,11 +41,48 @@ public class Book extends BaseEntity {
     private String authors;
 
     @Column(name = "book_translator")
-    private String translator;
+    private String translators;
+
+    @Embedded
+    private StarAndCount starAndCount;
+
+    @Embedded
+    private RecommendTime recommendTime;
 
     @OneToMany(mappedBy = "book")
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
-    private List<CommentBook> commentBooks = new ArrayList<>();
+    public void plusRegisterCount(long count) {
+        starAndCount.plusRegisterCount((int) count);
+    }
+
+    public void plusWishCount(int count) {
+        starAndCount.plusWishCount(count);
+    }
+
+    public void calculateAvgStar(double star) {
+        starAndCount.calculateAvgStar(star);
+    }
+
+    public void plusRecommendTime(BookTime time, long count) {
+        recommendTime.plusRecommendTime(time, (int) count);
+    }
+
+    public void zeroRecommendTime() {
+        recommendTime.makeZero();
+    }
+
+    @Builder
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators) {
+        this.isbn = isbn;
+        this.title = title;
+        this.publisher = publisher;
+        this.releaseDate = releaseDate;
+        this.price = price;
+        this.thumbnail = thumbnail;
+        this.authors = authors;
+        this.translators = translators;
+        this.starAndCount = StarAndCount.init();
+        this.recommendTime = RecommendTime.init();
+    }
 }

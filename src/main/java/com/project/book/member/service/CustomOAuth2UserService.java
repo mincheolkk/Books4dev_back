@@ -53,42 +53,46 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String registrationId = userRequest
                                     .getClientRegistration()
                                     .getRegistrationId();  // oauth 서비스 이름, 내꺼에선 kakao만 나옴
-
+        System.out.println("registrationId = " + registrationId);
         // userNmaeAttributeName = id
         String userNameAttributeName = userRequest
                                             .getClientRegistration()
                                             .getProviderDetails()
                                             .getUserInfoEndpoint()
                                             .getUserNameAttributeName();  //oauth 로그인 시 pk 가 되는 값
-
+        System.out.println("userNameAttributeName = " + userNameAttributeName);
 
         String kakaoId = oAuth2User.getName();
 
         Map<String, Object> attributes = oAuth2User.getAttributes(); // oauth 서비스의 유저 정보들
+        System.out.println("attributes = " + attributes);
 
         System.out.println("kakaoId = " + kakaoId);
         String role = iterator.next().getAuthority();
+        System.out.println("role = " + role);
 
         System.out.println("in customOAuth2UserService");
         String id = String.valueOf(oAuth2User.getAttributes().get("id"));
         System.out.println("id = " + id);
 
         if (!memberRepository.existsByoAuth(id)) {
-            String nickname = (String)
-                    ((LinkedHashMap)
-                            ((LinkedHashMap) oAuth2User.getAttribute("kakao_account"))
-                                    .get("profile"))
-                            .get("nickname");
+//            String nickname = (String)
+//                    ((LinkedHashMap)
+//                            ((LinkedHashMap) oAuth2User.getAttribute("kakao_account"))
+//                                    .get("profile"))
+//                            .get("nickname");
+            // 여기서 개발자 포지션 고르라는 창으로 보내야할듯
+
 
             Member newMember = Member.builder()
-                    .nickname(nickname)
+//                    .nickname(nickname)
                     .oAuth(id)
                     .build();
 
             Member saved = memberRepository.save(newMember);
 
             System.out.println("in customOAuth2UserService -- no MemberRepo");
-            System.out.println("saved = " + saved.getNickname());
+//            System.out.println("saved = " + saved.getNickname());
             System.out.println("saved.getId() = " + saved.getId());
             Optional<Member> byId = memberRepository.findById(1L);
             System.out.println("byId = " + byId);

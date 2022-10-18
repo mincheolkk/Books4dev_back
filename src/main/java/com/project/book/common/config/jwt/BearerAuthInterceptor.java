@@ -32,12 +32,10 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
 
         String oAuth = Optional.ofNullable(token)
                 .filter(t -> jwtTokenProvider.validateToken(t))
-                .map(t -> jwtTokenProvider.getPayload(t))
+                .map(t -> jwtTokenProvider.getPayload(t).getSubject())
                 .orElseThrow(InvalidAccessTokenException::new);
-
         request.setAttribute("oAuth",oAuth);
 
-        System.out.println("end preHandle");
         return true;
     }
 }
