@@ -18,8 +18,6 @@ public class MemberController {
 
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> getMember(@LoginMember Member member) {
-        System.out.println("/me/me/me/me/em/eme/meme/me");
-        System.out.println("012312" + ResponseEntity.ok(MemberResponse.from(member)));
         return ResponseEntity.ok(MemberResponse.from(member));
     }
 

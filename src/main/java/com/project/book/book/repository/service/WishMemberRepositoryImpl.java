@@ -42,7 +42,6 @@ public class WishMemberRepositoryImpl implements WishMemberRepositoryCustom {
                 .join(wishMember.wishBook, wishBook)
                 .where(wishMember.member.eq(member))
                 .fetch();
-
         return fetch;
     }
 
