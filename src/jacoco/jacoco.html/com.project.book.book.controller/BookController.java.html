@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">book</a> &gt; <a href="index.source.html" class="el_package">com.project.book.book.controller</a> &gt; <span class="el_source">BookController.java</span></div><h1>BookController.java</h1><pre class="source lang-java linenums">package com.project.book.book.controller;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.project.book.book.domain.Book;
+import com.project.book.book.dto.request.AllBookFilterDto;
+import com.project.book.book.dto.request.RegisterBySearchDto;
+import com.project.book.book.dto.request.RegisterByHomeListDto;
+import com.project.book.book.dto.request.WishBookRequestDto;
+import com.project.book.book.dto.response.AllBookResponseDto;
+import com.project.book.book.service.BookService;
+import com.project.book.common.config.jwt.LoginMember;
+import com.project.book.member.domain.Member;
+import com.project.book.member.repository.MemberRepository;
+import com.querydsl.core.Tuple;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+@RestController
+<span class="fc" id="L30">@RequiredArgsConstructor</span>
+public class BookController {
+
+    private final BookService bookService;
+    private final MemberRepository memberRepository;
+
+    // 책 저장 로직
+    @PostMapping(&quot;/bySearch&quot;)
+    public ResponseEntity registerBySearch(@LoginMember Member member, @RequestBody @Valid RegisterBySearchDto request) {
+<span class="nc" id="L39">        Book book = bookService.registerBySearch(request, member);</span>
+<span class="nc" id="L40">        return new ResponseEntity&lt;&gt;(book.getId(), HttpStatus.OK);</span>
+    }
+
+    @PostMapping(&quot;/bylist&quot;)
+    public ResponseEntity registerByHomeList(@LoginMember Member member, @RequestBody @Valid RegisterByHomeListDto request) {
+<span class="nc" id="L45">        Book book = bookService.registerByHomeList(request, member);</span>
+
+<span class="nc" id="L47">        return new ResponseEntity&lt;&gt;(book.getId(), HttpStatus.OK);</span>
+
+    }
+
+//    @GetMapping(&quot;/books/{book_id}&quot;)
+//    public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; getDetailBook(@PathVariable(&quot;book_id&quot;) @Valid Long id) throws JsonProcessingException {
+//        Map&lt;String, Object&gt; detailBook = bookService.getDetailBook(id);
+//
+//        return ResponseEntity.ok(detailBook);
+//    }
+
+    @PostMapping(&quot;/book/wish&quot;)
+    public ResponseEntity&lt;?&gt; saveWishBook(@LoginMember Member member, @RequestBody WishBookRequestDto request) {
+<span class="nc" id="L60">        ResponseEntity responseEntity = bookService.saveWishBook(request, member);</span>
+
+<span class="nc" id="L62">        return new ResponseEntity&lt;&gt;(responseEntity, HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/test/all&quot;)
+    public ResponseEntity&lt;?&gt; getAllBooks(@ModelAttribute AllBookFilterDto condition) {
+<span class="nc" id="L67">        PageRequest pageRequest = PageRequest.of(0, 100);</span>
+<span class="nc" id="L68">        ResponseEntity&lt;?&gt; result = bookService.getAllBook(condition, pageRequest);</span>
+
+<span class="nc" id="L70">        return new ResponseEntity&lt;&gt;(result, HttpStatus.OK);</span>
+    }
+
+    @GetMapping(&quot;/test/wish&quot;)
+    public ResponseEntity&lt;?&gt; getAllWishBook(@LoginMember Member member) {
+<span class="nc" id="L75">        return bookService.getAllWishBook(member);</span>
+    }
+
+    @GetMapping(&quot;/test/readBook&quot;)
+    public ResponseEntity&lt;?&gt; testReadBook(@LoginMember Member member) {
+<span class="nc" id="L80">        return bookService.testReadBook(member);</span>
+    }
+
+    @GetMapping(&quot;/search/readbook&quot;)
+    public List&lt;AllBookResponseDto&gt;tt(@RequestParam String query) {
+<span class="nc" id="L85">        return bookService.findRegisteredBook(query);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

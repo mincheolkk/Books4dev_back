@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RegisterBookRepositoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">book</a> &gt; <a href="index.source.html" class="el_package">com.project.book.book.repository.service</a> &gt; <span class="el_source">RegisterBookRepositoryImpl.java</span></div><h1>RegisterBookRepositoryImpl.java</h1><pre class="source lang-java linenums">package com.project.book.book.repository.service;
+
+import com.project.book.book.domain.*;
+import com.project.book.book.dto.response.QReadBookResponseDto;
+import com.project.book.book.dto.response.QRecommendCountDto;
+import com.project.book.book.dto.response.ReadBookResponseDto;
+import com.project.book.book.dto.response.RecommendCountDto;
+import com.project.book.book.repository.RegisterBookRepositoryCustom;
+import com.project.book.member.domain.Member;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+import static com.project.book.book.domain.QBook.*;
+import static com.project.book.book.domain.QRegisterBook.*;
+import static com.project.book.common.utils.QuerydslUtils.enumEqCheck;
+
+@Repository
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom {
+
+    private final JPAQueryFactory queryFactory;
+
+    public List&lt;ReadBookResponseDto&gt; testReadbook(Member member, BookTime readTime) {
+<span class="nc" id="L27">        return queryFactory.select(new QReadBookResponseDto(</span>
+                        book.title, book.isbn, book.thumbnail,
+                        registerBook.star
+<span class="nc" id="L30">                )).from(registerBook)</span>
+<span class="nc" id="L31">                .join(registerBook.book, book)</span>
+<span class="nc" id="L32">                .where(</span>
+<span class="nc" id="L33">                        registerBook.member.eq(member),</span>
+<span class="nc" id="L34">                        enumEqCheck(registerBook.readBookTime, readTime)</span>
+                )
+<span class="nc" id="L36">                .fetch();</span>
+    }
+
+    public RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime) {
+<span class="fc" id="L40">        RegisterBook findedBook = queryFactory.selectFrom(registerBook)</span>
+<span class="fc" id="L41">                .where(</span>
+<span class="fc" id="L42">                        registerBook.member.eq(member),</span>
+<span class="fc" id="L43">                        registerBook.book.eq(savedBook),</span>
+<span class="fc" id="L44">                        enumEqCheck(registerBook.readBookTime, readTime)</span>
+<span class="fc" id="L45">                ).fetchOne();</span>
+
+<span class="fc" id="L47">        return findedBook;</span>
+    }
+
+    @Override
+    public List&lt;RecommendCountDto&gt; findRecommendCount(Book book) {
+<span class="fc" id="L52">        return queryFactory.select(new QRecommendCountDto(</span>
+                        registerBook.recommendBookTime,
+<span class="fc" id="L54">                        registerBook.recommendBookTime.count()</span>
+<span class="fc" id="L55">                )).from(registerBook)</span>
+<span class="fc" id="L56">                .where(registerBook.book.eq(book))</span>
+<span class="fc" id="L57">                .groupBy(registerBook.recommendBookTime)</span>
+<span class="fc" id="L58">                .fetch();</span>
+    }
+
+    @Override
+    public Double findAvgStar(Book book) {
+<span class="fc" id="L63">        return queryFactory.select(</span>
+<span class="fc" id="L64">                        registerBook.star.avg())</span>
+<span class="fc" id="L65">                .from(registerBook)</span>
+<span class="fc" id="L66">                .where(registerBook.book.eq(book))</span>
+<span class="fc" id="L67">                .fetchOne();</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

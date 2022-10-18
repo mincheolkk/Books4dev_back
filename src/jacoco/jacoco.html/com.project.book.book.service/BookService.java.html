@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BookService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">book</a> &gt; <a href="index.source.html" class="el_package">com.project.book.book.service</a> &gt; <span class="el_source">BookService.java</span></div><h1>BookService.java</h1><pre class="source lang-java linenums">package com.project.book.book.service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.project.book.book.domain.*;
+import com.project.book.book.dto.request.*;
+import com.project.book.book.dto.response.AllBookResponseDto;
+import com.project.book.book.dto.response.ReadBookResponseDto;
+import com.project.book.book.dto.response.RecommendCountDto;
+import com.project.book.book.dto.response.WishBookResponseDto;
+import com.project.book.book.repository.BookRepository;
+import com.project.book.book.repository.RegisterBookRepository;
+import com.project.book.book.repository.WishBookRepository;
+import com.project.book.book.repository.WishMemberRepository;
+import com.project.book.member.domain.Member;
+import com.project.book.member.domain.MemberType;
+import com.querydsl.core.Tuple;
+import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+import static com.project.book.book.domain.BookTime.*;
+
+@Service
+<span class="fc" id="L30">@RequiredArgsConstructor</span>
+public class BookService {
+
+    private final BookRepository bookRepository;
+    private final RegisterBookRepository registerBookRepository;
+    private final WishBookRepository wishBookRepository;
+    private final WishMemberRepository wishMemberRepository;
+    @Transactional
+    public Book registerBySearch(RegisterBySearchDto request, Member member) {
+
+<span class="fc" id="L40">        String isbn = request.getItem().getIsbn();</span>
+<span class="fc" id="L41">        Book savedBook = bookRepository.findByIsbn(isbn);</span>
+
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        if (savedBook == null) {</span>
+<span class="fc" id="L44">            CreateBookRequestDto createbook = CreateBookRequestDto.builder()</span>
+<span class="fc" id="L45">                    .authors(listToString(request.getItem().getAuthors()))</span>
+<span class="fc" id="L46">                    .translators(listToString(request.getItem().getTranslators()))</span>
+<span class="fc" id="L47">                    .title(request.getItem().getTitle())</span>
+<span class="fc" id="L48">                    .publisher(request.getItem().getPublisher())</span>
+<span class="fc" id="L49">                    .price(request.getItem().getPrice())</span>
+<span class="fc" id="L50">                    .thumbnail(request.getItem().getThumbnail())</span>
+<span class="fc" id="L51">                    .datetime(request.getItem().getDatetime().toLocalDateTime())</span>
+<span class="fc" id="L52">                    .isbn(isbn)</span>
+<span class="fc" id="L53">                    .build();</span>
+
+<span class="fc" id="L55">            Book tempbook = createbook.toEntity();</span>
+<span class="fc" id="L56">            tempbook.plusRegisterCount(1);</span>
+<span class="fc" id="L57">            tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);</span>
+<span class="fc" id="L58">            tempbook.calculateAvgStar(request.getReview().getStar());</span>
+//            starCountRecommend(tempbook, request.getReview());
+
+<span class="fc" id="L61">            Book newBook = bookRepository.save(tempbook);</span>
+
+<span class="fc" id="L63">            findRegisterBookForUpdate(member, newBook, request.getReview());</span>
+<span class="fc" id="L64">            findWishBookCount(isbn);</span>
+//            RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
+//            registerBookRepository.save(registerBook);
+
+<span class="fc" id="L68">            return newBook;</span>
+        }
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        else if (savedBook != null) {</span>
+<span class="nc" id="L71">            findRegisterBookForUpdate(member, savedBook, request.getReview());</span>
+<span class="nc" id="L72">            starCountRecommend(savedBook, request.getReview());</span>
+<span class="nc" id="L73">            findWishBookCount(isbn);</span>
+        }
+<span class="nc" id="L75">        return savedBook;</span>
+    }
+
+    public void findRegisterBookForUpdate(Member member, Book book, BookReviewDto reviewDto) {
+<span class="fc" id="L79">        RegisterBook findedBook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());</span>
+
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (findedBook != null) {</span>
+<span class="nc" id="L82">            findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());</span>
+<span class="nc" id="L83">            registerBookRepository.save(findedBook);</span>
+<span class="nc" id="L84">            System.out.println(&quot;findBook != null&quot;);</span>
+<span class="nc" id="L85">            return;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">        } else if (findedBook == null) {</span>
+<span class="fc" id="L87">            RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);</span>
+<span class="fc" id="L88">            registerBookRepository.save(registerBook);</span>
+<span class="fc" id="L89">            System.out.println(&quot;findBook == null&quot;);</span>
+<span class="fc" id="L90">            return;</span>
+        }
+<span class="nc" id="L92">    }</span>
+
+    @Transactional
+    public Book registerByHomeList(RegisterByHomeListDto request, Member member) {
+<span class="fc" id="L96">        Book savedBook = bookRepository.findByIsbn(request.getIsbn());</span>
+//        RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
+//        registerBookRepository.save(registerBook);
+<span class="fc" id="L99">        findWishBookCount(request.getIsbn());</span>
+<span class="fc" id="L100">        findRegisterBookForUpdate(member, savedBook, request.getReview());</span>
+<span class="fc" id="L101">        starCountRecommend(savedBook, request.getReview());</span>
+
+<span class="fc" id="L103">        return savedBook;</span>
+    }
+
+    public void starCountRecommend(Book book, BookReviewDto request) {
+<span class="fc" id="L107">        List&lt;RecommendCountDto&gt; byRecommendCount = registerBookRepository.findRecommendCount(book);</span>
+<span class="fc" id="L108">        long registerCount = 0;</span>
+<span class="fc" id="L109">        book.zeroRecommendTime();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        for (RecommendCountDto dto : byRecommendCount) {</span>
+<span class="fc" id="L111">            book.plusRecommendTime(dto.getBookTime(), dto.getCount());</span>
+<span class="fc" id="L112">            registerCount += dto.getCount();</span>
+<span class="fc" id="L113">        }</span>
+<span class="fc" id="L114">        book.plusRegisterCount(registerCount);</span>
+<span class="fc" id="L115">        Double avgStar = registerBookRepository.findAvgStar(book);</span>
+<span class="fc" id="L116">        book.calculateAvgStar(avgStar);</span>
+
+//        book.plusRecommendTime(request.getRecommendTime());
+<span class="fc" id="L119">    }</span>
+    public void findRegistCountnRecommendCount() {
+
+<span class="nc" id="L122">    }</span>
+
+    private static RegisterBook requestRegisterBook(Book book, BookReviewDto request, Member member) {
+<span class="fc" id="L125">        return RegisterBook.builder()</span>
+<span class="fc" id="L126">                .book(book)</span>
+<span class="fc" id="L127">                .readBookTime(request.getReadTime())</span>
+<span class="fc" id="L128">                .recommendBookTime(request.getRecommendTime())</span>
+<span class="fc" id="L129">                .star(request.getStar())</span>
+<span class="fc" id="L130">                .member(member)</span>
+<span class="fc" id="L131">                .build();</span>
+    }
+
+    @Transactional
+    public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
+<span class="fc" id="L136">        WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());</span>
+
+
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (wishBook == null) {</span>
+<span class="fc" id="L140">            WishBook wish = WishBook.builder()</span>
+<span class="fc" id="L141">                    .isbn(request.getIsbn())</span>
+<span class="fc" id="L142">                    .title(request.getTitle())</span>
+<span class="fc" id="L143">                    .thumbnail(request.getThumbnail())</span>
+<span class="fc" id="L144">                    .build();</span>
+<span class="fc" id="L145">            wishBookRepository.save(wish);</span>
+
+<span class="fc" id="L147">           saveWishMember(member, wish);</span>
+<span class="fc" id="L148">           findWishBookCount(request.getIsbn());</span>
+<span class="fc" id="L149">           return new ResponseEntity(HttpStatus.ACCEPTED);</span>
+        }
+<span class="nc" id="L151">        boolean flag = wishMemberRepository.findByWishBook(wishBook, member);</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (flag) {</span>
+<span class="nc" id="L153">            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);</span>
+        }
+
+<span class="nc" id="L156">        saveWishMember(member, wishBook);</span>
+<span class="nc" id="L157">        findWishBookCount(request.getIsbn());</span>
+<span class="nc" id="L158">        return new ResponseEntity(HttpStatus.ACCEPTED);</span>
+    }
+
+    public void saveWishMember(Member member, WishBook wishBook) {
+<span class="fc" id="L162">        WishMember wishMember = WishMember.builder()</span>
+<span class="fc" id="L163">                .wishBook(wishBook)</span>
+<span class="fc" id="L164">                .member(member)</span>
+<span class="fc" id="L165">                .build();</span>
+<span class="fc" id="L166">        wishMemberRepository.save(wishMember);</span>
+<span class="fc" id="L167">    }</span>
+
+//    public Map&lt;String, Object&gt; getDetailBook(Long id) throws JsonProcessingException {
+//        Optional&lt;Book&gt; book = bookRepository.findById(id);
+//        Map&lt;String, Object&gt; detailBook = bookRepository.getDetailBook(book.get());
+//
+//        return detailBook;
+//    }
+
+    private static String listToString(List&lt;String&gt; list) {
+<span class="pc bpc" id="L177" title="3 of 4 branches missed.">        if (Objects.isNull(list) || list.isEmpty()) {</span>
+<span class="fc" id="L178">            return Strings.EMPTY;</span>
+        }
+<span class="nc" id="L180">        return String.join(&quot;,&quot;, list);</span>
+    }
+
+    public ResponseEntity&lt;?&gt; getAllBook(AllBookFilterDto condition, Pageable pageRequest) {
+<span class="nc bnc" id="L184" title="All 4 branches missed.">        if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {</span>
+<span class="nc" id="L185">            condition.setMemberType(null);</span>
+        }
+<span class="nc bnc" id="L187" title="All 4 branches missed.">        if (condition.getRecommendType() == null || condition.getRecommendType().equals(BookTime.All)) {</span>
+<span class="nc" id="L188">            condition.setRecommendType(null);</span>
+        }
+<span class="nc" id="L190">        return new ResponseEntity&lt;&gt;(bookRepository.getAllBooks(condition, pageRequest), HttpStatus.ACCEPTED);</span>
+    }
+
+    public ResponseEntity&lt;?&gt; getAllWishBook(Member member) {
+<span class="nc" id="L194">        List&lt;WishBookResponseDto&gt; allWishBook = wishMemberRepository.getAllWishBook(member);</span>
+<span class="nc" id="L195">        return new ResponseEntity&lt;&gt;(allWishBook, HttpStatus.ACCEPTED);</span>
+    }
+
+    public ResponseEntity&lt;?&gt; testReadBook(Member member) {
+<span class="nc" id="L199">        HashMap readTimeMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L200">        List&lt;BookTime&gt; enumList = Arrays.asList(before, after, twoYear, fiveYear, tenYear);</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">        for (BookTime bookTime : enumList) {</span>
+<span class="nc" id="L202">            List&lt;ReadBookResponseDto&gt; responseDtoList = registerBookRepository.testReadbook(member, bookTime);</span>
+<span class="nc" id="L203">            readTimeMap.put(bookTime, responseDtoList);</span>
+<span class="nc" id="L204">        }</span>
+<span class="nc" id="L205">        return new ResponseEntity&lt;&gt;(readTimeMap, HttpStatus.ACCEPTED);</span>
+    }
+
+    public void findWishBookCount(String isbn) {
+<span class="fc" id="L209">        Book savedBook = bookRepository.findByIsbn(isbn);</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">        if (savedBook == null) {</span>
+<span class="nc" id="L211">            return;</span>
+        }
+
+<span class="fc" id="L214">        long wishBookCount = wishMemberRepository.findWishBookCount(isbn);</span>
+<span class="fc" id="L215">        System.out.println(&quot;wishBookCount = &quot; + wishBookCount);</span>
+
+<span class="fc" id="L217">        savedBook.plusWishCount((int) wishBookCount);</span>
+<span class="fc" id="L218">        System.out.println(&quot;wwwwwerwerwerwrwrwerewrwrewrwerewrwerwerwerwerwerwerewrwrwerwr2&quot;);</span>
+<span class="fc" id="L219">        System.out.println(&quot;savedBook = &quot; + savedBook.getStarAndCount().getWishCount());</span>
+<span class="fc" id="L220">    }</span>
+
+    public  List&lt;AllBookResponseDto&gt; findRegisteredBook(String title) {
+<span class="nc" id="L223">        return bookRepository.findByTitle(title);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

@@ -5,6 +5,8 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+
+application-oauth.properties
 kakao.properties
 generated
 
@@ -43,3 +45,7 @@ out/
 # local env files
 **/.env.local
 **/.env.*.local
+
+properties
+application-local.yml
+

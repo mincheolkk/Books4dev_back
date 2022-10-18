@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="ko"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomOAuth2Provider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">book</a> &gt; <a href="index.source.html" class="el_package">com.project.book.common.config.auth</a> &gt; <span class="el_source">CustomOAuth2Provider.java</span></div><h1>CustomOAuth2Provider.java</h1><pre class="source lang-java linenums">package com.project.book.common.config.auth;
+
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistration.Builder;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+
+<span class="fc" id="L8">public enum CustomOAuth2Provider {</span>
+
+<span class="fc" id="L10">    KAKAO {</span>
+        @Override
+        public ClientRegistration.Builder getBuilder(String registrationId) {
+//            ClientRegistration.Builder builder = getBuilder(registrationId, ClientAuthenticationMethod.CLIENT_SECRET_BASIC, DEFAULT_REDIRECT_URL);
+<span class="fc" id="L14">            return getBuilder(&quot;kakao&quot;, ClientAuthenticationMethod.CLIENT_SECRET_POST, DEFAULT_REDIRECT_URL)</span>
+//                    .scope(&quot;profile_nickname&quot;)
+<span class="fc" id="L16">                    .authorizationUri(&quot;https://kauth.kakao.com/oauth/authorize&quot;)</span>
+<span class="fc" id="L17">                    .tokenUri(&quot;https://kauth.kakao.com/oauth/token&quot;)</span>
+<span class="fc" id="L18">                    .userInfoUri(&quot;https://kapi.kakao.com/v2/user/me&quot;)</span>
+<span class="fc" id="L19">                    .userNameAttributeName(&quot;id&quot;)</span>
+<span class="fc" id="L20">                    .clientName(&quot;kakao&quot;);</span>
+        }
+    };
+
+    private static final String BASE_URL = &quot;http://localhost:8081&quot;;
+    private static final String DEFAULT_REDIRECT_URL = BASE_URL + &quot;/login/oauth2/code/kakao&quot;;
+
+    protected final Builder getBuilder(String registrationId, ClientAuthenticationMethod method, String redirectUri) {
+<span class="fc" id="L28">        Builder builder = ClientRegistration.withRegistrationId(registrationId);</span>
+<span class="fc" id="L29">        builder.clientAuthenticationMethod(method);</span>
+<span class="fc" id="L30">        builder.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE);</span>
+<span class="fc" id="L31">        builder.redirectUri(redirectUri);</span>
+<span class="fc" id="L32">        System.out.println(&quot;customOauth2 Provider .. getBuilder&quot;);</span>
+<span class="fc" id="L33">        return builder;</span>
+    }
+
+    public abstract Builder getBuilder(String registraionId);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
