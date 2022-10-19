@@ -3,7 +3,9 @@ pipeline {
    stages {
        stage('Github') {
            steps {
-               git branch: 'feat/book_service', url: 'https://github.com/mincheolkk/book_first.git'
+               git branch: 'feat/book_service',
+               credentialsId: 'github_access_token',
+               url: 'https://github.com/mincheolkk/book_first.git'
            }
        }
        stage('Build') {
