@@ -11,10 +11,5 @@ pipeline {
                sh "./gradlew bootJar"
            }
        }
-       stage('Deploy') {
-           steps {
-
-           }
-       }
    }
 }
