@@ -1,0 +1,20 @@
+pipeline {
+   agent any
+   stages {
+       stage('Github') {
+           steps {
+               git branch: 'feat/book_service', url: 'https://github.com/mincheolkk/book_first.git'
+           }
+       }
+       stage('Build') {
+           steps {
+               sh "./gradlew bootJar"
+           }
+       }
+       stage('Deploy') {
+           steps {
+
+           }
+       }
+   }
+}
