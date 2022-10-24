@@ -17,7 +17,7 @@ pipeline {
            steps {
                 dir('build/libs') {
 //                     sshagent(credentials: ['please-jenkins']) {
-                        sh 'scp -o book-0.0.1-SNAPSHOT.jar ubuntu@54.180.45.254'
+                        sh 'scp book-0.0.1-SNAPSHOT.jar ubuntu@54.180.45.254:/home/ubuntu'
 //                     }
                 }
            }
