@@ -41,7 +41,7 @@ public class BookService {
         Book savedBook = bookRepository.findByIsbn(isbn);
 
         if (savedBook == null) {
-            CreateBookRequestDto createbook = CreateBookRequestDto.builder()
+            CreateBookRequestDto createBookRequestDto = CreateBookRequestDto.builder()
                     .authors(listToString(request.getItem().getAuthors()))
                     .translators(listToString(request.getItem().getTranslators()))
                     .title(request.getItem().getTitle())
@@ -52,7 +52,7 @@ public class BookService {
                     .isbn(isbn)
                     .build();
 
-            Book tempbook = createbook.toEntity();
+            Book tempbook = createBookRequestDto.toEntity();
             tempbook.plusRegisterCount(1);
             tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
             tempbook.calculateAvgStar(request.getReview().getStar());
@@ -81,12 +81,10 @@ public class BookService {
         if (findedBook != null) {
             findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
             registerBookRepository.save(findedBook);
-            System.out.println("findBook != null");
             return;
         } else if (findedBook == null) {
             RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
             registerBookRepository.save(registerBook);
-            System.out.println("findBook == null");
             return;
         }
     }
@@ -212,11 +210,8 @@ public class BookService {
         }
 
         long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
-        System.out.println("wishBookCount = " + wishBookCount);
 
         savedBook.plusWishCount((int) wishBookCount);
-        System.out.println("wwwwwerwerwerwrwrwerewrwrewrwerewrwerwerwerwerwerwerewrwrwerwr2");
-        System.out.println("savedBook = " + savedBook.getStarAndCount().getWishCount());
     }
 
     public  List<AllBookResponseDto> findRegisteredBook(String title) {
