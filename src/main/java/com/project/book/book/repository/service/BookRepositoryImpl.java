@@ -105,8 +105,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
         return queryFactory.select(new QAllBookResponseDto(
                         book.title, book.authors, book.publisher, book.thumbnail,
-                        book.isbn, book.price, book.starAndCount.avgStar, book.starAndCount.registerCount,
-                        book.recommendTime, book.starAndCount.wishCount))
+                        book.isbn, book.price, book.star.avgStar, book.count.registerCount,
+                        book.recommendTime, book.count.wishCount))
                 .from(book)
                 .join(book.registerBooks, registerBook)
                 .where(
@@ -126,8 +126,8 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     public List<AllBookResponseDto> findByTitle(String title) {
         return queryFactory.select(new QAllBookResponseDto(
                         book.title, book.authors, book.publisher, book.thumbnail,
-                        book.isbn, book.price, book.starAndCount.avgStar, book.starAndCount.registerCount,
-                        book.recommendTime, book.starAndCount.wishCount))
+                        book.isbn, book.price, book.star.avgStar, book.count.registerCount,
+                        book.recommendTime, book.count.wishCount))
                 .from(book)
                 .join(book.registerBooks, registerBook)
                 .where(

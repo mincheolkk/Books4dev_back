@@ -44,7 +44,10 @@ public class Book extends BaseEntity {
     private String translators;
 
     @Embedded
-    private StarAndCount starAndCount;
+    private Star star;
+
+    @Embedded
+    private Count count;
 
     @Embedded
     private RecommendTime recommendTime;
@@ -53,15 +56,15 @@ public class Book extends BaseEntity {
     private List<RegisterBook> registerBooks = new ArrayList<>();
 
     public void plusRegisterCount(long count) {
-        starAndCount.plusRegisterCount((int) count);
+        this.count.plusRegisterCount((int) count);
     }
 
     public void plusWishCount(int count) {
-        starAndCount.plusWishCount(count);
+        this.count.plusWishCount(count);
     }
 
     public void calculateAvgStar(double star) {
-        starAndCount.calculateAvgStar(star);
+        this.star.calculateAvgStar(star);
     }
 
     public void plusRecommendTime(BookTime time, long count) {
@@ -73,7 +76,7 @@ public class Book extends BaseEntity {
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators) {
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, Star star, Count count, RecommendTime recommendTime) {
         this.isbn = isbn;
         this.title = title;
         this.publisher = publisher;
@@ -82,7 +85,8 @@ public class Book extends BaseEntity {
         this.thumbnail = thumbnail;
         this.authors = authors;
         this.translators = translators;
-        this.starAndCount = StarAndCount.init();
+        this.star = Star.init();
+        this.count = Count.init();
         this.recommendTime = RecommendTime.init();
     }
 }

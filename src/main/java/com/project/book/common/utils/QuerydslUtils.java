@@ -32,21 +32,21 @@ public class QuerydslUtils {
 
     public static OrderSpecifier<?> getBookSortType(BookSortType sortType) {
         if (sortType == null) {
-            return book.starAndCount.registerCount.desc();
+            return book.count.registerCount.desc();
         } else if (sortType == COUNT) {
-            return book.starAndCount.registerCount.desc();
+            return book.count.registerCount.desc();
         } else if (sortType == STAR) {
-            return book.starAndCount.avgStar.desc();
+            return book.star.avgStar.desc();
         } else if (sortType == WISH) {
-            return book.starAndCount.wishCount.desc();
+            return book.count.wishCount.desc();
         }
-        return book.starAndCount.registerCount.desc();
+        return book.count.registerCount.desc();
     }
 
     public static OrderSpecifier<?> getBookSortByTime(BookTime sortType) {
 
         if (sortType == null) {
-            return book.starAndCount.avgStar.desc();
+            return book.star.avgStar.desc();
         } else if (sortType == before) {
             return book.recommendTime.beforeCount.desc();
         } else if (sortType == after) {
@@ -58,6 +58,6 @@ public class QuerydslUtils {
         } else if (sortType == tenYear) {
             return book.recommendTime.tenYearCount.desc();
         }
-        return book.starAndCount.avgStar.desc();
+        return book.star.avgStar.desc();
     }
 }
