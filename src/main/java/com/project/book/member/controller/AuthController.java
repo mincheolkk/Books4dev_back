@@ -23,17 +23,15 @@ public class AuthController {
 
 
     @PostMapping(value = "/update/token")
-    public ResponseEntity<?> updateAccessToken(@RequestBody TokenRequest tokenRequest) {
-        System.out.println("in updateAccessToken");
-        System.out.println("tokenRequest = " + tokenRequest.getRefreshToken());
+    public ResponseEntity<?> updateAccessToken(@LoginMember Member member, @RequestBody TokenRequest tokenRequest) {
+        String newAccessToken = authService.updateAccessToken(tokenRequest, member);
 
-        return new ResponseEntity<>("ssff",HttpStatus.OK);
+        return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 
     @GetMapping(value = "/out")
     public ResponseEntity<?> logOut(@LoginMember Member member, HttpServletRequest request) {
         authService.logOut(request);
-        System.out.println("223123123");
 
         return ResponseEntity.noContent().build();
     }

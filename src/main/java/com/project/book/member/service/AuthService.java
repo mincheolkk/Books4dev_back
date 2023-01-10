@@ -36,11 +36,9 @@ public class AuthService {
 
 
     @Transactional
-    public String updateAccessToken(TokenRequest tokenRequest, HttpServletRequest request) {
-        System.out.println("in updateAccessToken");
-        String oAuth = authExtractor.extract(request);
+    public String updateAccessToken(TokenRequest tokenRequest, Member member) {
+        String oAuth = member.getOAuth();
 
-        System.out.println("oAuth = " + oAuth);
         if (!jwtTokenProvider.validateToken(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
         }
@@ -55,11 +53,7 @@ public class AuthService {
     @Transactional
     public void logOut(HttpServletRequest request) {
         String accessToken = authExtractor.extract(request);
-        System.out.println("logOut == ");
-        System.out.println("accessToken = " + accessToken);
-
         redisUtil.setBlackList(accessToken,"blackList",ACCESS_TOKEN_VALID_TIME);
-        System.out.println("goooood");
     }
 
     //
