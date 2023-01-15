@@ -20,10 +20,11 @@ public class CreateBookRequestDto {
     private String publisher;
     private Long price;
     private String thumbnail;
+    private String contents;
 
     @Builder
     public CreateBookRequestDto(String title, String authors, String translators, String isbn,
-                                LocalDateTime datetime, String publisher, Long price, String thumbnail) {
+                                LocalDateTime datetime, String publisher, Long price, String thumbnail, String contents) {
         this.title = title;
         this.authors = authors;
         this.translators = translators;
@@ -32,6 +33,7 @@ public class CreateBookRequestDto {
         this.publisher = publisher;
         this.price = price;
         this.thumbnail = thumbnail;
+        this.contents = contents;
     }
 
     public Book toEntity() {
@@ -44,6 +46,7 @@ public class CreateBookRequestDto {
                 .publisher(publisher)
                 .price(price)
                 .thumbnail(thumbnail)
+                .contents(contents)
                 .build();
     }
 

@@ -19,16 +19,6 @@ public class BookDataDto {
     private String publisher;
     private Long price;
     private String thumbnail;
+    private String contents;
 
-    @Builder
-    public BookDataDto(String title, List<String> authors, List<String> translators, String isbn, ZonedDateTime datetime, String publisher, Long price, String thumbnail) {
-        this.title = title;
-        this.authors = authors;
-        this.translators = translators;
-        this.isbn = isbn;
-        this.datetime = datetime;
-        this.publisher = publisher;
-        this.price = price;
-        this.thumbnail = thumbnail;
-    }
 }

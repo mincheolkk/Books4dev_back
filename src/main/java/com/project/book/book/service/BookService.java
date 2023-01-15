@@ -34,6 +34,7 @@ public class BookService {
     private final RegisterBookRepository registerBookRepository;
     private final WishBookRepository wishBookRepository;
     private final WishMemberRepository wishMemberRepository;
+
     @Transactional
     public Book registerBySearch(RegisterBySearchDto request, Member member) {
 
@@ -50,6 +51,7 @@ public class BookService {
                     .thumbnail(request.getItem().getThumbnail())
                     .datetime(request.getItem().getDatetime().toLocalDateTime())
                     .isbn(isbn)
+                    .contents(request.getItem().getContents())
                     .build();
 
             Book tempbook = createBookRequestDto.toEntity();
@@ -164,13 +166,6 @@ public class BookService {
         wishMemberRepository.save(wishMember);
     }
 
-//    public Map<String, Object> getDetailBook(Long id) throws JsonProcessingException {
-//        Optional<Book> book = bookRepository.findById(id);
-//        Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
-//
-//        return detailBook;
-//    }
-
     private static String listToString(List<String> list) {
         if (Objects.isNull(list) || list.isEmpty()) {
             return Strings.EMPTY;
@@ -216,6 +211,11 @@ public class BookService {
 
     public  List<AllBookResponseDto> findRegisteredBook(String title) {
         return bookRepository.findByTitle(title);
+    }
+
+    public void getDetailBook(String isbn) {
+        Book book = bookRepository.findByIsbn(isbn);
+
     }
 
 

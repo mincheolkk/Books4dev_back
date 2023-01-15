@@ -43,6 +43,9 @@ public class Book extends BaseEntity {
     @Column(name = "book_translator")
     private String translators;
 
+    @Column(name = "book_contents", columnDefinition = "TEXT")
+    private String contents;
+
     @Embedded
     private Star star;
 
@@ -76,7 +79,7 @@ public class Book extends BaseEntity {
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, Star star, Count count, RecommendTime recommendTime) {
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents,Star star, Count count, RecommendTime recommendTime) {
         this.isbn = isbn;
         this.title = title;
         this.publisher = publisher;
@@ -85,6 +88,7 @@ public class Book extends BaseEntity {
         this.thumbnail = thumbnail;
         this.authors = authors;
         this.translators = translators;
+        this.contents = contents;
         this.star = Star.init();
         this.count = Count.init();
         this.recommendTime = RecommendTime.init();
