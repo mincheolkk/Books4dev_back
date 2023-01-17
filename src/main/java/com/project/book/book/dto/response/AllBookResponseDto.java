@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AllBookResponseDto {
 
+    private Long id;
     private String title;
     private String authors;
     private String publisher;
@@ -23,7 +24,8 @@ public class AllBookResponseDto {
     private Integer wishCount;
 
     @QueryProjection
-    public AllBookResponseDto(String title, String authors, String publisher, String thumbnail, String isbn, Long price, double avgStar, Integer registerCount, RecommendTime recommendTimeDto, Integer wishCount) {
+    public AllBookResponseDto(Long id, String title, String authors, String publisher, String thumbnail, String isbn, Long price, double avgStar, Integer registerCount, RecommendTime recommendTimeDto, Integer wishCount) {
+        this.id = id;
         this.title = title;
         this.authors = authors;
         this.publisher = publisher;
