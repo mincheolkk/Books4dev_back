@@ -8,10 +8,11 @@ import com.project.book.book.dto.response.RecommendCountDto;
 import com.project.book.member.domain.Member;
 
 import java.util.List;
+import java.util.Map;
 
 public interface RegisterBookRepositoryCustom {
 
-    List<ReadBookResponseDto> testReadbook(Member member, BookTime readTime);
+    Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(Member member);
 
     RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime);
 

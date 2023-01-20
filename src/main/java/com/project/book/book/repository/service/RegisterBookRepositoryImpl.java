@@ -12,10 +12,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.project.book.book.domain.QBook.*;
 import static com.project.book.book.domain.QRegisterBook.*;
 import static com.project.book.common.utils.QuerydslUtils.enumEqCheck;
+import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,17 +26,18 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
 
     private final JPAQueryFactory queryFactory;
 
-    public List<ReadBookResponseDto> testReadbook(Member member, BookTime readTime) {
-        return queryFactory.select(new QReadBookResponseDto(
-                        book.title, book.isbn, book.thumbnail,
-                        registerBook.star
-                )).from(registerBook)
-                .join(registerBook.book, book)
+    @Override
+    public Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(Member member) {
+        return queryFactory
+                .from(registerBook)
                 .where(
-                        registerBook.member.eq(member),
-                        enumEqCheck(registerBook.readBookTime, readTime)
-                )
-                .fetch();
+                        registerBook.member.eq(member))
+                .transform(
+                        groupBy(registerBook.readBookTime).as(list(
+                                                    new QReadBookResponseDto(
+                                                        book.title, book.isbn, book.thumbnail,
+                                                        registerBook.star
+                                                    ))));
     }
 
     public RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime) {
@@ -65,6 +69,5 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
                 .from(registerBook)
                 .where(registerBook.book.eq(book))
                 .fetchOne();
-
-    }
+        }
 }

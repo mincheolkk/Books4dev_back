@@ -1,6 +1,5 @@
 package com.project.book.book.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.*;
@@ -10,9 +9,7 @@ import com.project.book.book.repository.WishBookRepository;
 import com.project.book.book.repository.WishMemberRepository;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-
-import static com.project.book.book.domain.BookTime.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +34,6 @@ public class BookService {
         Book savedBook = bookRepository.findByIsbn(isbn);
 
         if (savedBook == null) {
-//            Book tempbook = CreateBookRequestDto.toEntity(request);
             Book tempbook = request.toBook(request.getItem());
             tempbook.plusRegisterCount(1);
             tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
@@ -52,7 +46,7 @@ public class BookService {
 
             return newBook;
         }
-        else if (savedBook != null) {
+        if (savedBook != null) {
             findRegisterBookForUpdate(member, savedBook, request.getReview());
             starCountRecommend(savedBook, request.getReview());
             findWishBookCount(isbn);
@@ -67,7 +61,8 @@ public class BookService {
             findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
             registerBookRepository.save(findedBook);
             return;
-        } else if (findedBook == null) {
+        }
+        if (findedBook == null) {
             RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
             registerBookRepository.save(registerBook);
             return;
@@ -163,14 +158,9 @@ public class BookService {
         return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> testReadBook(Member member) {
-        HashMap readTimeMap = new HashMap<>();
-        List<BookTime> enumList = Arrays.asList(before, after, twoYear, fiveYear, tenYear);
-        for (BookTime bookTime : enumList) {
-            List<ReadBookResponseDto> responseDtoList = registerBookRepository.testReadbook(member, bookTime);
-            readTimeMap.put(bookTime, responseDtoList);
-        }
-        return new ResponseEntity<>(readTimeMap, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> getReadBook(Member member) {
+        Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = registerBookRepository.getMyReadBook(member);
+        return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
     public void findWishBookCount(String isbn) {
@@ -190,9 +180,7 @@ public class BookService {
 
     public BookResponseDto getDetailBook(Long id) {
         Optional<Book> book = bookRepository.findById(id);
-        System.out.println("book.get().getTitle() = " + book.get().getTitle());
         return BookResponseDto.from(book.get());
-
     }
 
 
