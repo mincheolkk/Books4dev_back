@@ -35,6 +35,7 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
                                 book.title, book.isbn, book.thumbnail, registerBook.star
                         ))
                 .from(registerBook)
+                .innerJoin(registerBook.book, book)
                 .where(registerBook.member.eq(member))
                 .fetch();
 
