@@ -26,8 +26,8 @@ public class QuerydslUtils {
         }
     }
 
-    public static BooleanExpression stringEqCheck(StringPath select, String condition ) {
-        return hasText(condition) ? select.eq(condition) : null;
+    public static BooleanExpression stringContainsCheck(StringPath select, String condition ) {
+        return hasText(condition) ? select.contains(condition) : select.isNull();
     }
 
     public static OrderSpecifier<?> getBookSortType(BookSortType sortType) {
@@ -60,4 +60,6 @@ public class QuerydslUtils {
         }
         return book.star.avgStar.desc();
     }
+
+
 }
