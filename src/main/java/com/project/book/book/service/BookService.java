@@ -38,7 +38,7 @@ public class BookService {
 
         Book newBook = bookRepository.save(tempbook);
 
-        findRegisterBookForUpdate(member, newBook, request.getReview());
+        saveRegisterBook(member, newBook, request.getReview());
         getWishBookCount(request.getItem().getIsbn(), newBook);
 
         return newBook;
@@ -49,13 +49,13 @@ public class BookService {
     public Book saveBook(final RegisterByHomeListDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
-        findRegisterBookForUpdate(member, savedBook, request.getReview());
+        saveRegisterBook(member, savedBook, request.getReview());
         calculateAvgStar(savedBook);
 
         return savedBook;
     }
 
-    public void findRegisterBookForUpdate(final Member member, final Book book, final BookReviewDto reviewDto) {
+    public void saveRegisterBook(final Member member, final Book book, final BookReviewDto reviewDto) {
         RegisterBook registerbook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
 
         // 등록된 읽은 시기에 대해 재요청
