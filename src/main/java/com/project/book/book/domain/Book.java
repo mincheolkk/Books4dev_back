@@ -2,12 +2,14 @@ package com.project.book.book.domain;
 
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@DynamicUpdate
 @Getter
 @Entity
 @AllArgsConstructor
