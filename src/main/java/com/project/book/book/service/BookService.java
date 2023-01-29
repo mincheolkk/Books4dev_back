@@ -33,7 +33,7 @@ public class BookService {
 
         Book tempbook = request.toBook(request.getItem());
         tempbook.plusRegisterCount(1);
-        tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
+        tempbook.calculateRecommendTime(request.getReview().getRecommendTime(), 1);
         tempbook.calculateAvgStar(request.getReview().getStar());
 
         Book newBook = bookRepository.save(tempbook);
@@ -50,7 +50,6 @@ public class BookService {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
         findRegisterBookForUpdate(member, savedBook, request.getReview());
-        starCountRecommend(savedBook, request.getReview());
         calculateAvgStar(savedBook);
 
         return savedBook;
@@ -59,29 +58,25 @@ public class BookService {
     public void findRegisterBookForUpdate(final Member member, final Book book, final BookReviewDto reviewDto) {
         RegisterBook registerbook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
 
+        // 등록된 읽은 시기에 대해 재요청
         if (registerbook != null) {
+            // 기존 추천시기 -1
+            book.calculateRecommendTime(registerbook.getRecommendBookTime(), -1);
+            // 새로운 추천시기 +1
+            book.calculateRecommendTime(reviewDto.getRecommendTime(), 1);
             registerbook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
             registerBookRepository.save(registerbook);
-            return;
         }
         if (registerbook == null) {
             RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
+            book.calculateRecommendTime(registerBook.getRecommendBookTime(), 1);
+            book.plusRegisterCount(1);
             registerBookRepository.save(registerBook);
-            return;
         }
+        return;
     }
 
-    public void starCountRecommend(Book book, BookReviewDto request) {
-        List<RecommendCountDto> byRecommendCount = registerBookRepository.findRecommendCount(book);
-        long registerCount = 0;
-        book.zeroRecommendTime();
-        for (RecommendCountDto dto : byRecommendCount) {
-            book.plusRecommendTime(dto.getBookTime(), dto.getCount());
-            registerCount += dto.getCount();
-        }
-        book.plusRegisterCount(registerCount);
-    }
-
+    // RegisterBook 의 평점 값을 Book 으로
     public void calculateAvgStar(Book book) {
         Double avgStar = registerBookRepository.findAvgStar(book);
         book.calculateAvgStar(avgStar);
@@ -166,8 +161,6 @@ public class BookService {
         long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
         savedBook.getWishCount((int) wishBookCount);
     }
-
-
 
     public List<AllBookResponseDto> findBookBySearch(final String text) {
         return bookRepository.findBookBySearch(text);

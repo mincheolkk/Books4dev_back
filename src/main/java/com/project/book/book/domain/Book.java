@@ -78,12 +78,8 @@ public class Book extends BaseEntity {
         this.star.calculateAvgStar(star);
     }
 
-    public void plusRecommendTime(final BookTime time, final long count) {
-        recommendTime.plusRecommendTime(time, (int) count);
-    }
-
-    public void zeroRecommendTime() {
-        recommendTime.makeZero();
+    public void calculateRecommendTime(final BookTime recommendTime, final int count) {
+        this.recommendTime.calculateRecommendTime(recommendTime, count);
     }
 
     @Builder
