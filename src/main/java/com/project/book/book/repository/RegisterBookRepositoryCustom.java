@@ -12,13 +12,10 @@ import java.util.Map;
 
 public interface RegisterBookRepositoryCustom {
 
-    Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(Member member);
+    Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(final Member member);
 
-    RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime);
+    RegisterBook findByMemberAndBookAndReadTime(final Member member, final Book savedBook, final BookTime readTime);
 
-
-    List<RecommendCountDto> findRecommendCount(Book book);
-
-    Double findAvgStar(Book book);
+    Double findAvgStar(final Book book);
 
 }

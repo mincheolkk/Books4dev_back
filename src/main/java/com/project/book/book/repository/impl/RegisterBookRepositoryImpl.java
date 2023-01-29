@@ -1,4 +1,4 @@
-package com.project.book.book.repository.service;
+package com.project.book.book.repository.impl;
 
 import com.project.book.book.domain.*;
 import com.project.book.book.dto.response.QReadBookResponseDto;
@@ -29,7 +29,7 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(Member member) {
+    public Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(final Member member) {
         List<Tuple> tupleList = queryFactory.select(
                         registerBook.readBookTime,  new QReadBookResponseDto(
                                 book.title, book.isbn, book.thumbnail, registerBook.star
@@ -52,7 +52,8 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
         );
     }
 
-    public RegisterBook findByMemberAndBookAndReadTime(Member member, Book savedBook, BookTime readTime) {
+    @Override
+    public RegisterBook findByMemberAndBookAndReadTime(final Member member, final Book savedBook, final BookTime readTime) {
         RegisterBook findedBook = queryFactory.selectFrom(registerBook)
                 .where(
                         registerBook.member.eq(member),
@@ -63,19 +64,9 @@ public class RegisterBookRepositoryImpl implements RegisterBookRepositoryCustom 
         return findedBook;
     }
 
-    @Override
-    public List<RecommendCountDto> findRecommendCount(Book book) {
-        return queryFactory.select(new QRecommendCountDto(
-                        registerBook.recommendBookTime,
-                        registerBook.recommendBookTime.count()
-                )).from(registerBook)
-                .where(registerBook.book.eq(book))
-                .groupBy(registerBook.recommendBookTime)
-                .fetch();
-    }
 
     @Override
-    public Double findAvgStar(Book book) {
+    public Double findAvgStar(final Book book) {
         return queryFactory.select(
                         registerBook.star.avg())
                 .from(registerBook)
