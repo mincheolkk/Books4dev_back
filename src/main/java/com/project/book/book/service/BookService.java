@@ -27,30 +27,32 @@ public class BookService {
     private final WishBookRepository wishBookRepository;
     private final WishMemberRepository wishMemberRepository;
 
+    // Book 엔티티 처음 등록할 때
     @Transactional
-    public Book registerBySearch(final RegisterBySearchDto request, final Member member) {
+    public Book firstSaveBook(final RegisterBySearchDto request, final Member member) {
 
-        String isbn = request.getItem().getIsbn();
+        Book tempbook = request.toBook(request.getItem());
+        tempbook.plusRegisterCount(1);
+        tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
+        tempbook.calculateAvgStar(request.getReview().getStar());
+
+        Book newBook = bookRepository.save(tempbook);
+
+        findRegisterBookForUpdate(member, newBook, request.getReview());
+        getWishBookCount(request.getItem().getIsbn(), newBook);
+
+        return newBook;
+    }
+
+    // 책 등록 (처음 등록 제외)
+    @Transactional
+    public Book saveBook(final RegisterByHomeListDto request, final Member member) {
+        String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
+        findRegisterBookForUpdate(member, savedBook, request.getReview());
+        starCountRecommend(savedBook, request.getReview());
+        calculateAvgStar(savedBook);
 
-        if (savedBook == null) {
-            Book tempbook = request.toBook(request.getItem());
-            tempbook.plusRegisterCount(1);
-            tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
-            tempbook.calculateAvgStar(request.getReview().getStar());
-
-            Book newBook = bookRepository.save(tempbook);
-
-            findRegisterBookForUpdate(member, newBook, request.getReview());
-            findWishBookCount(isbn);
-
-            return newBook;
-        }
-        if (savedBook != null) {
-            findRegisterBookForUpdate(member, savedBook, request.getReview());
-            starCountRecommend(savedBook, request.getReview());
-            findWishBookCount(isbn);
-        }
         return savedBook;
     }
 
@@ -69,17 +71,6 @@ public class BookService {
         }
     }
 
-    @Transactional
-    public Book registerByHomeList(final RegisterByHomeListDto request, final Member member) {
-        String isbn = request.getIsbn();
-        Book savedBook = bookRepository.findByIsbn(isbn);
-        findWishBookCount(isbn);
-        findRegisterBookForUpdate(member, savedBook, request.getReview());
-        starCountRecommend(savedBook, request.getReview());
-
-        return savedBook;
-    }
-
     public void starCountRecommend(Book book, BookReviewDto request) {
         List<RecommendCountDto> byRecommendCount = registerBookRepository.findRecommendCount(book);
         long registerCount = 0;
@@ -89,10 +80,14 @@ public class BookService {
             registerCount += dto.getCount();
         }
         book.plusRegisterCount(registerCount);
+    }
+
+    public void calculateAvgStar(Book book) {
         Double avgStar = registerBookRepository.findAvgStar(book);
         book.calculateAvgStar(avgStar);
-
     }
+
+
     public void findRegistCountnRecommendCount() {
 
     }
@@ -111,26 +106,33 @@ public class BookService {
     public ResponseEntity saveWishBook(final WishBookRequestDto request, final Member member) {
         String isbn = request.getIsbn();
         WishBook wishBook = wishBookRepository.findByIsbn(isbn);
+        Book savedBook = bookRepository.findByIsbn(isbn);
 
 
         if (wishBook == null) {
             WishBook wish = request.toEntity();
-
             wishBookRepository.save(wish);
 
-           saveWishMember(member, wish);
-           findWishBookCount(isbn);
+            saveWishMember(member, wish);
+            if (savedBook != null) {
+                savedBook.plusWishCount();
+            }
+
            return new ResponseEntity(HttpStatus.ACCEPTED);
         }
-        boolean flag = wishMemberRepository.findByWishBook(wishBook, member);
-        if (flag) {
+
+        // 요청하는 유저가 해당 책으로 이미 관심있는 책을 등록했을때
+        if (wishMemberRepository.findByWishBook(wishBook, member)) {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
         saveWishMember(member, wishBook);
-        findWishBookCount(isbn);
+        if (savedBook != null) {
+            savedBook.plusWishCount();
+        }
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
+
 
     public void saveWishMember(final Member member, final WishBook wishBook) {
         WishMember wishMember = WishMember.builder()
@@ -160,16 +162,12 @@ public class BookService {
         return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
-    public void findWishBookCount(final String isbn) {
-        Book savedBook = bookRepository.findByIsbn(isbn);
-        if (savedBook == null) {
-            return;
-        }
-
+    public void getWishBookCount(final String isbn, final Book savedBook) {
         long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
-
-        savedBook.plusWishCount((int) wishBookCount);
+        savedBook.getWishCount((int) wishBookCount);
     }
+
+
 
     public List<AllBookResponseDto> findBookBySearch(final String text) {
         return bookRepository.findBookBySearch(text);
