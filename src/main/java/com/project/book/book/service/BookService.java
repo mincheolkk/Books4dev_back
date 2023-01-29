@@ -28,7 +28,7 @@ public class BookService {
     private final WishMemberRepository wishMemberRepository;
 
     @Transactional
-    public Book registerBySearch(RegisterBySearchDto request, Member member) {
+    public Book registerBySearch(final RegisterBySearchDto request, final Member member) {
 
         String isbn = request.getItem().getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
@@ -54,15 +54,15 @@ public class BookService {
         return savedBook;
     }
 
-    public void findRegisterBookForUpdate(Member member, Book book, BookReviewDto reviewDto) {
-        RegisterBook findedBook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
+    public void findRegisterBookForUpdate(final Member member, final Book book, final BookReviewDto reviewDto) {
+        RegisterBook registerbook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
 
-        if (findedBook != null) {
-            findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
-            registerBookRepository.save(findedBook);
+        if (registerbook != null) {
+            registerbook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
+            registerBookRepository.save(registerbook);
             return;
         }
-        if (findedBook == null) {
+        if (registerbook == null) {
             RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
             registerBookRepository.save(registerBook);
             return;
@@ -70,7 +70,7 @@ public class BookService {
     }
 
     @Transactional
-    public Book registerByHomeList(RegisterByHomeListDto request, Member member) {
+    public Book registerByHomeList(final RegisterByHomeListDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
         findWishBookCount(isbn);
@@ -97,7 +97,7 @@ public class BookService {
 
     }
 
-    private static RegisterBook requestRegisterBook(Book book, BookReviewDto request, Member member) {
+    private static RegisterBook requestRegisterBook(final Book book, final BookReviewDto request, final Member member) {
         return RegisterBook.builder()
                 .book(book)
                 .readBookTime(request.getReadTime())
@@ -108,17 +108,14 @@ public class BookService {
     }
 
     @Transactional
-    public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
+    public ResponseEntity saveWishBook(final WishBookRequestDto request, final Member member) {
         String isbn = request.getIsbn();
         WishBook wishBook = wishBookRepository.findByIsbn(isbn);
 
 
         if (wishBook == null) {
-            WishBook wish = WishBook.builder()
-                    .isbn(isbn)
-                    .title(request.getTitle())
-                    .thumbnail(request.getThumbnail())
-                    .build();
+            WishBook wish = request.toEntity();
+
             wishBookRepository.save(wish);
 
            saveWishMember(member, wish);
@@ -135,7 +132,7 @@ public class BookService {
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    public void saveWishMember(Member member, WishBook wishBook) {
+    public void saveWishMember(final Member member, final WishBook wishBook) {
         WishMember wishMember = WishMember.builder()
                 .wishBook(wishBook)
                 .member(member)
@@ -143,7 +140,7 @@ public class BookService {
         wishMemberRepository.save(wishMember);
     }
 
-    public ResponseEntity<?> getAllBook(AllBookFilterDto condition, Pageable pageRequest) {
+    public ResponseEntity<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
         if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {
             condition.setMemberType(null);
         }
@@ -153,17 +150,17 @@ public class BookService {
         return new ResponseEntity<>(bookRepository.getAllBooks(condition, pageRequest), HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> getAllWishBook(Member member) {
-        List<WishBookResponseDto> allWishBook = wishMemberRepository.getAllWishBook(member);
-        return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> getMyWishBook(final Member member) {
+        List<WishBookResponseDto> wishBook = wishMemberRepository.getAllWishBook(member);
+        return new ResponseEntity<>(wishBook, HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> getReadBook(Member member) {
+    public ResponseEntity<?> getMyReadBook(final Member member) {
         Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = registerBookRepository.getMyReadBook(member);
         return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
-    public void findWishBookCount(String isbn) {
+    public void findWishBookCount(final String isbn) {
         Book savedBook = bookRepository.findByIsbn(isbn);
         if (savedBook == null) {
             return;
@@ -174,14 +171,12 @@ public class BookService {
         savedBook.plusWishCount((int) wishBookCount);
     }
 
-    public  List<AllBookResponseDto> findRegisteredBook(String title) {
-        return bookRepository.findByTitle(title);
+    public List<AllBookResponseDto> findBookBySearch(final String text) {
+        return bookRepository.findBookBySearch(text);
     }
 
-    public BookResponseDto getDetailBook(Long id) {
+    public BookResponseDto getDetailBook(final Long id) {
         Optional<Book> book = bookRepository.findById(id);
         return BookResponseDto.from(book.get());
     }
-
-
 }

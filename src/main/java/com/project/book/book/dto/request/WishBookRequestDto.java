@@ -1,5 +1,6 @@
 package com.project.book.book.dto.request;
 
+import com.project.book.book.domain.WishBook;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ public class WishBookRequestDto {
     private String title;
     private String thumbnail;
 
-    public static WishBookRequestDto create(String isbn, String title, String thumbnail) {
-        return new WishBookRequestDto(isbn, title, thumbnail);
+    public WishBook toEntity() {
+        return new WishBook(isbn, title, thumbnail);
     }
 }
