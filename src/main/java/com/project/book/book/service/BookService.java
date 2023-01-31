@@ -29,24 +29,31 @@ public class BookService {
 
     // Book 엔티티 처음 등록할 때
     @Transactional
-    public Book firstSaveBook(final RegisterBySearchDto request, final Member member) {
+    public Book firstSaveBook(final FirstSaveBookDto request, final Member member) {
+
+        // 검색 화면에서 두 번 이상 등록할 때, 등록은 됐지만 검색어 불일치 때문에 안 나올때
+        String isbn = request.getItem().getIsbn();
+        Book savedBook = bookRepository.findByIsbn(isbn);
+        if (savedBook != null) {
+            saveRegisterBook(member, savedBook, request.getReview());
+            calculateAvgStar(savedBook);
+            return savedBook;
+        }
 
         Book tempbook = request.toBook(request.getItem());
-        tempbook.plusRegisterCount(1);
-        tempbook.calculateRecommendTime(request.getReview().getRecommendTime(), 1);
         tempbook.calculateAvgStar(request.getReview().getStar());
 
         Book newBook = bookRepository.save(tempbook);
 
         saveRegisterBook(member, newBook, request.getReview());
-        getWishBookCount(request.getItem().getIsbn(), newBook);
+        getWishBookCount(isbn, newBook);
 
         return newBook;
     }
 
     // 책 등록 (처음 등록 제외)
     @Transactional
-    public Book saveBook(final RegisterByHomeListDto request, final Member member) {
+    public Book saveBook(final SaveBookDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
         saveRegisterBook(member, savedBook, request.getReview());
@@ -56,6 +63,7 @@ public class BookService {
     }
 
     public void saveRegisterBook(final Member member, final Book book, final BookReviewDto reviewDto) {
+        // 유저, 책, 읽은 시기가 같은 걸 조회
         RegisterBook registerbook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
 
         // 등록된 읽은 시기에 대해 재요청
@@ -68,7 +76,7 @@ public class BookService {
             registerBookRepository.save(registerbook);
         }
         if (registerbook == null) {
-            RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
+            RegisterBook registerBook = toRegisterBook(book, reviewDto, member);
             book.calculateRecommendTime(registerBook.getRecommendBookTime(), 1);
             book.plusRegisterCount(1);
             registerBookRepository.save(registerBook);
@@ -82,12 +90,7 @@ public class BookService {
         book.calculateAvgStar(avgStar);
     }
 
-
-    public void findRegistCountnRecommendCount() {
-
-    }
-
-    private static RegisterBook requestRegisterBook(final Book book, final BookReviewDto request, final Member member) {
+    private static RegisterBook toRegisterBook(final Book book, final BookReviewDto request, final Member member) {
         return RegisterBook.builder()
                 .book(book)
                 .readBookTime(request.getReadTime())
@@ -102,7 +105,6 @@ public class BookService {
         String isbn = request.getIsbn();
         WishBook wishBook = wishBookRepository.findByIsbn(isbn);
         Book savedBook = bookRepository.findByIsbn(isbn);
-
 
         if (wishBook == null) {
             WishBook wish = request.toEntity();
@@ -127,7 +129,6 @@ public class BookService {
         }
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
-
 
     public void saveWishMember(final Member member, final WishBook wishBook) {
         WishMember wishMember = WishMember.builder()
