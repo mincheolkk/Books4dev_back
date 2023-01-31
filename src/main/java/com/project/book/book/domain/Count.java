@@ -22,7 +22,7 @@ public class Count {
     }
 
     public void plusRegisterCount(final int count) {
-        this.registerCount = count;
+        this.registerCount += count;
     }
 
     public void plusWishCount() {
