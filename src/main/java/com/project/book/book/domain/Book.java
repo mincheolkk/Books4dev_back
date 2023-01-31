@@ -21,7 +21,7 @@ public class Book extends BaseEntity {
     @Column(name = "book_id")
     private Long id;
 
-    @Column(name = "book_isbn")
+    @Column(name = "book_isbn", unique = true)
     private String isbn;
 
     @Column(name = "book_title")
@@ -33,7 +33,7 @@ public class Book extends BaseEntity {
     @Column(name = "book_dateTime")
     private LocalDateTime releaseDate;
 
-    @Column(name = "book_price")
+    @Column(name = "book_price" )
     private Long price;
 
     @Column(name = "book_thumbnail")
