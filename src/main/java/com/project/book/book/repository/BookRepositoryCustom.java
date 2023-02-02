@@ -13,12 +13,8 @@ import java.util.Map;
 
 public interface BookRepositoryCustom {
 
-    Book findByIsbn(String isbn);
+    List<AllBookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageable);
 
-//    Map<String, Object> getDetailBook(Book book) throws JsonProcessingException;
-
-    List<AllBookResponseDto> getAllBooks(AllBookFilterDto condition, Pageable pageable);
-
-    List<AllBookResponseDto> findByTitle(String title);
+    List<AllBookResponseDto> findBookBySearch(final String text);
 
 }
