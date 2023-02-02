@@ -4,16 +4,18 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.project.book.book.dto.request.BookReviewDto;
 import com.project.book.common.domain.BaseEntity;
 import com.project.book.member.domain.Member;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 
-
+@DynamicUpdate
 @Getter
 @Entity
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
@@ -51,7 +53,17 @@ public class RegisterBook extends BaseEntity {
         this.star = (double) star;
     }
 
-    public void updateRegisterBook(Integer star, BookTime recommendBookTime) {
+    public static RegisterBook toRegisterBook(final Book book, final BookReviewDto request, final Member member) {
+        return RegisterBook.builder()
+                .book(book)
+                .readBookTime(request.getReadTime())
+                .recommendBookTime(request.getRecommendTime())
+                .star(request.getStar())
+                .member(member)
+                .build();
+    }
+
+    public void updateRegisterBook(final Integer star, final BookTime recommendBookTime) {
         this.star = (double) star;
         this.recommendBookTime = recommendBookTime;
     }
