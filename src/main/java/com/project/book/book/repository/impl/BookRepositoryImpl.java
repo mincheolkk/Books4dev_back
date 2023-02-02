@@ -1,21 +1,22 @@
-package com.project.book.book.repository.service;
+package com.project.book.book.repository.impl;
 
-import com.project.book.book.domain.Book;
-import com.project.book.book.domain.QBook;
 import com.project.book.book.dto.request.AllBookFilterDto;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepositoryCustom;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
 import static com.project.book.book.domain.QBook.*;
 import static com.project.book.book.domain.QRegisterBook.registerBook;
 import static com.project.book.common.utils.QuerydslUtils.*;
+import static com.project.book.member.domain.QMember.member;
 
 @Repository
 @RequiredArgsConstructor
@@ -24,22 +25,14 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Book findByIsbn(String isbn) {
-
-        Book book = queryFactory.selectFrom(QBook.book).where(QBook.book.isbn.eq(isbn)).fetchOne();
-
-        return book;
-    }
-
-    @Override
-    public List<AllBookResponseDto> getAllBooks(AllBookFilterDto condition, Pageable pageRequest) {
-
+    public List<AllBookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageRequest) {
         return queryFactory.select(new QAllBookResponseDto(
-                        book.id, book.title, book.authors, book.publisher, book.thumbnail,
-                        book.isbn, book.price, book.star.avgStar, book.count.registerCount,
-                        book.recommendTime, book.count.wishCount))
+                        book.id, book.title, book.authors, book.thumbnail,
+                        book.isbn, book.star.avgStar,
+                        book.count.registerCount, book.count.wishCount, book.recommendTime))
                 .from(book)
                 .join(book.registerBooks, registerBook)
+                .join(registerBook.member, member)
                 .where(
                         enumEqCheck(registerBook.member.type, condition.getMemberType()),
                         enumEqCheck(registerBook.recommendBookTime, condition.getRecommendType())
@@ -54,18 +47,33 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 .fetch();
     }
 
-    public List<AllBookResponseDto> findByTitle(String title) {
+    @Override
+    public List<AllBookResponseDto> findBookBySearch(final String text) {
         return queryFactory.select(new QAllBookResponseDto(
-                        book.id, book.title, book.authors, book.publisher, book.thumbnail,
-                        book.isbn, book.price, book.star.avgStar, book.count.registerCount,
-                        book.recommendTime, book.count.wishCount))
+                        book.id, book.title, book.authors, book.thumbnail,
+                        book.isbn, book.star.avgStar,
+                        book.count.registerCount, book.count.wishCount, book.recommendTime))
                 .from(book)
-                .join(book.registerBooks, registerBook)
                 .where(
-                        book.title.contains(title)
+                        bookSearchBooleanBuilder(text)
                 )
                 .distinct()
                 .fetch();
     }
-}
 
+    private BooleanBuilder bookSearchBooleanBuilder(final String text) {
+        BooleanBuilder conditionBuilder = new BooleanBuilder();
+
+        if (StringUtils.hasText(text)) {
+                conditionBuilder.and(
+                    stringContainsCheck(book.title, text)
+                            .or(stringContainsCheck(book.contents, text))
+                            .or(stringContainsCheck(book.authors, text))
+                            .or(stringContainsCheck(book.translators, text))
+                            .or(stringContainsCheck(book.publisher, text))
+            );
+        }
+
+        return conditionBuilder;
+    }
+}
