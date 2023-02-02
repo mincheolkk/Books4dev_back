@@ -13,11 +13,13 @@ public class BookReviewDto {
     private BookTime readTime;
     private BookTime recommendTime;
     private Integer star;
+    private String searchKeyWord;
 
     @Builder
-    public BookReviewDto(BookTime readTime, BookTime recommendTime, Integer star) {
+    public BookReviewDto(BookTime readTime, BookTime recommendTime, Integer star, String searchKeyWord) {
         this.readTime = readTime;
         this.recommendTime = recommendTime;
         this.star = star;
+        this.searchKeyWord = searchKeyWord;
     }
 }
