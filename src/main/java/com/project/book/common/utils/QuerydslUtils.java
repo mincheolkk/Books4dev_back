@@ -2,7 +2,6 @@ package com.project.book.common.utils;
 
 import com.project.book.book.domain.BookSortType;
 import com.project.book.book.domain.BookTime;
-import com.project.book.book.domain.QBook;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.EnumPath;
@@ -31,23 +30,13 @@ public class QuerydslUtils {
     }
 
     public static OrderSpecifier<?> getBookSortType(BookSortType sortType) {
-        if (sortType == null) {
-            return book.count.registerCount.desc();
-        } else if (sortType == COUNT) {
-            return book.count.registerCount.desc();
-        } else if (sortType == STAR) {
-            return book.star.avgStar.desc();
-        } else if (sortType == WISH) {
-            return book.count.wishCount.desc();
-        }
-        return book.count.registerCount.desc();
+        return fromBookSortType(sortType).getOrderSpecifier();
+
+
     }
 
     public static OrderSpecifier<?> getBookSortByTime(BookTime sortType) {
-
-        if (sortType == null) {
-            return book.star.avgStar.desc();
-        } else if (sortType == before) {
+        if (sortType == before) {
             return book.recommendTime.beforeCount.desc();
         } else if (sortType == after) {
             return book.recommendTime.afterCount.desc();
