@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Member findByoAuth(String oAuth);
+    Member findByoAuth(final String oAuth);
 
-    boolean existsByoAuth(String oAuth);
+    boolean existsByoAuth(final String oAuth);
 }

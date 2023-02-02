@@ -15,7 +15,7 @@ public class MemberResponse {
     private Long id;
     private MemberType memberType;
 
-    public static MemberResponse from(Member member) {
+    public static MemberResponse from(final Member member) {
         return MemberResponse.builder()
                 .id(member.getId())
                 .memberType(member.getType())

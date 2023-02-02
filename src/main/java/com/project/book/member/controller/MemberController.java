@@ -17,18 +17,17 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> getMember(@LoginMember Member member) {
+    public ResponseEntity<MemberResponse> getMember(@LoginMember final Member member) {
         return ResponseEntity.ok(MemberResponse.from(member));
     }
 
     @GetMapping(value = "/checkPosition")
-    public ResponseEntity<?> checkPosition(@LoginMember Member member) {
+    public ResponseEntity<?> checkPosition(@LoginMember final Member member) {
         return memberService.checkPosition(member);
     }
 
     @PostMapping("/selectPosition")
-    public ResponseEntity<?> selectPosition(@LoginMember Member member, @RequestBody PositionResponseDto request) {
-        System.out.println("request.getPosition = " + request.getPosition());
+    public ResponseEntity<?> selectPosition(@LoginMember final Member member, @RequestBody final PositionResponseDto request) {
         return memberService.addPosition(member, request.getPosition());
     }
 }

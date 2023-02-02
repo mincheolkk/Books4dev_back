@@ -6,6 +6,6 @@ import com.project.book.member.domain.Member;
 import java.util.Optional;
 
 public interface WishBookRepositoryCustom  {
-    WishBook findByIsbn(String isbn);
+    WishBook findByIsbn(final String isbn);
 
 }

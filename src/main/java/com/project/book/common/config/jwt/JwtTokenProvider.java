@@ -18,14 +18,14 @@ public class JwtTokenProvider {
     public static long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;
     public static long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
 
-    public Token createToken(String payload, long time) {
+    public Token createToken(final String payload, final long time) {
         Claims claims = Jwts.claims().setSubject(payload);
         String value = createTokenValue(claims, time);
 
         return new Token(value, time);
     }
 
-    public String createTokenValue(Claims claims, long time) {
+    public String createTokenValue(final Claims claims, final long time) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + time);
 
@@ -45,14 +45,14 @@ public class JwtTokenProvider {
 //                .getBody()
 //                .getSubject();
 //    }
-    public Claims getPayload(String token) {
+    public Claims getPayload(final String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(final String token) {
         try {
             Jws<Claims> claims = Jwts.parser()
                     .setSigningKey(secretKey)

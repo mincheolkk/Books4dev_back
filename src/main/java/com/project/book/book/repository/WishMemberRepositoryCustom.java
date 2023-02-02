@@ -9,10 +9,10 @@ import java.util.List;
 
 public interface WishMemberRepositoryCustom {
 
-    boolean findByWishBook(WishBook wishBook, Member member);
+    boolean findByWishBook(final WishBook wishBook, final Member member);
 
-    List<WishBookResponseDto> getAllWishBook(Member member);
+    List<WishBookResponseDto> getAllWishBook(final Member member);
 
-    long findWishBookCount(String isbn);
+    long findWishBookCount(final String isbn);
 
 }

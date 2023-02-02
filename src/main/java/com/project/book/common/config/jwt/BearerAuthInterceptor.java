@@ -1,6 +1,7 @@
 package com.project.book.common.config.jwt;
 
 import com.project.book.common.exception.InvalidAccessTokenException;
+import com.project.book.common.utils.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,11 +20,10 @@ public class BearerAuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle (
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler
+            final HttpServletRequest request,
+            final HttpServletResponse response,
+            final Object handler
     ) {
-        System.out.println("in preHandle");
 
         String token = authExtractor.extract(request);
         if (redisUtil.getBlackListData(token) != null) {

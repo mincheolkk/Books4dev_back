@@ -1,17 +1,13 @@
 package com.project.book.member.domain;
 
 import com.project.book.book.domain.RegisterBook;
-import com.project.book.book.domain.WishBook;
 import com.project.book.book.domain.WishMember;
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -27,7 +23,6 @@ public class Member extends BaseEntity {
 
     private String kakaoId;
 
-//    @NotEmpty
     @Column(name = "member_nickname")
     private String nickname;
 
@@ -35,8 +30,6 @@ public class Member extends BaseEntity {
     private String oAuth;
 
     @Email
-//    @NotEmpty
-//    @Column(nullable = false)
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -51,7 +44,7 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member")
     private Set<WishMember> WishBooks = new HashSet<>();
 
-    public void updateMemberPosition(MemberType position) {
+    public void updateMemberPosition(final MemberType position) {
         this.type = position;
     }
 }

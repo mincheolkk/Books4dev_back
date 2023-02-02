@@ -23,14 +23,14 @@ public class AuthController {
 
 
     @PostMapping(value = "/update/token")
-    public ResponseEntity<?> updateAccessToken(@LoginMember Member member, @RequestBody TokenRequest tokenRequest) {
+    public ResponseEntity<?> updateAccessToken(@LoginMember final Member member, @RequestBody final TokenRequest tokenRequest) {
         String newAccessToken = authService.updateAccessToken(tokenRequest, member);
 
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 
     @GetMapping(value = "/out")
-    public ResponseEntity<?> logOut(@LoginMember Member member, HttpServletRequest request) {
+    public ResponseEntity<?> logOut(final HttpServletRequest request) {
         authService.logOut(request);
 
         return ResponseEntity.noContent().build();
@@ -38,11 +38,8 @@ public class AuthController {
 
 
     @GetMapping(value = "/test/token")
-    public ResponseEntity<?> kk(@LoginMember Member member) {
+    public ResponseEntity<?> kk(@LoginMember final Member member) {
         ResponseEntity refresh = authService.getRefresh(member);
-        System.out.println("member = " + member.getId());
-        System.out.println("refresh = " + refresh);
         return ResponseEntity.ok(refresh.getBody());
-
     }
 }
