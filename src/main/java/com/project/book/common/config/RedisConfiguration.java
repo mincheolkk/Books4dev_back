@@ -43,6 +43,13 @@ public class RedisConfiguration {
     }
 
     @Bean
+    public RedisConnectionFactory rateLimiterConnectionFactory() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+        config.setDatabase(3);
+        return new LettuceConnectionFactory(config);
+    }
+
+    @Bean
     @Qualifier("redisTemplateBean")
     public StringRedisTemplate redisTemplate(){
         StringRedisTemplate redisTemplate = new StringRedisTemplate(loginConnectionFactory());
@@ -65,4 +72,16 @@ public class RedisConfiguration {
         redisTemplate.setConnectionFactory(keywordConnectionFactory());
         return redisTemplate;
     }
+
+    @Bean
+    @Qualifier("rateLimiterRedisTemplateBean")
+    public RedisTemplate<String, Integer> rateLimiterRedisTemplate() {
+        RedisTemplate<String, Integer> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericToStringSerializer<>(Integer.class));
+        redisTemplate.setConnectionFactory(rateLimiterConnectionFactory());
+        return redisTemplate;
+    }
+
+
 }
