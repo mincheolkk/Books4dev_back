@@ -1,11 +1,10 @@
 package com.project.book.common.config.aop;
 
+import com.project.book.common.exception.TooManyRequestException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -30,8 +29,9 @@ public class RateLimitAspect {
         HttpServletRequest request = attributes.getRequest();
         String identifier = request.getRemoteAddr();
         String methodName = joinPoint.getSignature().getName();
+
         if (!rateLimiter.isOneMethodAllowed(identifier, methodName, 1, 5) || !rateLimiter.isAllMethodAllowed(identifier,5,20)) {
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body("Too many requests");
+            throw new TooManyRequestException();
         }
         return joinPoint.proceed();
     }
