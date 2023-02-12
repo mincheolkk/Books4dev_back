@@ -65,8 +65,8 @@ public class Book extends BaseEntity {
     }
 
     // 관심 수 연동
-    public void getWishCount(final int count) {
-        this.count.getWishCount(count);
+    public void fetchWishCount(final int count) {
+        this.count.fetchWishCount(count);
     }
 
     // 괌심 수 +1

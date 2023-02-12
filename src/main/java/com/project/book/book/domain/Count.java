@@ -29,7 +29,7 @@ public class Count {
         this.wishCount += 1;
     }
 
-    public void getWishCount(final int count) {
+    public void fetchWishCount(final int count) {
         this.wishCount = count;
     }
 
