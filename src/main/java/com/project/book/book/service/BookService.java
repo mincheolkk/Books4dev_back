@@ -7,6 +7,7 @@ import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
 import com.project.book.book.repository.WishBookRepository;
 import com.project.book.book.repository.WishMemberRepository;
+import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.project.book.book.domain.RegisterBook.toRegisterBook;
+
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -26,12 +29,15 @@ public class BookService {
     private final RegisterBookRepository registerBookRepository;
     private final WishBookRepository wishBookRepository;
     private final WishMemberRepository wishMemberRepository;
+    private final RedisUtil redisUtil;
 
-    // Book 엔티티 처음 등록할 때
+    // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
     @Transactional
-    public Book firstSaveBook(final FirstSaveBookDto request, final Member member) {
+    public Book saveFromKakao(final SaveBookFromKakaoDto request, final Member member) {
 
-        // 검색 화면에서 두 번 이상 등록할 때, 등록은 됐지만 검색어 불일치 때문에 안 나올때
+        // 검색 화면에서 두 번 이상 등록할 때
+        // 검색어 불일치 때문에 검색 리스트에 등록된 책이 안 나올때
+
         String isbn = request.getItem().getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
         if (savedBook != null) {
@@ -47,17 +53,26 @@ public class BookService {
 
         saveRegisterBook(member, newBook, request.getReview());
         getWishBookCount(isbn, newBook);
-
+        saveKeyword(newBook.getId(), request.getReview().getSearchKeyword());
         return newBook;
+    }
+
+    public void saveKeyword(final Long id, String keyword) {
+        redisUtil.incrementKeywordScore(id, keyword);
     }
 
     // 책 등록 (처음 등록 제외)
     @Transactional
-    public Book saveBook(final SaveBookDto request, final Member member) {
+    public Book saveBookFromBooks4dev(final SaveBookDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
+
         saveRegisterBook(member, savedBook, request.getReview());
         calculateAvgStar(savedBook);
+
+        if (request.getReview().getSearchKeyword() != null) {
+            saveKeyword(savedBook.getId(), request.getReview().getSearchKeyword());
+        }
 
         return savedBook;
     }
@@ -90,15 +105,6 @@ public class BookService {
         book.calculateAvgStar(avgStar);
     }
 
-    private static RegisterBook toRegisterBook(final Book book, final BookReviewDto request, final Member member) {
-        return RegisterBook.builder()
-                .book(book)
-                .readBookTime(request.getReadTime())
-                .recommendBookTime(request.getRecommendTime())
-                .star(request.getStar())
-                .member(member)
-                .build();
-    }
 
     @Transactional
     public ResponseEntity saveWishBook(final WishBookRequestDto request, final Member member) {
@@ -107,13 +113,10 @@ public class BookService {
         Book savedBook = bookRepository.findByIsbn(isbn);
 
         if (wishBook == null) {
-            WishBook wish = request.toEntity();
+            WishBook wish = request.toWishBook();
             wishBookRepository.save(wish);
 
-            saveWishMember(member, wish);
-            if (savedBook != null) {
-                savedBook.plusWishCount();
-            }
+            saveWishMemberAndWishCount(member, wish, savedBook);
 
            return new ResponseEntity(HttpStatus.ACCEPTED);
         }
@@ -123,11 +126,16 @@ public class BookService {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
+        saveWishMemberAndWishCount(member, wishBook, savedBook);
+
+        return new ResponseEntity(HttpStatus.ACCEPTED);
+    }
+
+    private void saveWishMemberAndWishCount(final Member member, final WishBook wishBook, final Book savedBook) {
         saveWishMember(member, wishBook);
         if (savedBook != null) {
             savedBook.plusWishCount();
         }
-        return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
     public void saveWishMember(final Member member, final WishBook wishBook) {
@@ -160,7 +168,7 @@ public class BookService {
 
     public void getWishBookCount(final String isbn, final Book savedBook) {
         long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
-        savedBook.getWishCount((int) wishBookCount);
+        savedBook.fetchWishCount((int) wishBookCount);
     }
 
     public List<AllBookResponseDto> findBookBySearch(final String text) {
@@ -169,6 +177,12 @@ public class BookService {
 
     public BookResponseDto getDetailBook(final Long id) {
         Optional<Book> book = bookRepository.findById(id);
-        return BookResponseDto.from(book.get());
+        List<KeywordScoreResponseDto> topThree = redisUtil.getKeyword(id);
+        return BookResponseDto.from(book.get(), topThree);
+    }
+
+    public ResponseEntity<?> getPopularKeyword() {
+        List<KeywordScoreResponseDto> topThree = redisUtil.getTopThree();
+        return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);
     }
 }
