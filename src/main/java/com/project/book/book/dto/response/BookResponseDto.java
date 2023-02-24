@@ -1,14 +1,12 @@
 package com.project.book.book.dto.response;
 
-import com.project.book.book.domain.Book;
-import com.project.book.book.domain.Count;
-import com.project.book.book.domain.RecommendTime;
-import com.project.book.book.domain.Star;
+import com.project.book.book.domain.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -40,8 +38,10 @@ public class BookResponseDto {
 
     private RecommendTime recommendTime;
 
+    private List<KeywordScoreResponseDto> topKeywordList;
+
     @Builder
-    public BookResponseDto(Long id, String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents, Star star, Count count, RecommendTime recommendTime) {
+    public BookResponseDto(Long id, String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents, Star star, Count count, RecommendTime recommendTime, List<KeywordScoreResponseDto> topKeywordList) {
         this.id = id;
         this.isbn = isbn;
         this.title = title;
@@ -55,9 +55,10 @@ public class BookResponseDto {
         this.star = star;
         this.count = count;
         this.recommendTime = recommendTime;
+        this.topKeywordList = topKeywordList;
     }
 
-    public static BookResponseDto from(Book book) {
+    public static BookResponseDto from(final Book book, List<KeywordScoreResponseDto> topKeywordList) {
         return BookResponseDto.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -72,7 +73,7 @@ public class BookResponseDto {
                 .recommendTime(book.getRecommendTime())
                 .releaseDate(book.getReleaseDate())
                 .star(book.getStar())
+                .topKeywordList(topKeywordList)
                 .build();
-
     }
 }
