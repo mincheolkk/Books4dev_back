@@ -8,7 +8,7 @@ public class TokenResponse {
 
     private String accessToken;
 
-    public TokenResponse(String accessToken) {
+    public TokenResponse(final String accessToken) {
         this.accessToken = accessToken;
     }
 }
