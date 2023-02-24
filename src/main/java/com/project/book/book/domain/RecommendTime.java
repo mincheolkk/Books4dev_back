@@ -23,24 +23,23 @@ public class RecommendTime {
         return new RecommendTime(0, 0, 0, 0, 0);
     }
 
-    public void makeZero() {
-        this.beforeCount = 0;
-        this.afterCount = 0;
-        this.twoYearCount = 0;
-        this.fiveYearCount = 0;
-        this.tenYearCount = 0;
-    }
-    public void plusRecommendTime(BookTime time, int count) {
-        if (time == BookTime.before) {
-            this.beforeCount = count;
-        } else if (time == BookTime.after) {
-            this.afterCount = count;
-        } else if (time == BookTime.twoYear) {
-            this.twoYearCount = count;
-        } else if (time == BookTime.fiveYear) {
-            this.fiveYearCount = count;
-        } else if (time == BookTime.tenYear) {
-            this.tenYearCount = count;
+    public void calculateRecommendTime(final BookTime time, final int count) {
+        switch (time) {
+            case before:
+                this.beforeCount += count;
+                return;
+            case after:
+                this.afterCount += count;
+                return;
+            case twoYear:
+                this.twoYearCount += count;
+                return;
+            case fiveYear:
+                this.fiveYearCount += count;
+                return;
+            case tenYear:
+                this.tenYearCount += count;
+                return;
         }
     }
 }
