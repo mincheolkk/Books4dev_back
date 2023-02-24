@@ -5,7 +5,6 @@ import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.RegisterBookRepository;
-import com.project.book.book.repository.WishBookRepository;
 import com.project.book.book.repository.WishMemberRepository;
 import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.domain.Member;
@@ -27,7 +26,6 @@ public class BookService {
 
     private final BookRepository bookRepository;
     private final RegisterBookRepository registerBookRepository;
-    private final WishBookRepository wishBookRepository;
     private final WishMemberRepository wishMemberRepository;
     private final RedisUtil redisUtil;
 
@@ -43,6 +41,7 @@ public class BookService {
         if (savedBook != null) {
             saveRegisterBook(member, savedBook, request.getReview());
             calculateAvgStar(savedBook);
+            saveKeyword(savedBook.getId(), request.getReview().getSearchKeyword());
             return savedBook;
         }
 
@@ -52,7 +51,6 @@ public class BookService {
         Book newBook = bookRepository.save(tempbook);
 
         saveRegisterBook(member, newBook, request.getReview());
-        getWishBookCount(isbn, newBook);
         saveKeyword(newBook.getId(), request.getReview().getSearchKeyword());
         return newBook;
     }
@@ -105,46 +103,41 @@ public class BookService {
         book.calculateAvgStar(avgStar);
     }
 
-
     @Transactional
-    public ResponseEntity saveWishBook(final WishBookRequestDto request, final Member member) {
+    public ResponseEntity saveWishBook(final BookDataDto request, final Member member) {
         String isbn = request.getIsbn();
-        WishBook wishBook = wishBookRepository.findByIsbn(isbn);
         Book savedBook = bookRepository.findByIsbn(isbn);
 
-        if (wishBook == null) {
-            WishBook wish = request.toWishBook();
-            wishBookRepository.save(wish);
+        if (!request.validCheck()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
 
-            saveWishMemberAndWishCount(member, wish, savedBook);
-
-           return new ResponseEntity(HttpStatus.ACCEPTED);
+        if (savedBook == null) {
+            Book tempBook = request.toBook();
+            tempBook.plusWishCount();
+            Book newBook = bookRepository.save(tempBook);
+            saveWishMember(member, newBook);
+            return new ResponseEntity(HttpStatus.ACCEPTED);
         }
 
         // 요청하는 유저가 해당 책으로 이미 관심있는 책을 등록했을때
-        if (wishMemberRepository.findByWishBook(wishBook, member)) {
+        if (wishMemberRepository.existByBookAndMember(savedBook, member)) {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        saveWishMemberAndWishCount(member, wishBook, savedBook);
-
+        savedBook.plusWishCount();
+        saveWishMember(member, savedBook);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    private void saveWishMemberAndWishCount(final Member member, final WishBook wishBook, final Book savedBook) {
-        saveWishMember(member, wishBook);
-        if (savedBook != null) {
-            savedBook.plusWishCount();
-        }
-    }
-
-    public void saveWishMember(final Member member, final WishBook wishBook) {
+    public void saveWishMember(final Member member, final Book book) {
         WishMember wishMember = WishMember.builder()
-                .wishBook(wishBook)
+                .book(book)
                 .member(member)
                 .build();
         wishMemberRepository.save(wishMember);
     }
+
 
     public ResponseEntity<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
         if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {
@@ -166,21 +159,15 @@ public class BookService {
         return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
-    public void getWishBookCount(final String isbn, final Book savedBook) {
-        long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
-        savedBook.fetchWishCount((int) wishBookCount);
-    }
-
     public List<AllBookResponseDto> findBookBySearch(final String text) {
         return bookRepository.findBookBySearch(text);
     }
 
     public BookResponseDto getDetailBook(final Long id) {
-        Optional<Book> book = bookRepository.findById(id);
+        Book book = bookRepository.findById(id).get();
         List<KeywordScoreResponseDto> topThree = redisUtil.getKeyword(id);
-        return BookResponseDto.from(book.get(), topThree);
+        return BookResponseDto.from(book, topThree);
     }
-
     public ResponseEntity<?> getPopularKeyword() {
         List<KeywordScoreResponseDto> topThree = redisUtil.getTopThree();
         return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);

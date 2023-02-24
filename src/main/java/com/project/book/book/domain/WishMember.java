@@ -24,11 +24,11 @@ public class WishMember {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
-    private WishBook wishBook;
+    private Book book;
 
     @Builder
-    public WishMember(Member member, WishBook wishBook) {
+    public WishMember(Member member, Book book) {
         this.member = member;
-        this.wishBook = wishBook;
+        this.book = book;
     }
 }
