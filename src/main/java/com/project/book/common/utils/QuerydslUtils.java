@@ -14,15 +14,15 @@ import static com.project.book.book.domain.BookTime.*;
 import static com.project.book.book.domain.QBook.*;
 import static org.springframework.util.StringUtils.hasText;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class QuerydslUtils {
 
     public static BooleanExpression enumEqCheck(EnumPath select, Enum condition ) {
         if(condition!=null) {
             return select.eq(condition);
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     public static BooleanExpression stringContainsCheck(StringPath select, String condition ) {
@@ -31,8 +31,6 @@ public class QuerydslUtils {
 
     public static OrderSpecifier<?> getBookSortType(BookSortType sortType) {
         return fromBookSortType(sortType).getOrderSpecifier();
-
-
     }
 
     public static OrderSpecifier<?> getBookSortByTime(BookTime sortType) {
@@ -49,6 +47,4 @@ public class QuerydslUtils {
         }
         return book.star.avgStar.desc();
     }
-
-
 }
