@@ -21,8 +21,6 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
-    private String kakaoId;
-
     @Column(name = "member_nickname")
     private String nickname;
 
@@ -35,14 +33,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "member_type")
     private MemberType type;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member")
-    private Set<RegisterBook> registerBooks = new HashSet<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "member")
-    private Set<WishMember> WishBooks = new HashSet<>();
 
     public void updateMemberPosition(final MemberType position) {
         this.type = position;
