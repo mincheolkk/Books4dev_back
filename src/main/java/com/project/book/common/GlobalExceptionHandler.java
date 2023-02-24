@@ -4,6 +4,7 @@ import com.project.book.common.exception.InvalidAccessTokenException;
 import com.project.book.common.exception.InvalidRefreshTokenException;
 import com.project.book.common.exception.MemberNotFoundException;
 import com.project.book.common.exception.TooManyRequestException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -57,8 +58,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTokenValidException(AuthenticationException e) {
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleTokenValidException(final Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
