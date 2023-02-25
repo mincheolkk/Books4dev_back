@@ -36,12 +36,14 @@ public class BookResponseDto {
 
     private Count count;
 
-    private RecommendTime recommendTime;
+    private BookTimeCount readTime;
+
+    private BookTimeCount recommendTime;
 
     private List<KeywordScoreResponseDto> topKeywordList;
 
     @Builder
-    public BookResponseDto(Long id, String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents, Star star, Count count, RecommendTime recommendTime, List<KeywordScoreResponseDto> topKeywordList) {
+    public BookResponseDto(Long id, String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents, Star star, Count count, BookTimeCount readTime, BookTimeCount recommendTime, List<KeywordScoreResponseDto> topKeywordList) {
         this.id = id;
         this.isbn = isbn;
         this.title = title;
@@ -54,11 +56,12 @@ public class BookResponseDto {
         this.contents = contents;
         this.star = star;
         this.count = count;
+        this.readTime = readTime;
         this.recommendTime = recommendTime;
         this.topKeywordList = topKeywordList;
     }
 
-    public static BookResponseDto from(final Book book, List<KeywordScoreResponseDto> topKeywordList) {
+    public static BookResponseDto from(final Book book, final BookTimeCount readTime, final List<KeywordScoreResponseDto> topKeywordList) {
         return BookResponseDto.builder()
                 .id(book.getId())
                 .title(book.getTitle())
@@ -70,6 +73,7 @@ public class BookResponseDto {
                 .price(book.getPrice())
                 .isbn(book.getIsbn())
                 .count(book.getCount())
+                .readTime(readTime)
                 .recommendTime(book.getRecommendTime())
                 .releaseDate(book.getReleaseDate())
                 .star(book.getStar())

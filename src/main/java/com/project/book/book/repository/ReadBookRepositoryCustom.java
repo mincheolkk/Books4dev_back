@@ -2,6 +2,7 @@ package com.project.book.book.repository;
 
 import com.project.book.book.domain.Book;
 import com.project.book.book.domain.BookTime;
+import com.project.book.book.domain.BookTimeCount;
 import com.project.book.book.domain.ReadBook;
 import com.project.book.book.dto.response.ReadBookResponseDto;
 import com.project.book.member.domain.Member;
@@ -17,4 +18,5 @@ public interface ReadBookRepositoryCustom {
 
     Double findAvgStar(final Book book);
 
+    BookTimeCount getReadTime(Book book);
 }

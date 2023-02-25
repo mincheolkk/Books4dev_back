@@ -89,7 +89,7 @@ public class BookService {
             readBookRepository.save(readBook);
         }
         if (readBook == null) {
-            ReadBook newReadBook = toReadBook(book, reviewDto, member);
+            ReadBook newReadBook = toReadBook(member, book, reviewDto);
             book.calculateRecommendTime(newReadBook.getRecommendBookTime(), 1);
             book.plusReadCount(1);
             readBookRepository.save(newReadBook);
@@ -107,10 +107,6 @@ public class BookService {
     public ResponseEntity saveWishBook(final BookDataDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
-
-        if (!request.validCheck()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
-        }
 
         if (savedBook == null) {
             Book tempBook = request.toBook();
@@ -158,9 +154,11 @@ public class BookService {
 
     public BookResponseDto getDetailBook(final Long id) {
         Book book = bookRepository.findById(id).get();
+        BookTimeCount readTime = readBookRepository.getReadTime(book);
         List<KeywordScoreResponseDto> topThree = redisUtil.getKeyword(id);
-        return BookResponseDto.from(book, topThree);
+        return BookResponseDto.from(book, readTime, topThree);
     }
+
     public ResponseEntity<?> getPopularKeyword() {
         List<KeywordScoreResponseDto> topThree = redisUtil.getTopThree();
         return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);

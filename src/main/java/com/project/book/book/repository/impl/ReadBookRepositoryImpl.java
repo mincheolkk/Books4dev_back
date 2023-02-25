@@ -68,4 +68,23 @@ public class ReadBookRepositoryImpl implements ReadBookRepositoryCustom {
                 .where(readBook.book.eq(book))
                 .fetchOne();
         }
+
+    @Override
+    public BookTimeCount getReadTime(Book book) {
+        List<Tuple> tupleList = queryFactory.select(readBook.readBookTime, readBook.readBookTime.count())
+                .from(readBook)
+                .where(readBook.book.eq(book))
+                .groupBy(readBook.readBookTime)
+                .fetch();
+
+        BookTimeCount readTime = BookTimeCount.init();
+
+        tupleList.stream().forEach(
+                t -> readTime.calculateBookTimeCount(
+                        t.get(readBook.readBookTime),
+                        t.get(readBook.readBookTime.count()).intValue())
+                );
+
+        return readTime;
+    }
 }
