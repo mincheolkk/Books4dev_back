@@ -116,7 +116,8 @@ public class BookService {
             Book tempBook = request.toBook();
             tempBook.plusWishCount();
             Book newBook = bookRepository.save(tempBook);
-            saveWishBookEntity(member, newBook);
+            WishBook wishBook = new WishBook(member, newBook);
+            wishBookRepository.save(wishBook);
             return new ResponseEntity(HttpStatus.ACCEPTED);
         }
 
@@ -126,16 +127,9 @@ public class BookService {
         }
 
         savedBook.plusWishCount();
-        saveWishBookEntity(member, savedBook);
-        return new ResponseEntity(HttpStatus.ACCEPTED);
-    }
-
-    public void saveWishBookEntity(final Member member, final Book book) {
-        WishBook wishBook = WishBook.builder()
-                .book(book)
-                .member(member)
-                .build();
+        WishBook wishBook = new WishBook(member, savedBook);
         wishBookRepository.save(wishBook);
+        return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
     public ResponseEntity<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
