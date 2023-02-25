@@ -50,8 +50,8 @@ public class ReadBook extends BaseEntity {
         this.star = (double) star;
     }
 
-    public static ReadBook toReadBook(final Book book, final BookReviewDto request, final Member member) {
-        return com.project.book.book.domain.ReadBook.builder()
+    public static ReadBook toReadBook(final Member member, final Book book, final BookReviewDto request) {
+        return ReadBook.builder()
                 .book(book)
                 .readBookTime(request.getReadTime())
                 .recommendBookTime(request.getRecommendTime())

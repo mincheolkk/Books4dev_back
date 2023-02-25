@@ -55,7 +55,7 @@ public class Book extends BaseEntity {
     private Count count;
 
     @Embedded
-    private RecommendTime recommendTime;
+    private BookTimeCount recommendTime;
 
     @OneToMany(mappedBy = "book")
     private List<ReadBook> readBooks = new ArrayList<>();
@@ -74,11 +74,11 @@ public class Book extends BaseEntity {
     }
 
     public void calculateRecommendTime(final BookTime recommendTime, final int count) {
-        this.recommendTime.calculateRecommendTime(recommendTime, count);
+        this.recommendTime.calculateBookTimeCount(recommendTime, count);
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents,Star star, Count count, RecommendTime recommendTime) {
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents,Star star, Count count, BookTimeCount recommendTime) {
         this.isbn = isbn;
         this.title = title;
         this.publisher = publisher;
@@ -90,6 +90,6 @@ public class Book extends BaseEntity {
         this.contents = contents;
         this.star = Star.init();
         this.count = Count.init();
-        this.recommendTime = RecommendTime.init();
+        this.recommendTime = BookTimeCount.init();
     }
 }

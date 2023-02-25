@@ -11,7 +11,7 @@ import javax.persistence.Embeddable;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class RecommendTime {
+public class BookTimeCount {
 
     private Integer beforeCount;
     private Integer afterCount;
@@ -19,11 +19,11 @@ public class RecommendTime {
     private Integer fiveYearCount;
     private Integer tenYearCount;
 
-    public static RecommendTime init() {
-        return new RecommendTime(0, 0, 0, 0, 0);
+    public static BookTimeCount init() {
+        return new BookTimeCount(0, 0, 0, 0, 0);
     }
 
-    public void calculateRecommendTime(final BookTime time, final int count) {
+    public void calculateBookTimeCount(final BookTime time, final int count) {
         switch (time) {
             case before:
                 this.beforeCount += count;
