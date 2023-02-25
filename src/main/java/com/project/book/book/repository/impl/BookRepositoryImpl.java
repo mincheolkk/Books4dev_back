@@ -14,7 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 
 import static com.project.book.book.domain.QBook.*;
-import static com.project.book.book.domain.QRegisterBook.registerBook;
+import static com.project.book.book.domain.QReadBook.readBook;
 import static com.project.book.common.utils.QuerydslUtils.*;
 import static com.project.book.member.domain.QMember.member;
 
@@ -29,13 +29,13 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.title, book.authors, book.thumbnail,
                         book.isbn, book.star.avgStar,
-                        book.count.registerCount, book.count.wishCount, book.recommendTime))
+                        book.count.readCount, book.count.wishCount, book.recommendTime))
                 .from(book)
-                .join(book.registerBooks, registerBook)
-                .join(registerBook.member, member)
+                .join(book.readBooks, readBook)
+                .join(readBook.member, member)
                 .where(
-                        enumEqCheck(registerBook.member.type, condition.getMemberType()),
-                        enumEqCheck(registerBook.recommendBookTime, condition.getRecommendType())
+                        enumEqCheck(readBook.member.type, condition.getMemberType()),
+                        enumEqCheck(readBook.recommendBookTime, condition.getRecommendType())
                 )
                 .orderBy(
                         getBookSortType(condition.getSortType()),
@@ -52,7 +52,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.title, book.authors, book.thumbnail,
                         book.isbn, book.star.avgStar,
-                        book.count.registerCount, book.count.wishCount, book.recommendTime))
+                        book.count.readCount, book.count.wishCount, book.recommendTime))
                 .from(book)
                 .where(
                         bookSearchBooleanBuilder(text)

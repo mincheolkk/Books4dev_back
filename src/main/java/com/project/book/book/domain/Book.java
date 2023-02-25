@@ -58,15 +58,10 @@ public class Book extends BaseEntity {
     private RecommendTime recommendTime;
 
     @OneToMany(mappedBy = "book")
-    private List<RegisterBook> registerBooks = new ArrayList<>();
+    private List<ReadBook> readBooks = new ArrayList<>();
 
-    public void plusRegisterCount(final long count) {
-        this.count.plusRegisterCount((int) count);
-    }
-
-    // 관심 수 연동
-    public void fetchWishCount(final int count) {
-        this.count.fetchWishCount(count);
+    public void plusReadCount(final long count) {
+        this.count.readCount((int) count);
     }
 
     // 괌심 수 +1

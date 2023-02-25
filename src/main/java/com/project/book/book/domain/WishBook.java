@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WishMember {
+public class WishBook {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class WishMember {
     private Book book;
 
     @Builder
-    public WishMember(Member member, Book book) {
+    public WishBook(Member member, Book book) {
         this.member = member;
         this.book = book;
     }

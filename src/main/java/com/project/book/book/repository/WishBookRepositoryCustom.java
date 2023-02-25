@@ -6,7 +6,7 @@ import com.project.book.member.domain.Member;
 
 import java.util.List;
 
-public interface WishMemberRepositoryCustom {
+public interface WishBookRepositoryCustom {
 
     boolean existByBookAndMember(final Book book, final Member member);
 

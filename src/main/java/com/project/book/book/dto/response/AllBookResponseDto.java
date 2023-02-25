@@ -17,19 +17,19 @@ public class AllBookResponseDto {
     private String isbn;
 
     private double avgStar;
-    private Integer registerCount;
+    private Integer readCount;
     private Integer wishCount;
     private RecommendTime recommendTimeDto;
 
     @QueryProjection
-    public AllBookResponseDto(Long id, String title, String authors, String thumbnail, String isbn, double avgStar, Integer registerCount, Integer wishCount, RecommendTime recommendTimeDto) {
+    public AllBookResponseDto(Long id, String title, String authors, String thumbnail, String isbn, double avgStar, Integer readCount, Integer wishCount, RecommendTime recommendTimeDto) {
         this.id = id;
         this.title = title;
         this.authors = authors;
         this.thumbnail = thumbnail;
         this.isbn = isbn;
         this.avgStar = avgStar;
-        this.registerCount = registerCount;
+        this.readCount = readCount;
         this.wishCount = wishCount;
         this.recommendTimeDto = recommendTimeDto;
     }
