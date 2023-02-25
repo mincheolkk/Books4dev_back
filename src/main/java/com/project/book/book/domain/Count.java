@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
+@Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public class Count {
 
-    private Integer registerCount;
+    private Integer readCount;
 
     private Integer wishCount;
 
@@ -21,16 +21,11 @@ public class Count {
         return new Count(0,0);
     }
 
-    public void plusRegisterCount(final int count) {
-        this.registerCount += count;
+    public void readCount(final int count) {
+        this.readCount += count;
     }
 
     public void plusWishCount() {
         this.wishCount += 1;
     }
-
-    public void fetchWishCount(final int count) {
-        this.wishCount = count;
-    }
-
 }

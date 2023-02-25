@@ -8,7 +8,7 @@ import static com.project.book.book.domain.QBook.book;
 
 public enum BookSortType {
 
-    COUNT("COUNT", book.count.registerCount.desc()),
+    COUNT("COUNT", book.count.readCount.desc()),
     STAR("STAR", book.star.avgStar.desc()),
     WISH("WISH", book.count.wishCount.desc());
 
