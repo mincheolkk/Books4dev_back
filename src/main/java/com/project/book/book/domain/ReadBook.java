@@ -1,9 +1,6 @@
 package com.project.book.book.domain;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.book.book.dto.request.BookReviewDto;
 import com.project.book.common.domain.BaseEntity;
 import com.project.book.member.domain.Member;
@@ -19,7 +16,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
-public class RegisterBook extends BaseEntity {
+public class ReadBook extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +41,7 @@ public class RegisterBook extends BaseEntity {
     private double star;
 
     @Builder
-    public RegisterBook(Long id, Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
+    public ReadBook(Long id, Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
         this.id = id;
         this.book = book;
         this.member = member;
@@ -53,8 +50,8 @@ public class RegisterBook extends BaseEntity {
         this.star = (double) star;
     }
 
-    public static RegisterBook toRegisterBook(final Book book, final BookReviewDto request, final Member member) {
-        return RegisterBook.builder()
+    public static ReadBook toReadBook(final Book book, final BookReviewDto request, final Member member) {
+        return com.project.book.book.domain.ReadBook.builder()
                 .book(book)
                 .readBookTime(request.getReadTime())
                 .recommendBookTime(request.getRecommendTime())
@@ -63,7 +60,7 @@ public class RegisterBook extends BaseEntity {
                 .build();
     }
 
-    public void updateRegisterBook(final Integer star, final BookTime recommendBookTime) {
+    public void updateReadBook(final Integer star, final BookTime recommendBookTime) {
         this.star = (double) star;
         this.recommendBookTime = recommendBookTime;
     }
