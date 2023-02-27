@@ -1,9 +1,12 @@
 package com.project.book.book.repository.impl;
 
+import com.project.book.book.domain.BookSortType;
+import com.project.book.book.domain.BookTime;
 import com.project.book.book.dto.request.AllBookFilterDto;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepositoryCustom;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.*;
 
+import static com.project.book.book.domain.BookSortType.fromBookSortType;
+import static com.project.book.book.domain.BookTime.*;
 import static com.project.book.book.domain.QBook.*;
 import static com.project.book.book.domain.QReadBook.readBook;
 import static com.project.book.common.utils.QuerydslUtils.*;
@@ -39,7 +44,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 )
                 .orderBy(
                         getBookSortType(condition.getSortType()),
-                        getBookSortByTime(condition.getRecommendType())
+                        getRecommendTime(condition.getRecommendType())
                 )
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -59,6 +64,14 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 )
                 .distinct()
                 .fetch();
+    }
+
+    private OrderSpecifier<?> getBookSortType(BookSortType sortType) {
+        return fromBookSortType(sortType).getOrderSpecifier();
+    }
+
+    private OrderSpecifier<?> getRecommendTime(BookTime recommendTime) {
+        return fromBookTime(recommendTime).getOrderSpecifier();
     }
 
     private BooleanBuilder bookSearchBooleanBuilder(final String text) {

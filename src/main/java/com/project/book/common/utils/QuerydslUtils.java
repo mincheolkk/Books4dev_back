@@ -18,33 +18,10 @@ import static org.springframework.util.StringUtils.hasText;
 public class QuerydslUtils {
 
     public static BooleanExpression enumEqCheck(EnumPath select, Enum condition ) {
-        if(condition!=null) {
-            return select.eq(condition);
-        }
-
-        return null;
+        return condition != null ? select.eq(condition) : null;
     }
 
     public static BooleanExpression stringContainsCheck(StringPath select, String condition ) {
         return hasText(condition) ? select.contains(condition) : select.isNull();
-    }
-
-    public static OrderSpecifier<?> getBookSortType(BookSortType sortType) {
-        return fromBookSortType(sortType).getOrderSpecifier();
-    }
-
-    public static OrderSpecifier<?> getBookSortByTime(BookTime sortType) {
-        if (sortType == before) {
-            return book.recommendTime.beforeCount.desc();
-        } else if (sortType == after) {
-            return book.recommendTime.afterCount.desc();
-        } else if (sortType == twoYear) {
-            return book.recommendTime.twoYearCount.desc();
-        } else if (sortType == fiveYear) {
-            return book.recommendTime.fiveYearCount.desc();
-        } else if (sortType == tenYear) {
-            return book.recommendTime.tenYearCount.desc();
-        }
-        return book.star.avgStar.desc();
     }
 }
