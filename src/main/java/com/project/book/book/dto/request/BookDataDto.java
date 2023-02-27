@@ -42,9 +42,6 @@ public class BookDataDto {
     }
 
     public Boolean validCheck() {
-        if (this.isbn.length() < 1) {
-            return false;
-        }
-        return true;
+        return this.isbn.length() < 1 ? false : true;
     }
 }
