@@ -18,7 +18,7 @@ public class MemberService {
     public ResponseEntity<?> checkPosition(final Member member) {
         MemberType type = member.getType();
         if (type == null) {
-            return new ResponseEntity<>(HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
