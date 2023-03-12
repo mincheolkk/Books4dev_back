@@ -6,6 +6,7 @@ import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.ReadBookRepository;
 import com.project.book.book.repository.WishBookRepository;
+import com.project.book.common.exception.ContentNotFoundException;
 import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
@@ -31,11 +32,10 @@ public class BookService {
 
     // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
     @Transactional
-    public Book saveFromKakao(final SaveBookFromKakaoDto request, final Member member) {
+    public Book saveBookFromSearch(final SaveBookFromSearchDto request, final Member member) {
 
         // 검색 화면에서 두 번 이상 등록할 때
         // 검색어 불일치 때문에 검색 리스트에 등록된 책이 안 나올때
-
         String isbn = request.getItem().getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
         if (savedBook != null) {
@@ -55,13 +55,13 @@ public class BookService {
         return newBook;
     }
 
-    public void saveKeyword(final Long id, String keyword) {
+    public void saveKeyword(final Long id, final String keyword) {
         redisUtil.incrementKeywordScore(id, keyword);
     }
 
     // 책 등록 (처음 등록 제외)
     @Transactional
-    public Book saveBookFromBooks4dev(final SaveBookDto request, final Member member) {
+    public Book saveBookFromList(final SaveBookFromListDto request, final Member member) {
         String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
 
@@ -91,7 +91,7 @@ public class BookService {
         if (readBook == null) {
             ReadBook newReadBook = toReadBook(member, book, reviewDto);
             book.calculateRecommendTime(newReadBook.getRecommendBookTime(), 1);
-            book.plusReadCount(1);
+            book.calculateReadCount(1);
             readBookRepository.save(newReadBook);
         }
         return;
@@ -110,7 +110,7 @@ public class BookService {
 
         if (savedBook == null) {
             Book tempBook = request.toBook();
-            tempBook.plusWishCount();
+            tempBook.calculateWishCount(1);
             Book newBook = bookRepository.save(tempBook);
             WishBook wishBook = new WishBook(member, newBook);
             wishBookRepository.save(wishBook);
@@ -122,7 +122,7 @@ public class BookService {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        savedBook.plusWishCount();
+        savedBook.calculateWishCount(1);
         WishBook wishBook = new WishBook(member, savedBook);
         wishBookRepository.save(wishBook);
         return new ResponseEntity(HttpStatus.ACCEPTED);
@@ -153,7 +153,8 @@ public class BookService {
     }
 
     public BookResponseDto getDetailBook(final Long id) {
-        Book book = bookRepository.findById(id).get();
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new ContentNotFoundException());
         BookTimeCount readTime = readBookRepository.getReadTime(book);
         List<KeywordScoreResponseDto> topThree = redisUtil.getKeyword(id);
         return BookResponseDto.from(book, readTime, topThree);

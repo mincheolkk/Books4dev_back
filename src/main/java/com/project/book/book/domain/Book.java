@@ -12,7 +12,6 @@ import java.util.List;
 @DynamicUpdate
 @Getter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
@@ -60,13 +59,16 @@ public class Book extends BaseEntity {
     @OneToMany(mappedBy = "book")
     private List<ReadBook> readBooks = new ArrayList<>();
 
-    public void plusReadCount(final long count) {
-        this.count.readCount((int) count);
+    public void calculateReadCount(final long count) {
+        this.count.calculateReadCount((int) count);
     }
 
-    // 괌심 수 +1
-    public void plusWishCount() {
-        this.count.plusWishCount();
+    public void calculateWishCount(int count) {
+        this.count.calculateWishCount(count);
+    }
+
+    public void calculateCommentCount(int count) {
+        this.count.calculateCommentCount(count);
     }
 
     public void calculateAvgStar(final double star) {
