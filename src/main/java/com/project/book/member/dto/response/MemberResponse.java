@@ -12,12 +12,12 @@ import lombok.Getter;
 @Getter
 public class MemberResponse {
 
-    private Long id;
+    private String oAuth;
     private MemberType memberType;
 
     public static MemberResponse from(final Member member) {
         return MemberResponse.builder()
-                .id(member.getId())
+                .oAuth(member.getOAuth())
                 .memberType(member.getType())
                 .build();
     }
