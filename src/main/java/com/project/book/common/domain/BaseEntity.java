@@ -1,37 +1,40 @@
 package com.project.book.common.domain;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.data.annotation.CreatedBy;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@DynamicInsert
+@DynamicUpdate
 @MappedSuperclass
+@SuperBuilder
 @Getter
+@NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class BaseEntity {
+public abstract class BaseEntity {
 
     @CreatedDate
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", columnDefinition = "DATETIME", nullable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
-    private LocalDateTime modifiedAt;
+    @Column(name = "delete_yn")
+    @Enumerated(EnumType.STRING)
+    private EntityStatus.DeleteYn deleteYn;
 
-    @CreatedBy
-    private Long createdBy;
+    public void changeDeleteYn(EntityStatus.DeleteYn s) {
+        this.deleteYn = s;
+    }
 
-//    @PrePersist
-//    public void prePersist() {
-//        createdAt = LocalDateTime.now();
-//    }
-//
-//    @PreUpdate
-//    public void preUpdate() {
-//        modifiedAt = LocalDateTime.now();
-//    }
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        this.deleteYn = this.deleteYn == null ? EntityStatus.DeleteYn.N : this.deleteYn;
+    }
 }

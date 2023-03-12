@@ -20,5 +20,6 @@ public class KaKaoBookInfoDto {
     private String publisher;
     private Long price;
     private String thumbnail;
+    private String contents;
 
 }

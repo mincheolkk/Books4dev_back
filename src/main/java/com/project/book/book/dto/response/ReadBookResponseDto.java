@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReadBookResponseDto {
 
+    private Long id;
     private String title;
     private String isbn;
     private String thumbnail;
     private double star;
 
     @QueryProjection
-    public ReadBookResponseDto(String title, String isbn, String thumbnail, double star) {
+    public ReadBookResponseDto(Long id, String title, String isbn, String thumbnail, double star) {
+        this.id = id;
         this.title = title;
         this.isbn = isbn;
         this.thumbnail = thumbnail;

@@ -1,27 +1,34 @@
 package com.project.book.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.book.common.domain.BaseEntity;
 import com.project.book.member.domain.Member;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
-@NoArgsConstructor
+
+@Getter
 @Entity
-public class WishBook extends BaseEntity {
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class WishBook {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String isbn;
-    private String title;
-    private String thumbnail;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "book_id")
+    private Book book;
 
     @Builder
-    public WishBook(String isbn, String title, String thumbnail) {
-        this.isbn = isbn;
-        this.title = title;
-        this.thumbnail = thumbnail;
+    public WishBook(Member member, Book book) {
+        this.member = member;
+        this.book = book;
     }
 }

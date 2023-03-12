@@ -1,21 +1,16 @@
 package com.project.book.book.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
-import com.project.book.book.dto.response.AllBookResponseDto;
-import com.project.book.book.dto.response.ReadBookResponseDto;
-import com.project.book.book.dto.response.RecommendCountDto;
-import com.project.book.book.dto.response.WishBookResponseDto;
+import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
-import com.project.book.book.repository.RegisterBookRepository;
+import com.project.book.book.repository.ReadBookRepository;
 import com.project.book.book.repository.WishBookRepository;
-import com.project.book.book.repository.WishMemberRepository;
+import com.project.book.common.exception.ContentNotFoundException;
+import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,163 +19,116 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.project.book.book.domain.BookTime.*;
+import static com.project.book.book.domain.ReadBook.toReadBook;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final RegisterBookRepository registerBookRepository;
+    private final ReadBookRepository readBookRepository;
     private final WishBookRepository wishBookRepository;
-    private final WishMemberRepository wishMemberRepository;
-    @Transactional
-    public Book registerBySearch(RegisterBySearchDto request, Member member) {
+    private final RedisUtil redisUtil;
 
+    // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
+    @Transactional
+    public Book saveBookFromSearch(final SaveBookFromSearchDto request, final Member member) {
+
+        // 검색 화면에서 두 번 이상 등록할 때
+        // 검색어 불일치 때문에 검색 리스트에 등록된 책이 안 나올때
         String isbn = request.getItem().getIsbn();
+        Book savedBook = bookRepository.findByIsbn(isbn);
+        if (savedBook != null) {
+            saveReadBook(member, savedBook, request.getReview());
+            calculateAvgStar(savedBook);
+            saveKeyword(savedBook.getId(), request.getReview().getSearchKeyword());
+            return savedBook;
+        }
+
+        Book tempbook = request.toBook(request.getItem());
+        tempbook.calculateAvgStar(request.getReview().getStar());
+
+        Book newBook = bookRepository.save(tempbook);
+
+        saveReadBook(member, newBook, request.getReview());
+        saveKeyword(newBook.getId(), request.getReview().getSearchKeyword());
+        return newBook;
+    }
+
+    public void saveKeyword(final Long id, final String keyword) {
+        redisUtil.incrementKeywordScore(id, keyword);
+    }
+
+    // 책 등록 (처음 등록 제외)
+    @Transactional
+    public Book saveBookFromList(final SaveBookFromListDto request, final Member member) {
+        String isbn = request.getIsbn();
+        Book savedBook = bookRepository.findByIsbn(isbn);
+
+        saveReadBook(member, savedBook, request.getReview());
+        calculateAvgStar(savedBook);
+
+        if (request.getReview().getSearchKeyword() != null) {
+            saveKeyword(savedBook.getId(), request.getReview().getSearchKeyword());
+        }
+
+        return savedBook;
+    }
+
+    public void saveReadBook(final Member member, final Book book, final BookReviewDto reviewDto) {
+        // 유저, 책, 읽은 시기가 같은 걸 조회
+        ReadBook readBook = readBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
+
+        // 등록된 읽은 시기에 대해 재요청
+        if (readBook != null) {
+            // 기존 추천시기 -1
+            book.calculateRecommendTime(readBook.getRecommendBookTime(), -1);
+            // 새로운 추천시기 +1
+            book.calculateRecommendTime(reviewDto.getRecommendTime(), 1);
+            readBook.updateReadBook(reviewDto.getStar(), reviewDto.getRecommendTime());
+            readBookRepository.save(readBook);
+        }
+        if (readBook == null) {
+            ReadBook newReadBook = toReadBook(member, book, reviewDto);
+            book.calculateRecommendTime(newReadBook.getRecommendBookTime(), 1);
+            book.calculateReadCount(1);
+            readBookRepository.save(newReadBook);
+        }
+        return;
+    }
+
+    // RegisterBook 의 평점 값을 Book 으로
+    public void calculateAvgStar(Book book) {
+        Double avgStar = readBookRepository.findAvgStar(book);
+        book.calculateAvgStar(avgStar);
+    }
+
+    @Transactional
+    public ResponseEntity saveWishBook(final BookDataDto request, final Member member) {
+        String isbn = request.getIsbn();
         Book savedBook = bookRepository.findByIsbn(isbn);
 
         if (savedBook == null) {
-            CreateBookRequestDto createbook = CreateBookRequestDto.builder()
-                    .authors(listToString(request.getItem().getAuthors()))
-                    .translators(listToString(request.getItem().getTranslators()))
-                    .title(request.getItem().getTitle())
-                    .publisher(request.getItem().getPublisher())
-                    .price(request.getItem().getPrice())
-                    .thumbnail(request.getItem().getThumbnail())
-                    .datetime(request.getItem().getDatetime().toLocalDateTime())
-                    .isbn(isbn)
-                    .build();
-
-            Book tempbook = createbook.toEntity();
-            tempbook.plusRegisterCount(1);
-            tempbook.plusRecommendTime(request.getReview().getRecommendTime(), 1);
-            tempbook.calculateAvgStar(request.getReview().getStar());
-//            starCountRecommend(tempbook, request.getReview());
-
-            Book newBook = bookRepository.save(tempbook);
-
-            findRegisterBookForUpdate(member, newBook, request.getReview());
-            findWishBookCount(isbn);
-//            RegisterBook registerBook = requestRegisterBook(newBook, request.getReview(), member);
-//            registerBookRepository.save(registerBook);
-
-            return newBook;
+            Book tempBook = request.toBook();
+            tempBook.calculateWishCount(1);
+            Book newBook = bookRepository.save(tempBook);
+            WishBook wishBook = new WishBook(member, newBook);
+            wishBookRepository.save(wishBook);
+            return new ResponseEntity(HttpStatus.ACCEPTED);
         }
-        else if (savedBook != null) {
-            findRegisterBookForUpdate(member, savedBook, request.getReview());
-            starCountRecommend(savedBook, request.getReview());
-            findWishBookCount(isbn);
-        }
-        return savedBook;
-    }
 
-    public void findRegisterBookForUpdate(Member member, Book book, BookReviewDto reviewDto) {
-        RegisterBook findedBook = registerBookRepository.findByMemberAndBookAndReadTime(member, book, reviewDto.getReadTime());
-
-        if (findedBook != null) {
-            findedBook.updateRegisterBook(reviewDto.getStar(), reviewDto.getRecommendTime());
-            registerBookRepository.save(findedBook);
-            System.out.println("findBook != null");
-            return;
-        } else if (findedBook == null) {
-            RegisterBook registerBook = requestRegisterBook(book, reviewDto, member);
-            registerBookRepository.save(registerBook);
-            System.out.println("findBook == null");
-            return;
-        }
-    }
-
-    @Transactional
-    public Book registerByHomeList(RegisterByHomeListDto request, Member member) {
-        Book savedBook = bookRepository.findByIsbn(request.getIsbn());
-//        RegisterBook registerBook = requestRegisterBook(savedBook, request.getReview(), member);
-//        registerBookRepository.save(registerBook);
-        findWishBookCount(request.getIsbn());
-        findRegisterBookForUpdate(member, savedBook, request.getReview());
-        starCountRecommend(savedBook, request.getReview());
-
-        return savedBook;
-    }
-
-    public void starCountRecommend(Book book, BookReviewDto request) {
-        List<RecommendCountDto> byRecommendCount = registerBookRepository.findRecommendCount(book);
-        long registerCount = 0;
-        book.zeroRecommendTime();
-        for (RecommendCountDto dto : byRecommendCount) {
-            book.plusRecommendTime(dto.getBookTime(), dto.getCount());
-            registerCount += dto.getCount();
-        }
-        book.plusRegisterCount(registerCount);
-        Double avgStar = registerBookRepository.findAvgStar(book);
-        book.calculateAvgStar(avgStar);
-
-//        book.plusRecommendTime(request.getRecommendTime());
-    }
-    public void findRegistCountnRecommendCount() {
-
-    }
-
-    private static RegisterBook requestRegisterBook(Book book, BookReviewDto request, Member member) {
-        return RegisterBook.builder()
-                .book(book)
-                .readBookTime(request.getReadTime())
-                .recommendBookTime(request.getRecommendTime())
-                .star(request.getStar())
-                .member(member)
-                .build();
-    }
-
-    @Transactional
-    public ResponseEntity saveWishBook(WishBookRequestDto request, Member member) {
-        WishBook wishBook = wishBookRepository.findByIsbn(request.getIsbn());
-
-
-        if (wishBook == null) {
-            WishBook wish = WishBook.builder()
-                    .isbn(request.getIsbn())
-                    .title(request.getTitle())
-                    .thumbnail(request.getThumbnail())
-                    .build();
-            wishBookRepository.save(wish);
-
-           saveWishMember(member, wish);
-           findWishBookCount(request.getIsbn());
-           return new ResponseEntity(HttpStatus.ACCEPTED);
-        }
-        boolean flag = wishMemberRepository.findByWishBook(wishBook, member);
-        if (flag) {
+        // 요청하는 유저가 해당 책으로 이미 관심있는 책을 등록했을때
+        if (wishBookRepository.existByBookAndMember(savedBook, member)) {
             return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
         }
 
-        saveWishMember(member, wishBook);
-        findWishBookCount(request.getIsbn());
+        savedBook.calculateWishCount(1);
+        WishBook wishBook = new WishBook(member, savedBook);
+        wishBookRepository.save(wishBook);
         return new ResponseEntity(HttpStatus.ACCEPTED);
     }
 
-    public void saveWishMember(Member member, WishBook wishBook) {
-        WishMember wishMember = WishMember.builder()
-                .wishBook(wishBook)
-                .member(member)
-                .build();
-        wishMemberRepository.save(wishMember);
-    }
-
-//    public Map<String, Object> getDetailBook(Long id) throws JsonProcessingException {
-//        Optional<Book> book = bookRepository.findById(id);
-//        Map<String, Object> detailBook = bookRepository.getDetailBook(book.get());
-//
-//        return detailBook;
-//    }
-
-    private static String listToString(List<String> list) {
-        if (Objects.isNull(list) || list.isEmpty()) {
-            return Strings.EMPTY;
-        }
-        return String.join(",", list);
-    }
-
-    public ResponseEntity<?> getAllBook(AllBookFilterDto condition, Pageable pageRequest) {
+    public ResponseEntity<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
         if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {
             condition.setMemberType(null);
         }
@@ -190,38 +138,30 @@ public class BookService {
         return new ResponseEntity<>(bookRepository.getAllBooks(condition, pageRequest), HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> getAllWishBook(Member member) {
-        List<WishBookResponseDto> allWishBook = wishMemberRepository.getAllWishBook(member);
-        return new ResponseEntity<>(allWishBook, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> getMyWishBook(final Member member) {
+        List<WishBookResponseDto> wishBook = wishBookRepository.getAllWishBook(member);
+        return new ResponseEntity<>(wishBook, HttpStatus.ACCEPTED);
     }
 
-    public ResponseEntity<?> testReadBook(Member member) {
-        HashMap readTimeMap = new HashMap<>();
-        List<BookTime> enumList = Arrays.asList(before, after, twoYear, fiveYear, tenYear);
-        for (BookTime bookTime : enumList) {
-            List<ReadBookResponseDto> responseDtoList = registerBookRepository.testReadbook(member, bookTime);
-            readTimeMap.put(bookTime, responseDtoList);
-        }
-        return new ResponseEntity<>(readTimeMap, HttpStatus.ACCEPTED);
+    public ResponseEntity<?> getMyReadBook(final Member member) {
+        Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = readBookRepository.getMyReadBook(member);
+        return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
-    public void findWishBookCount(String isbn) {
-        Book savedBook = bookRepository.findByIsbn(isbn);
-        if (savedBook == null) {
-            return;
-        }
-
-        long wishBookCount = wishMemberRepository.findWishBookCount(isbn);
-        System.out.println("wishBookCount = " + wishBookCount);
-
-        savedBook.plusWishCount((int) wishBookCount);
-        System.out.println("wwwwwerwerwerwrwrwerewrwrewrwerewrwerwerwerwerwerwerewrwrwerwr2");
-        System.out.println("savedBook = " + savedBook.getStarAndCount().getWishCount());
+    public List<AllBookResponseDto> findBookBySearch(final String text) {
+        return bookRepository.findBookBySearch(text);
     }
 
-    public  List<AllBookResponseDto> findRegisteredBook(String title) {
-        return bookRepository.findByTitle(title);
+    public BookResponseDto getDetailBook(final Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(
+                () -> new ContentNotFoundException());
+        BookTimeCount readTime = readBookRepository.getReadTime(book);
+        List<KeywordScoreResponseDto> topThree = redisUtil.getKeyword(id);
+        return BookResponseDto.from(book, readTime, topThree);
     }
 
-
+    public ResponseEntity<?> getPopularKeyword() {
+        List<KeywordScoreResponseDto> topThree = redisUtil.getTopThree();
+        return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);
+    }
 }

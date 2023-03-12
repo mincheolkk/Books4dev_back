@@ -2,15 +2,16 @@ package com.project.book.book.domain;
 
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@DynamicUpdate
 @Getter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Book extends BaseEntity {
 
@@ -19,7 +20,7 @@ public class Book extends BaseEntity {
     @Column(name = "book_id")
     private Long id;
 
-    @Column(name = "book_isbn")
+    @Column(name = "book_isbn", unique = true)
     private String isbn;
 
     @Column(name = "book_title")
@@ -31,7 +32,7 @@ public class Book extends BaseEntity {
     @Column(name = "book_dateTime")
     private LocalDateTime releaseDate;
 
-    @Column(name = "book_price")
+    @Column(name = "book_price" )
     private Long price;
 
     @Column(name = "book_thumbnail")
@@ -43,37 +44,43 @@ public class Book extends BaseEntity {
     @Column(name = "book_translator")
     private String translators;
 
-    @Embedded
-    private StarAndCount starAndCount;
+    @Column(name = "book_contents", columnDefinition = "TEXT")
+    private String contents;
 
     @Embedded
-    private RecommendTime recommendTime;
+    private Star star;
+
+    @Embedded
+    private Count count;
+
+    @Embedded
+    private BookTimeCount recommendTime;
 
     @OneToMany(mappedBy = "book")
-    private List<RegisterBook> registerBooks = new ArrayList<>();
+    private List<ReadBook> readBooks = new ArrayList<>();
 
-    public void plusRegisterCount(long count) {
-        starAndCount.plusRegisterCount((int) count);
+    public void calculateReadCount(final long count) {
+        this.count.calculateReadCount((int) count);
     }
 
-    public void plusWishCount(int count) {
-        starAndCount.plusWishCount(count);
+    public void calculateWishCount(int count) {
+        this.count.calculateWishCount(count);
     }
 
-    public void calculateAvgStar(double star) {
-        starAndCount.calculateAvgStar(star);
+    public void calculateCommentCount(int count) {
+        this.count.calculateCommentCount(count);
     }
 
-    public void plusRecommendTime(BookTime time, long count) {
-        recommendTime.plusRecommendTime(time, (int) count);
+    public void calculateAvgStar(final double star) {
+        this.star.calculateAvgStar(star);
     }
 
-    public void zeroRecommendTime() {
-        recommendTime.makeZero();
+    public void calculateRecommendTime(final BookTime recommendTime, final int count) {
+        this.recommendTime.calculateBookTimeCount(recommendTime, count);
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators) {
+    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents,Star star, Count count, BookTimeCount recommendTime) {
         this.isbn = isbn;
         this.title = title;
         this.publisher = publisher;
@@ -82,7 +89,9 @@ public class Book extends BaseEntity {
         this.thumbnail = thumbnail;
         this.authors = authors;
         this.translators = translators;
-        this.starAndCount = StarAndCount.init();
-        this.recommendTime = RecommendTime.init();
+        this.contents = contents;
+        this.star = Star.init();
+        this.count = Count.init();
+        this.recommendTime = BookTimeCount.init();
     }
 }

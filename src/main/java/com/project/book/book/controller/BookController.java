@@ -1,89 +1,87 @@
 package com.project.book.book.controller;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.project.book.book.domain.Book;
-import com.project.book.book.dto.request.AllBookFilterDto;
-import com.project.book.book.dto.request.RegisterBySearchDto;
-import com.project.book.book.dto.request.RegisterByHomeListDto;
-import com.project.book.book.dto.request.WishBookRequestDto;
+import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.AllBookResponseDto;
+import com.project.book.book.dto.response.BookResponseDto;
 import com.project.book.book.service.BookService;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.domain.Member;
-import com.project.book.member.repository.MemberRepository;
-import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/book")
 public class BookController {
 
     private final BookService bookService;
-    private final MemberRepository memberRepository;
 
     // 책 저장 로직
-    @PostMapping("/bySearch")
-    public ResponseEntity registerBySearch(@LoginMember Member member, @RequestBody @Valid RegisterBySearchDto request) {
-        Book book = bookService.registerBySearch(request, member);
+    @PostMapping("/fromSearch")
+    public ResponseEntity saveBookFromSearch(
+                                            @LoginMember final Member member,
+                                            @RequestBody @Valid final SaveBookFromSearchDto request
+    ) {
+        Book book = bookService.saveBookFromSearch(request, member);
+        return ResponseEntity.created(
+                        URI.create("/book/" + book.getId()))
+                .build();
+    }
+
+    @PostMapping("/fromList")
+    public ResponseEntity saveBookFromList(
+                                            @LoginMember final Member member,
+                                            @RequestBody @Valid final SaveBookFromListDto request
+    ) {
+        Book book = bookService.saveBookFromList(request, member);
+
         return new ResponseEntity<>(book.getId(), HttpStatus.OK);
-    }
-
-    @PostMapping("/bylist")
-    public ResponseEntity registerByHomeList(@LoginMember Member member, @RequestBody @Valid RegisterByHomeListDto request) {
-        Book book = bookService.registerByHomeList(request, member);
-
-        return new ResponseEntity<>(book.getId(), HttpStatus.OK);
 
     }
 
-//    @GetMapping("/books/{book_id}")
-//    public ResponseEntity<Map<String, Object>> getDetailBook(@PathVariable("book_id") @Valid Long id) throws JsonProcessingException {
-//        Map<String, Object> detailBook = bookService.getDetailBook(id);
-//
-//        return ResponseEntity.ok(detailBook);
-//    }
-
-    @PostMapping("/book/wish")
-    public ResponseEntity<?> saveWishBook(@LoginMember Member member, @RequestBody WishBookRequestDto request) {
-        ResponseEntity responseEntity = bookService.saveWishBook(request, member);
-
-        return new ResponseEntity<>(responseEntity, HttpStatus.OK);
+    @PostMapping("/wish")
+    public ResponseEntity<?> saveWishBook(
+                                            @LoginMember final Member member,
+                                            @RequestBody @Valid final BookDataDto request
+    ) {
+        if (!request.validCheck()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return bookService.saveWishBook(request, member);
     }
 
-    @GetMapping("/test/all")
-    public ResponseEntity<?> getAllBooks(@ModelAttribute AllBookFilterDto condition) {
-        PageRequest pageRequest = PageRequest.of(0, 100);
-        ResponseEntity<?> result = bookService.getAllBook(condition, pageRequest);
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllBooks(
+                                        @ModelAttribute final AllBookFilterDto condition,
+                                        @ModelAttribute CustomPageRequest customPageRequest) {
+        ResponseEntity<?> result = bookService.getAllBook(condition, customPageRequest.toPageable());
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/test/wish")
-    public ResponseEntity<?> getAllWishBook(@LoginMember Member member) {
-        return bookService.getAllWishBook(member);
-    }
-
-    @GetMapping("/test/readBook")
-    public ResponseEntity<?> testReadBook(@LoginMember Member member) {
-        return bookService.testReadBook(member);
-    }
-
     @GetMapping("/search/readbook")
-    public List<AllBookResponseDto>tt(@RequestParam String query) {
-        return bookService.findRegisteredBook(query);
+    public List<AllBookResponseDto> findBookBySearch(@RequestParam final String query) {
+        return bookService.findBookBySearch(query);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getDetail(@PathVariable final Long id) {
+        BookResponseDto bookResponseDto = bookService.getDetailBook(id);
+        return new ResponseEntity<>(bookResponseDto, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<?> getPopularKeyword() {
+        return bookService.getPopularKeyword();
+    }
 
 }
+

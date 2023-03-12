@@ -1,5 +1,6 @@
 package com.project.book.member.controller;
 
+import com.project.book.book.service.BookService;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
@@ -10,25 +11,33 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/member")
 public class MemberController {
 
     private final MemberService memberService;
-
-    @GetMapping("/me")
-    public ResponseEntity<MemberResponse> getMember(@LoginMember Member member) {
-        return ResponseEntity.ok(MemberResponse.from(member));
-    }
+    private final BookService bookService;
 
     @GetMapping(value = "/checkPosition")
-    public ResponseEntity<?> checkPosition(@LoginMember Member member) {
+    public ResponseEntity<?> checkPosition(@LoginMember final Member member) {
         return memberService.checkPosition(member);
     }
 
     @PostMapping("/selectPosition")
-    public ResponseEntity<?> selectPosition(@LoginMember Member member, @RequestBody PositionResponseDto request) {
-        System.out.println("request.getPosition = " + request.getPosition());
+    public ResponseEntity<?> selectPosition(@LoginMember final Member member, @RequestBody @Valid final PositionResponseDto request) {
         return memberService.addPosition(member, request.getPosition());
+    }
+
+    @GetMapping("/wish")
+    public ResponseEntity<?> getAllWishBook(@LoginMember final Member member) {
+        return bookService.getMyWishBook(member);
+    }
+
+    @GetMapping("/readBook")
+    public ResponseEntity<?> getMyReadBook(@LoginMember final Member member) {
+        return bookService.getMyReadBook(member);
     }
 }

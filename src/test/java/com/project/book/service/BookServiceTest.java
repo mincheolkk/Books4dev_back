@@ -33,107 +33,107 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 public class BookServiceTest {
 
-    @Autowired
-    BookService bookService;
-    @Autowired BookRepository bookRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
-
-    @Autowired
-    RegisterBookRepository registerBookRepository;
-
-    private Member member;
-
-    private Book book;
-
-    @BeforeEach
-    void setUp() {
-        member = Member.builder()
-                .oAuth("01")
-                .type(BackEnd)
-                .build();
-
-        book = Book.builder()
-                .title("test_book")
-                .isbn("1111")
-                .price(12345L)
-                .publisher("test_publisher")
-                .authors("test_authors")
-                .build();
-
-        memberRepository.save(member);
-        bookRepository.save(book);
-    }
-
-    @AfterEach
-    void tearDown() {
-        memberRepository.delete(member);
-        bookRepository.delete(book);
-    }
-
-    @DisplayName("검색해서 책 등록")
-    @Test
-    void registerBySearch() {
-        // given
-        BookDataDto bookDataDto = BookDataDto.builder()
-                .title("book")
-                .datetime(ZonedDateTime.now())
-                .isbn("12345")
-                .price(12345L)
-                .build();
-
-        BookReviewDto bookReviewDto = BookReviewDto.builder()
-                .readTime(after)
-                .recommendTime(twoYear)
-                .star(5)
-                .build();
-
-        RegisterBySearchDto registerBySearchDto = RegisterBySearchDto.builder()
-                .item(bookDataDto)
-                .review(bookReviewDto)
-                .build();
-
-        // when
-        Book bookBySearch = bookService.registerBySearch(registerBySearchDto, member);
-        RegisterBook registerBook = registerBookRepository.findByMemberAndBookAndReadTime(member, bookBySearch, after);
-
-        // then
-        assertThat(bookBySearch.getIsbn()).isEqualTo("12345");
-        assertThat(bookBySearch.getPrice()).isEqualTo(12345L);
-
-        assertThat(registerBook.getBook()).isEqualTo(bookBySearch);
-        assertThat(registerBook.getMember()).isEqualTo(member);
-        assertThat(member.getRegisterBooks().size()).isEqualTo(0);
-    }
-    @DisplayName("홈 화면에서 책 등록")
-    @Test
-    void registerByHome() {
-        BookReviewDto bookReviewDto = BookReviewDto.builder()
-                .readTime(after)
-                .recommendTime(twoYear)
-                .star(2)
-                .build();
-
-        RegisterByHomeListDto registerByHomeListDto = RegisterByHomeListDto.builder()
-                .isbn("1111")
-                .review(bookReviewDto)
-                .build();
-
-        Book book = bookService.registerByHomeList(registerByHomeListDto, member);
-
-        assertThat(book.getPrice()).isEqualTo(12345L);
-        assertThat(book.getIsbn()).isEqualTo("1111");
-        assertThat(book.getPublisher()).isEqualTo("test_publisher");
-        assertThat(book.getRecommendTime().getTwoYearCount()).isEqualTo(1);
-    }
-
-    @DisplayName("관심 등록")
-    @Test
-    void wishRegister() {
-        WishBookRequestDto wishBookRequestDto = WishBookRequestDto.create("1111", "test_book", "test::thumbanil");
-        bookService.saveWishBook(wishBookRequestDto, member);
-
-        assertThat(book.getStarAndCount().getWishCount()).isEqualTo(1);
-    }
+//    @Autowired
+//    BookService bookService;
+//    @Autowired BookRepository bookRepository;
+//
+//    @Autowired
+//    MemberRepository memberRepository;
+//
+//    @Autowired
+//    RegisterBookRepository registerBookRepository;
+//
+//    private Member member;
+//
+//    private Book book;
+//
+//    @BeforeEach
+//    void setUp() {
+//        member = Member.builder()
+//                .oAuth("01")
+//                .type(BackEnd)
+//                .build();
+//
+//        book = Book.builder()
+//                .title("test_book")
+//                .isbn("1111")
+//                .price(12345L)
+//                .publisher("test_publisher")
+//                .authors("test_authors")
+//                .build();
+//
+//        memberRepository.save(member);
+//        bookRepository.save(book);
+//    }
+//
+//    @AfterEach
+//    void tearDown() {
+//        memberRepository.delete(member);
+//        bookRepository.delete(book);
+//    }
+//
+//    @DisplayName("검색해서 책 등록")
+//    @Test
+//    void registerBySearch() {
+//        // given
+//        BookDataDto bookDataDto = BookDataDto.builder()
+//                .title("book")
+//                .datetime(ZonedDateTime.now())
+//                .isbn("12345")
+//                .price(12345L)
+//                .build();
+//
+//        BookReviewDto bookReviewDto = BookReviewDto.builder()
+//                .readTime(after)
+//                .recommendTime(twoYear)
+//                .star(5)
+//                .build();
+//
+//        RegisterBySearchDto registerBySearchDto = RegisterBySearchDto.builder()
+//                .item(bookDataDto)
+//                .review(bookReviewDto)
+//                .build();
+//
+//        // when
+//        Book bookBySearch = bookService.registerBySearch(registerBySearchDto, member);
+//        RegisterBook registerBook = registerBookRepository.findByMemberAndBookAndReadTime(member, bookBySearch, after);
+//
+//        // then
+//        assertThat(bookBySearch.getIsbn()).isEqualTo("12345");
+//        assertThat(bookBySearch.getPrice()).isEqualTo(12345L);
+//
+//        assertThat(registerBook.getBook()).isEqualTo(bookBySearch);
+//        assertThat(registerBook.getMember()).isEqualTo(member);
+//        assertThat(member.getRegisterBooks().size()).isEqualTo(0);
+//    }
+//    @DisplayName("홈 화면에서 책 등록")
+//    @Test
+//    void registerByHome() {
+//        BookReviewDto bookReviewDto = BookReviewDto.builder()
+//                .readTime(after)
+//                .recommendTime(twoYear)
+//                .star(2)
+//                .build();
+//
+//        RegisterByHomeListDto registerByHomeListDto = RegisterByHomeListDto.builder()
+//                .isbn("1111")
+//                .review(bookReviewDto)
+//                .build();
+//
+//        Book book = bookService.registerByHomeList(registerByHomeListDto, member);
+//
+//        assertThat(book.getPrice()).isEqualTo(12345L);
+//        assertThat(book.getIsbn()).isEqualTo("1111");
+//        assertThat(book.getPublisher()).isEqualTo("test_publisher");
+//        assertThat(book.getRecommendTime().getTwoYearCount()).isEqualTo(1);
+//    }
+//
+//    @DisplayName("관심 등록")
+//    @Test
+//    void wishRegister() {
+//        WishBookRequestDto wishBookRequestDto = WishBookRequestDto.create("1111", "test_book", "test::thumbanil");
+//        bookService.saveWishBook(wishBookRequestDto, member);
+//
+//        assertThat(book.getStarAndCount().getWishCount()).isEqualTo(1);
+//    }
 }

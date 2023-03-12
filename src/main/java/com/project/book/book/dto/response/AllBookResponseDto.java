@@ -1,38 +1,38 @@
 package com.project.book.book.dto.response;
 
-import com.project.book.book.domain.RecommendTime;
+import com.project.book.book.domain.BookTimeCount;
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AllBookResponseDto {
 
+    private Long id;
     private String title;
     private String authors;
-    private String publisher;
     private String thumbnail;
     private String isbn;
-    private Long price;
 
     private double avgStar;
-    private Integer registerCount;
-    private RecommendTime recommendTimeDto;
-
+    private Integer readCount;
     private Integer wishCount;
+    private Integer commentCount;
+    private BookTimeCount recommendTime;
 
     @QueryProjection
-    public AllBookResponseDto(String title, String authors, String publisher, String thumbnail, String isbn, Long price, double avgStar, Integer registerCount, RecommendTime recommendTimeDto, Integer wishCount) {
+    public AllBookResponseDto(Long id, String title, String authors, String thumbnail, String isbn, double avgStar, Integer readCount, Integer wishCount, Integer commentCount, BookTimeCount recommendTime) {
+        this.id = id;
         this.title = title;
         this.authors = authors;
-        this.publisher = publisher;
         this.thumbnail = thumbnail;
         this.isbn = isbn;
-        this.price = price;
         this.avgStar = avgStar;
-        this.registerCount = registerCount;
-        this.recommendTimeDto = recommendTimeDto;
+        this.readCount = readCount;
         this.wishCount = wishCount;
+        this.commentCount = commentCount;
+        this.recommendTime = recommendTime;
     }
 }

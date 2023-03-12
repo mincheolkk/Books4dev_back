@@ -1,5 +1,7 @@
 package com.project.book.book.dto.request;
 
+import com.project.book.book.domain.Book;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,7 +9,11 @@ import lombok.NoArgsConstructor;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+import static com.project.book.common.utils.ServiceUtils.listToString;
+
+@Builder
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 public class BookDataDto {
 
@@ -19,16 +25,23 @@ public class BookDataDto {
     private String publisher;
     private Long price;
     private String thumbnail;
+    private String contents;
 
-    @Builder
-    public BookDataDto(String title, List<String> authors, List<String> translators, String isbn, ZonedDateTime datetime, String publisher, Long price, String thumbnail) {
-        this.title = title;
-        this.authors = authors;
-        this.translators = translators;
-        this.isbn = isbn;
-        this.datetime = datetime;
-        this.publisher = publisher;
-        this.price = price;
-        this.thumbnail = thumbnail;
+    public Book toBook() {
+        return Book.builder()
+                .authors(listToString(this.authors))
+                .translators(listToString(this.translators))
+                .title(this.title)
+                .publisher(this.publisher)
+                .price(this.price)
+                .thumbnail(this.thumbnail)
+                .releaseDate(this.datetime != null ? this.datetime.toLocalDateTime() : null)
+                .isbn(this.isbn)
+                .contents(this.contents)
+                .build();
+    }
+
+    public Boolean validCheck() {
+        return this.isbn.length() < 1 ? false : true;
     }
 }
