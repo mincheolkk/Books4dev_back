@@ -1,17 +1,12 @@
 package com.project.book.common;
 
-import com.project.book.common.exception.InvalidAccessTokenException;
-import com.project.book.common.exception.InvalidRefreshTokenException;
-import com.project.book.common.exception.MemberNotFoundException;
-import com.project.book.common.exception.TooManyRequestException;
+import com.project.book.common.exception.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,7 +35,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(errorResponse);
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
+    @ExceptionHandler({
+            MemberNotFoundException.class,
+            ContentNotFoundException.class
+    })
     public ResponseEntity<ErrorResponse> handleNotFoundException(final RuntimeException e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
@@ -62,5 +60,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleTokenValidException(final Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler({
+            InvalidOwnerException.class,
+            ExistNicknameException.class
+    })
+    public ResponseEntity<ErrorResponse> handleInvalidOwnerException(final Exception e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorResponse);
     }
 }
