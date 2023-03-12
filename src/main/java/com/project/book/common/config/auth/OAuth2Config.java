@@ -24,8 +24,6 @@ public class OAuth2Config {
                 .clientSecret(clientSecret)
                 .build();
 
-        System.out.println("clientRegistration = " + clientRegistration);
-
         return new InMemoryClientRegistrationRepository(Collections.singletonList(
                 clientRegistration
         ));
