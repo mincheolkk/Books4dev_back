@@ -45,15 +45,16 @@ public class AuthService {
     }
 
     @Transactional
-    public void logOut(final Member member, final HttpServletRequest request) {
+    public void logOut(final HttpServletRequest request) {
         String accessToken = authExtractor.extract(request);
+        String oAuth = (String) request.getAttribute("oAuth");
         redisUtil.setBlackList(accessToken,"blackList",ACCESS_TOKEN_VALID_TIME);
-        redisUtil.deleteRefreshTokenData(member.getOAuth());
+        redisUtil.deleteRefreshTokenData(oAuth);
     }
 
     @Transactional
-    public ResponseEntity getRefresh(final Member member) {
-        String oAuth = member.getOAuth();
+    public ResponseEntity getRefresh(final HttpServletRequest request) {
+        String oAuth = (String) request.getAttribute("oAuth");
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
