@@ -1,6 +1,6 @@
 package com.project.book.common.utils;
 
-import com.project.book.book.dto.response.RankingResponseDto;
+import com.project.book.book.dto.response.KeywordScoreResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,32 +32,49 @@ public class RedisUtil {
         this.keywordTemplate = keywordTemplate;
     }
 
+    private static final String RANKING = "ranking";
 
-    public void setRefreshToken(String key, String value, long duration) {
+    public void setRefreshToken(final String key, final String value, final long duration) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         Duration expireDuration = Duration.ofMillis(duration);
         valueOperations.set(key, value, expireDuration);
     }
 
-    public void deleteRefreshTokenData(String key) {
+    public void deleteRefreshTokenData(final String key) {
         loginTemplate.delete(key);
     }
 
-    public String getRefreshTokenData(String key) {
+    public String getRefreshTokenData(final String key) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         return valueOperations.get(key);
     }
 
-    public void setBlackList(String key, String value, long duration) {
+    public void setBlackList(final String key, final String value, final long duration) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         Duration expireDuration = Duration.ofMillis(duration);
         valueOperations.set(key, value, expireDuration);
     }
 
-    public String getBlackListData(String key) {
+    public String getBlackListData(final String key) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         return valueOperations.get(key);
     }
 
+    public void incrementRankingScore(final String keyword) {
+        rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
+    }
 
+    public List<KeywordScoreResponseDto> getTopThree() {
+        Set<TypedTuple<String>> typedTuples = rankingTemplate.opsForZSet().reverseRangeWithScores(RANKING, 0, 2);
+        return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
+    }
+
+    public List<KeywordScoreResponseDto> getKeyword(final Long id) {
+        Set<TypedTuple<String>> typedTuples = keywordTemplate.opsForZSet().reverseRangeWithScores(id, 0, 2);
+        return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
+    }
+
+    public void incrementKeywordScore(final Long id, final String keyword) {
+        keywordTemplate.opsForZSet().incrementScore(id, keyword, 1);
+    }
 }
