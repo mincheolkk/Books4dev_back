@@ -1,14 +1,18 @@
 package com.project.book.book.dto.request;
 
 import com.project.book.book.domain.Book;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.project.book.common.utils.ServiceUtils.listToString;
 
+@Builder
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
-public class saveBookFromKakaoDto {
+public class SaveBookFromSearchDto {
 
     private BookDataDto item;
     private BookReviewDto review;

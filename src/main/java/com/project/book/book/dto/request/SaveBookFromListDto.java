@@ -7,14 +7,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RegisterByHomeListDto {
+@NoArgsConstructor
+public class SaveBookFromListDto {
 
     public String isbn;
     public BookReviewDto review;
 
     @Builder
-    public RegisterByHomeListDto(String isbn, BookReviewDto review) {
+    public SaveBookFromListDto(String isbn, BookReviewDto review) {
         this.isbn = isbn;
         this.review = review;
     }
