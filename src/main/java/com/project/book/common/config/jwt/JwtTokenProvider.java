@@ -2,6 +2,7 @@ package com.project.book.common.config.jwt;
 
 import com.project.book.member.domain.Token;
 import io.jsonwebtoken.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
@@ -12,8 +13,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-//    @Value("${security.oauth2.resource.jwt.key-value}")
-    private static String secretKey = "sdsfadsfewqrgewqrgavsyhyjmyfur5tym5346234gbbh3e4r5fq324453254";
+    @Value("${security.oauth2.resource.jwt.key-value}")
+    private String secretKey;
 
     public static long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L;
     public static long REFRESH_TOKEN_VALID_TIME = 24 * 60 * 60 * 1000L;
@@ -37,14 +38,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
-//    public String getPayload(String token) {
-//        return Jwts.parser()
-//                .setSigningKey(secretKey)
-//                .parseClaimsJws(token)
-//                .getBody()
-//                .getSubject();
-//    }
     public Claims getPayload(final String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
