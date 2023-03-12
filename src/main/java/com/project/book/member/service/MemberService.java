@@ -1,5 +1,6 @@
 package com.project.book.member.service;
 
+import com.project.book.common.exception.ExistNicknameException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
 import com.project.book.member.repository.MemberRepository;
@@ -27,6 +28,16 @@ public class MemberService {
     public ResponseEntity<?> addPosition(final Member member, final MemberType position) {
         member.updateMemberPosition(position);
         memberRepository.save(member);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    public ResponseEntity<?> addNickname(final Member member, final String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new ExistNicknameException();
+        }
+        member.updateMemberNickname(nickname);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

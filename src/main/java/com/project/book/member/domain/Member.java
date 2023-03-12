@@ -1,14 +1,10 @@
 package com.project.book.member.domain;
 
-import com.project.book.book.domain.RegisterBook;
-import com.project.book.book.domain.WishMember;
 import com.project.book.common.domain.BaseEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import java.util.HashSet;
-import java.util.Set;
 
 @Builder
 @Getter
@@ -36,5 +32,9 @@ public class Member extends BaseEntity {
 
     public void updateMemberPosition(final MemberType position) {
         this.type = position;
+    }
+
+    public void updateMemberNickname(final String nickname) {
+        this.nickname = nickname;
     }
 }

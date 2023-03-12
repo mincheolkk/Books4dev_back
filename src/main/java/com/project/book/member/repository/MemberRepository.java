@@ -11,4 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Member findByoAuth(final String oAuth);
 
     boolean existsByoAuth(final String oAuth);
+
+    boolean existsByNickname(final String nickname);
 }
