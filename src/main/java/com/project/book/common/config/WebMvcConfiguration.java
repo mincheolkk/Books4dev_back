@@ -1,5 +1,7 @@
-package com.project.book.common.config.jwt;
+package com.project.book.common.config;
 
+import com.project.book.common.config.jwt.BearerAuthInterceptor;
+import com.project.book.common.config.jwt.MemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -11,7 +13,7 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class WebMvcConfig implements WebMvcConfigurer {
+public class WebMvcConfiguration implements WebMvcConfigurer {
 
     private final MemberArgumentResolver MemberArgumentResolver;
     private final BearerAuthInterceptor bearerAuthInterceptor;
@@ -23,11 +25,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(final InterceptorRegistry registry) {
-        final List<String> pathPatterns = Arrays.asList(
-//               "/todo",
-                "/member/login/**", "/book/login/**","/update/token");
+        final List<String> pathPatterns = List.of(
+                "/auth/out","/auth/refreshtoken"
+        );
         registry.addInterceptor(bearerAuthInterceptor).addPathPatterns(pathPatterns);
-
-        System.out.println("in WebMvcConfig on addInterceptors");
     }
 }
