@@ -17,15 +17,21 @@ public class Count {
 
     private Integer wishCount;
 
+    private Integer commentCount;
+
     public static Count init() {
-        return new Count(0,0);
+        return new Count(0,0,0);
     }
 
-    public void readCount(final int count) {
+    public void calculateReadCount(final int count) {
         this.readCount += count;
     }
 
-    public void plusWishCount() {
-        this.wishCount += 1;
+    public void calculateWishCount(final int count) {
+        this.wishCount += count;
+    }
+
+    public void calculateCommentCount(final int count) {
+        this.commentCount += count;
     }
 }

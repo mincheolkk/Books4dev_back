@@ -34,7 +34,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.title, book.authors, book.thumbnail,
                         book.isbn, book.star.avgStar,
-                        book.count.readCount, book.count.wishCount, book.recommendTime))
+                        book.count.readCount, book.count.wishCount, book.count.commentCount,book.recommendTime))
                 .from(book)
                 .join(book.readBooks, readBook)
                 .join(readBook.member, member)
@@ -57,7 +57,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.title, book.authors, book.thumbnail,
                         book.isbn, book.star.avgStar,
-                        book.count.readCount, book.count.wishCount, book.recommendTime))
+                        book.count.readCount, book.count.wishCount, book.count.commentCount, book.recommendTime))
                 .from(book)
                 .where(
                         bookSearchBooleanBuilder(text)
