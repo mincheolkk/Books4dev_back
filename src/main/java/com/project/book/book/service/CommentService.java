@@ -33,31 +33,26 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment saveComment(final Member member, final Long bookId, final SaveCommentRequestDto request) {
-        Comment comment = request.toComment(member.getId(), bookId, member.getNickname(), member.getOAuth());
+    public Long saveComment(final Member member, final Long bookId, final SaveCommentRequestDto request) {
+        Comment comment = request.toComment(member.getId(), bookId, member.getNickname().getNickname(), member.getOAuth());
         commentRepository.save(comment);
 
         Book book = bookRepository.findById(bookId).orElseThrow(
                 () -> new ContentNotFoundException());
 
         book.calculateCommentCount(1);
-        bookRepository.save(book);
-        return comment;
+        return comment.getId();
     }
 
     @Transactional
     public ResponseEntity<?> deleteComment(final Member member, final Long commentId) {
-
-        Comment comment = checkComment(member, commentId);
-
+        Comment comment = validateOwner(member, commentId);
         comment.changeDeleteYn(DeleteYn.Y);
-        commentRepository.save(comment);
 
         Long bookId = comment.getBookId();
         Book book = bookRepository.findById(bookId).orElseThrow(
                 () -> new ContentNotFoundException());
         book.calculateCommentCount(-1);
-        bookRepository.save(book);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
@@ -65,15 +60,14 @@ public class CommentService {
     @Transactional
     public ResponseEntity<?> updateComment(final Member member, final Long commentId,
                                            final SaveCommentRequestDto request) {
-        Comment comment = checkComment(member, commentId);
+        Comment comment = validateOwner(member, commentId);
 
         comment.updateContent(request.getContent());
-        commentRepository.save(comment);
 
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private Comment checkComment(final Member member, final Long commentId) {
+    private Comment validateOwner(final Member member, final Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(
                 () -> new ContentNotFoundException());
 
