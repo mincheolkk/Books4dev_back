@@ -1,7 +1,7 @@
 package com.project.book.common.config.jwt;
 
 import com.project.book.common.exception.InvalidAccessTokenException;
-import com.project.book.member.repository.MemberRepository;
+import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.dto.LoginMemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -18,9 +18,8 @@ import java.util.Optional;
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final AuthorizationExtractor authExtractor;
 
     @Override
@@ -36,6 +35,9 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         String token = authExtractor.extract(request);
+        if (redisUtil.getBlackList(token) != null) {
+            return new InvalidAccessTokenException();
+        }
 
         String oAuth = Optional.ofNullable(token)
                 .filter(t -> jwtTokenProvider.validateToken(t))
