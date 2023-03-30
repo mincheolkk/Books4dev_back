@@ -10,7 +10,8 @@ public enum BookSortType {
 
     COUNT("COUNT", book.count.readCount.desc()),
     STAR("STAR", book.star.avgStar.desc()),
-    WISH("WISH", book.count.wishCount.desc());
+    WISH("WISH", book.count.wishCount.desc()),
+    COMMENT("COMMENT", book.count.commentCount.desc());
 
     private final String name;
     private final OrderSpecifier<?> orderSpecifier;
@@ -27,8 +28,8 @@ public enum BookSortType {
                 .orElse(COUNT);
     }
 
-
     public OrderSpecifier<?> getOrderSpecifier() {
         return orderSpecifier;
     }
 }
+
