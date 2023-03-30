@@ -13,8 +13,8 @@ import static org.springframework.data.domain.PageRequest.*;
 @AllArgsConstructor
 public class CustomPageRequest {
 
-    private static final int DEFAULT_PAGE_LIMIT = 30;
-    private static final int DEFAULT_PAGE_OFFSET = 0;
+    private static final int DEFAULT_PAGE_LIMIT = 10;
+    private static final int DEFAULT_PAGE_OFFSET = 1;
     private static final int MIN_DISPLAY_LIMIT = 1;
     private static final int MAX_DISPLAY_LIMIT = 100;
 
@@ -24,7 +24,7 @@ public class CustomPageRequest {
     public Pageable toPageable() {
         setAsOffset();
         setAsLimit();
-        return of(offset, limit, Sort.by(Sort.Direction.DESC, "id"));
+        return of(offset -1 , limit, Sort.by(Sort.Direction.DESC, "id"));
     }
 
     private void setAsOffset() {
