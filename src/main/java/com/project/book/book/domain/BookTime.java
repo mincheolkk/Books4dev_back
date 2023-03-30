@@ -10,9 +10,9 @@ public enum BookTime {
 
     before("before",book.recommendTime.beforeCount.desc()),
     after("after",  book.recommendTime.afterCount.desc()),
-    twoYear("twoYear", book.recommendTime.twoYearCount.desc()),
-    fiveYear("fiveYear", book.recommendTime.fiveYearCount.desc()),
-    tenYear("tenYear",  book.recommendTime.tenYearCount.desc()),
+    threeYear("threeYear", book.recommendTime.threeYearCount.desc()),
+    sixYear("sixYear", book.recommendTime.sixYearCount.desc()),
+    anyTime("anyTime",  book.recommendTime.anyTimeCount.desc()),
     All("All", book.star.avgStar.desc());
 
     private final String name;

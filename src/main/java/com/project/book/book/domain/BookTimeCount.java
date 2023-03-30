@@ -7,17 +7,17 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 
+@Getter
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Getter
 public class BookTimeCount {
 
     private Integer beforeCount;
     private Integer afterCount;
-    private Integer twoYearCount;
-    private Integer fiveYearCount;
-    private Integer tenYearCount;
+    private Integer threeYearCount;
+    private Integer sixYearCount;
+    private Integer anyTimeCount;
 
     public static BookTimeCount init() {
         return new BookTimeCount(0, 0, 0, 0, 0);
@@ -31,14 +31,14 @@ public class BookTimeCount {
             case after:
                 this.afterCount += count;
                 return;
-            case twoYear:
-                this.twoYearCount += count;
+            case threeYear:
+                this.threeYearCount += count;
                 return;
-            case fiveYear:
-                this.fiveYearCount += count;
+            case sixYear:
+                this.sixYearCount += count;
                 return;
-            case tenYear:
-                this.tenYearCount += count;
+            case anyTime:
+                this.anyTimeCount += count;
                 return;
         }
     }
