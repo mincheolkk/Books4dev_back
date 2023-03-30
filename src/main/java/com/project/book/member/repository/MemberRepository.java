@@ -1,7 +1,8 @@
 package com.project.book.member.repository;
 
 import com.project.book.member.domain.Member;
-import java.util.Optional;
+
+import com.project.book.member.domain.Nickname;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByoAuth(final String oAuth);
 
-    boolean existsByNickname(final String nickname);
+    boolean existsByNickname(final Nickname nickname);
+
 }

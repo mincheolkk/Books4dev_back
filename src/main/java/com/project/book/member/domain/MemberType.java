@@ -6,13 +6,8 @@ import lombok.Getter;
 public enum MemberType {
     BackEnd,
     FrontEnd,
-    iOS,
-    Android,
     DevOps,
     AInML,
-    DATA,
-    BlockChian,
     ETC,
     All;
-
 }
