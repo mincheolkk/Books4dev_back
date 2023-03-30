@@ -1,7 +1,7 @@
 package com.project.book.member.service;
 
-import com.project.book.common.config.jwt.JwtTokenProvider;
 import com.project.book.member.domain.Member;
+import com.project.book.member.domain.Nickname;
 import com.project.book.member.repository.MemberRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -14,11 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
-    private final JwtTokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
-    public CustomOAuth2UserService(JwtTokenProvider tokenProvider, MemberRepository memberRepository) {
-        this.tokenProvider = tokenProvider;
+    public CustomOAuth2UserService(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
@@ -32,8 +30,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         String id = String.valueOf(oAuth2User.getAttributes().get("id"));
 
         if (!memberRepository.existsByoAuth(id)) {
+            Nickname nickname = new Nickname(id);
             Member newMember = Member.builder()
                     .oAuth(id)
+                    .nickname(nickname)
                     .build();
 
             memberRepository.save(newMember);
