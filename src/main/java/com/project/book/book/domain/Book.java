@@ -20,32 +20,8 @@ public class Book extends BaseEntity {
     @Column(name = "book_id")
     private Long id;
 
-    @Column(name = "book_isbn", unique = true)
-    private String isbn;
-
-    @Column(name = "book_title")
-    private String title;
-
-    @Column(name = "book_publisher")
-    private String publisher;
-
-    @Column(name = "book_dateTime")
-    private LocalDateTime releaseDate;
-
-    @Column(name = "book_price" )
-    private Long price;
-
-    @Column(name = "book_thumbnail")
-    private String thumbnail;
-
-    @Column(name = "book_authors")
-    private String authors;
-
-    @Column(name = "book_translator")
-    private String translators;
-
-    @Column(name = "book_contents", columnDefinition = "TEXT")
-    private String contents;
+    @Embedded
+    private BookInfo bookInfo;
 
     @Embedded
     private Star star;
@@ -56,7 +32,7 @@ public class Book extends BaseEntity {
     @Embedded
     private BookTimeCount recommendTime;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", orphanRemoval = true)
     private List<ReadBook> readBooks = new ArrayList<>();
 
     public void calculateReadCount(final long count) {
@@ -80,16 +56,9 @@ public class Book extends BaseEntity {
     }
 
     @Builder
-    public Book(String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents,Star star, Count count, BookTimeCount recommendTime) {
-        this.isbn = isbn;
-        this.title = title;
-        this.publisher = publisher;
-        this.releaseDate = releaseDate;
-        this.price = price;
-        this.thumbnail = thumbnail;
-        this.authors = authors;
-        this.translators = translators;
-        this.contents = contents;
+    public Book(Long id, BookInfo bookInfo) {
+        this.id = id;
+        this.bookInfo = bookInfo;
         this.star = Star.init();
         this.count = Count.init();
         this.recommendTime = BookTimeCount.init();
