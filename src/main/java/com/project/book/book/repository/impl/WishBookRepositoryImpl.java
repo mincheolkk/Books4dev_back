@@ -32,7 +32,7 @@ public class WishBookRepositoryImpl implements WishBookRepositoryCustom {
     @Override
     public List<WishBookResponseDto> getAllWishBook(final Member member) {
         List<WishBookResponseDto> fetch = queryFactory.select(new QWishBookResponseDto(
-                        book.id, book.title, book.isbn, book.thumbnail
+                        book.id, book.bookInfo.title, book.bookInfo.isbn, book.bookInfo.thumbnail
                 ))
                 .from(wishBook)
                 .join(wishBook.book, book)
