@@ -38,11 +38,12 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public Claims getPayload(final String token) {
+    public String getPayload(final String token) {
         return Jwts.parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
-                .getBody();
+                .getBody()
+                .getSubject();
     }
 
     public boolean validateToken(final String token) {
