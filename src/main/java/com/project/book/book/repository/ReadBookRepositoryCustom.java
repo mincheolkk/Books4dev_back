@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface ReadBookRepositoryCustom {
 
-    Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(final Member member);
+    Map<BookTime, List<ReadBookResponseDto>> getMemberReadBook(final Member member);
 
     ReadBook findByMemberAndBookAndReadTime(final Member member, final Book savedBook, final BookTime readTime);
 

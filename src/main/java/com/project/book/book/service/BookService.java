@@ -61,8 +61,8 @@ public class BookService {
         return newBook;
     }
 
-    public void saveKeyword(final Long id, final String keyword) {
-        redisUtil.incrementKeywordScore(id, keyword);
+    public void saveKeyword(final Long bookId, final String keyword) {
+        redisUtil.incrementKeywordScore(bookId, keyword);
     }
 
     // 책 등록 (카카오 데이터로 등록 제외)
@@ -172,7 +172,7 @@ public class BookService {
     public ResponseEntity<?> getMemberReadBook(final Long id) {
         String oauth = String.valueOf(id);
         Member member = memberRepository.findByoAuth(oauth);
-        Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = readBookRepository.getMyReadBook(member);
+        Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = readBookRepository.getMemberReadBook(member);
         return new ResponseEntity<>(bookTimeListMap, HttpStatus.ACCEPTED);
     }
 
@@ -197,7 +197,7 @@ public class BookService {
     }
 
     public ResponseEntity<?> getPopularKeyword() {
-        List<KeywordScoreResponseDto> topThree = redisUtil.getTopThree();
+        List<KeywordScoreResponseDto> topThree = redisUtil.getPopularKeyword();
         return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);
     }
 }
