@@ -13,7 +13,7 @@ public enum BookTime {
     threeYear("threeYear", book.recommendTime.threeYearCount.desc()),
     sixYear("sixYear", book.recommendTime.sixYearCount.desc()),
     anyTime("anyTime",  book.recommendTime.anyTimeCount.desc()),
-    All("All", book.star.avgStar.desc());
+    All("All", book.count.readCount.desc());
 
     private final String name;
     private final OrderSpecifier<?> orderSpecifier;
