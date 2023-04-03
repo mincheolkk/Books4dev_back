@@ -10,6 +10,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class KakaoBookDto {
 
-    private List<KaKaoBookInfoDto> documents;
+    private List<KakaoBookInfoDto> documents;
 
 }
