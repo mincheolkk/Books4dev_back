@@ -1,14 +1,9 @@
 package com.project.book.book.dto.response;
 
 
-import com.project.book.book.domain.WishMember;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @NoArgsConstructor
 @Getter
