@@ -1,16 +1,13 @@
 package com.project.book.book.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.book.book.dto.request.BookReviewDto;
 import com.project.book.common.domain.BaseEntity;
 import com.project.book.member.domain.Member;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @DynamicUpdate
 @Getter
@@ -22,42 +19,36 @@ public class ReadBook extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private Book book;
 
+    @NotNull
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     public BookTime readBookTime;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     public BookTime recommendBookTime;
 
+    @NotNull
     private double star;
 
     @Builder
-    public ReadBook(Long id, Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
-        this.id = id;
+    public ReadBook(Book book, Member member, BookTime readBookTime, BookTime recommendBookTime, Integer star) {
         this.book = book;
         this.member = member;
         this.readBookTime = readBookTime;
         this.recommendBookTime = recommendBookTime;
         this.star = (double) star;
-    }
-
-    public static ReadBook toReadBook(final Member member, final Book book, final BookReviewDto request) {
-        return ReadBook.builder()
-                .book(book)
-                .readBookTime(request.getReadTime())
-                .recommendBookTime(request.getRecommendTime())
-                .star(request.getStar())
-                .member(member)
-                .build();
     }
 
     public void updateReadBook(final Integer star, final BookTime recommendBookTime) {

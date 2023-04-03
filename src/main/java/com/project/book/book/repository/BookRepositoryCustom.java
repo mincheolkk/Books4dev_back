@@ -17,4 +17,6 @@ public interface BookRepositoryCustom {
 
     List<AllBookResponseDto> findBookBySearch(final String text);
 
+    Long countAllBooks(final AllBookFilterDto condition);
+
 }

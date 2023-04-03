@@ -1,9 +1,8 @@
 package com.project.book.common.config.jwt;
 
-import com.project.book.common.exception.MemberNotFoundException;
-import com.project.book.member.domain.Member;
-import com.project.book.member.repository.MemberRepository;
-import io.jsonwebtoken.Claims;
+import com.project.book.common.exception.InvalidAccessTokenException;
+import com.project.book.common.utils.RedisUtil;
+import com.project.book.member.dto.LoginMemberDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -19,9 +18,8 @@ import java.util.Optional;
 @Component
 public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final RedisUtil redisUtil;
     private final JwtTokenProvider jwtTokenProvider;
-
     private final AuthorizationExtractor authExtractor;
 
     @Override
@@ -37,13 +35,15 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
         String token = authExtractor.extract(request);
-        Claims payload = jwtTokenProvider.getPayload(token);
-        String oAuth = payload.getSubject();
+        if (redisUtil.getBlackList(token) != null) {
+            return new InvalidAccessTokenException();
+        }
 
-        Member member = Optional.ofNullable(oAuth)
-                .map(memberRepository::findByoAuth)
-                .orElseThrow(MemberNotFoundException::new);
+        String oAuth = Optional.ofNullable(token)
+                .filter(t -> jwtTokenProvider.validateToken(t))
+                .map(t -> jwtTokenProvider.getPayload(t))
+                .orElseThrow(InvalidAccessTokenException::new);
 
-        return member;
+        return new LoginMemberDto(oAuth);
     }
 }

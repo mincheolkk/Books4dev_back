@@ -1,8 +1,8 @@
 package com.project.book.member.controller;
 
 import com.project.book.common.config.jwt.LoginMember;
-import com.project.book.member.domain.Member;
-import com.project.book.member.dto.TokenRequest;
+ import com.project.book.member.dto.LoginMemberDto;
+import com.project.book.member.dto.request.TokenRequest;
 import com.project.book.member.dto.response.MemberResponse;
 import com.project.book.member.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -21,28 +21,27 @@ public class AuthController {
     private final AuthService authService;
 
     @GetMapping("/me")
-    public ResponseEntity<MemberResponse> getMember(@LoginMember final Member member) {
-        return ResponseEntity.ok(MemberResponse.from(member));
+    public ResponseEntity<MemberResponse> getMyProfile(@LoginMember final LoginMemberDto loginMemberDto) {
+        return authService.getMyProfile(loginMemberDto.getOAuth());
     }
 
     @PostMapping(value = "/update/token")
-    public ResponseEntity<?> updateAccessToken(@LoginMember final Member member, @RequestBody @Valid final TokenRequest tokenRequest) {
-        String newAccessToken = authService.updateAccessToken(member, tokenRequest);
+    public ResponseEntity<?> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
+        String newAccessToken = authService.updateAccessToken(loginMemberDto.getOAuth(), tokenRequest);
 
         return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     }
 
     @GetMapping(value = "/out")
-    public ResponseEntity<?> logOut(final HttpServletRequest request) {
-        authService.logOut(request);
-
+    public ResponseEntity<?> logOut(final HttpServletRequest request, @LoginMember final LoginMemberDto loginMemberDto) {
+        authService.logOut(request, loginMemberDto.getOAuth());
         return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping(value = "/refreshtoken")
-    public ResponseEntity<?> getRefreshToken(final HttpServletRequest request) {
-        ResponseEntity refresh = authService.getRefresh(request);
+    public ResponseEntity<?> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
+        ResponseEntity refresh = authService.getRefresh(loginMemberDto.getOAuth());
         return ResponseEntity.ok(refresh.getBody());
     }
 }

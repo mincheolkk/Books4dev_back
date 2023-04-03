@@ -2,19 +2,18 @@ package com.project.book.book.controller;
 
 import com.project.book.book.domain.Book;
 import com.project.book.book.dto.request.*;
-import com.project.book.book.dto.response.AllBookResponseDto;
 import com.project.book.book.dto.response.BookResponseDto;
 import com.project.book.book.service.BookService;
 import com.project.book.common.config.jwt.LoginMember;
-import com.project.book.member.domain.Member;
+import com.project.book.member.dto.LoginMemberDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
 
 @RestController
@@ -24,24 +23,25 @@ public class BookController {
 
     private final BookService bookService;
 
-    // 책 저장 로직
+    // 검색을 통한 책 저장
     @PostMapping("/fromSearch")
     public ResponseEntity saveBookFromSearch(
-                                            @LoginMember final Member member,
+                                            @LoginMember final LoginMemberDto loginMemberDto,
                                             @RequestBody @Valid final SaveBookFromSearchDto request
     ) {
-        Book book = bookService.saveBookFromSearch(request, member);
+        Book book = bookService.saveBookFromSearch(loginMemberDto.getOAuth(), request);
         return ResponseEntity.created(
                         URI.create("/book/" + book.getId()))
                 .build();
     }
 
+    // 등록된 책 데이터를 통한 책 저장
     @PostMapping("/fromList")
     public ResponseEntity saveBookFromList(
-                                            @LoginMember final Member member,
+                                            @LoginMember final LoginMemberDto loginMemberDto,
                                             @RequestBody @Valid final SaveBookFromListDto request
     ) {
-        Book book = bookService.saveBookFromList(request, member);
+        Book book = bookService.saveBookFromList(loginMemberDto.getOAuth(), request);
 
         return new ResponseEntity<>(book.getId(), HttpStatus.OK);
 
@@ -49,27 +49,23 @@ public class BookController {
 
     @PostMapping("/wish")
     public ResponseEntity<?> saveWishBook(
-                                            @LoginMember final Member member,
-                                            @RequestBody @Valid final BookDataDto request
+                                            @LoginMember final LoginMemberDto loginMemberDto,
+                                            @RequestBody @Valid final BookInfoDto request
     ) {
-        if (!request.validCheck()) {
+        if (!request.validate()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return bookService.saveWishBook(request, member);
+        return bookService.saveWishBook(loginMemberDto.getOAuth(), request);
     }
 
+    // 전체 책 조회
     @GetMapping("/all")
     public ResponseEntity<?> getAllBooks(
                                         @ModelAttribute final AllBookFilterDto condition,
                                         @ModelAttribute CustomPageRequest customPageRequest) {
-        ResponseEntity<?> result = bookService.getAllBook(condition, customPageRequest.toPageable());
+        Page<?> allBook = bookService.getAllBook(condition, customPageRequest.toPageable());
 
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-
-    @GetMapping("/search/readbook")
-    public List<AllBookResponseDto> findBookBySearch(@RequestParam final String query) {
-        return bookService.findBookBySearch(query);
+        return new ResponseEntity<>(allBook, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -78,6 +74,7 @@ public class BookController {
         return new ResponseEntity<>(bookResponseDto, HttpStatus.ACCEPTED);
     }
 
+    // 인기 검색어 조회
     @GetMapping("/popular")
     public ResponseEntity<?> getPopularKeyword() {
         return bookService.getPopularKeyword();

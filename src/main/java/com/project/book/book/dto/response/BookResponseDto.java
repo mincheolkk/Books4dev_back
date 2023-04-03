@@ -61,21 +61,21 @@ public class BookResponseDto {
         this.topKeywordList = topKeywordList;
     }
 
-    public static BookResponseDto from(final Book book, final BookTimeCount readTime, final List<KeywordScoreResponseDto> topKeywordList) {
+    public static BookResponseDto from(final Book book, final List<KeywordScoreResponseDto> topKeywordList) {
         return BookResponseDto.builder()
                 .id(book.getId())
-                .title(book.getTitle())
-                .contents(book.getContents())
-                .authors(book.getAuthors())
-                .translators(book.getTranslators())
-                .thumbnail(book.getThumbnail())
-                .publisher(book.getPublisher())
-                .price(book.getPrice())
-                .isbn(book.getIsbn())
+                .title(book.getBookInfo().getTitle())
+                .contents(book.getBookInfo().getContents())
+                .authors(book.getBookInfo().getAuthors())
+                .translators(book.getBookInfo().getTranslators())
+                .thumbnail(book.getBookInfo().getThumbnail())
+                .publisher(book.getBookInfo().getPublisher())
+                .price(book.getBookInfo().getPrice())
+                .isbn(book.getBookInfo().getIsbn())
                 .count(book.getCount())
-                .readTime(readTime)
+//                .readTime(readTime)
                 .recommendTime(book.getRecommendTime())
-                .releaseDate(book.getReleaseDate())
+                .releaseDate(book.getBookInfo().getReleaseDate())
                 .star(book.getStar())
                 .topKeywordList(topKeywordList)
                 .build();

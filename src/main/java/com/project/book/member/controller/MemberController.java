@@ -2,10 +2,9 @@ package com.project.book.member.controller;
 
 import com.project.book.book.service.BookService;
 import com.project.book.common.config.jwt.LoginMember;
-import com.project.book.member.domain.Member;
-import com.project.book.member.domain.MemberType;
-import com.project.book.member.dto.response.MemberResponse;
-import com.project.book.member.dto.response.PositionResponseDto;
+import com.project.book.member.dto.LoginMemberDto;
+import com.project.book.member.dto.request.NicknameRequest;
+import com.project.book.member.dto.request.PositionRequest;
 import com.project.book.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,22 +21,33 @@ public class MemberController {
     private final BookService bookService;
 
     @GetMapping(value = "/checkPosition")
-    public ResponseEntity<?> checkPosition(@LoginMember final Member member) {
-        return memberService.checkPosition(member);
+    public ResponseEntity<?> checkPosition(@LoginMember final LoginMemberDto loginMemberDto) {
+        return memberService.hasPosition(loginMemberDto.getOAuth());
     }
 
     @PostMapping("/selectPosition")
-    public ResponseEntity<?> selectPosition(@LoginMember final Member member, @RequestBody @Valid final PositionResponseDto request) {
-        return memberService.addPosition(member, request.getPosition());
+    public ResponseEntity<?> selectPosition(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final PositionRequest request) {
+        return memberService.addPosition(loginMemberDto.getOAuth(), request.getPosition());
     }
 
-    @GetMapping("/wish")
-    public ResponseEntity<?> getAllWishBook(@LoginMember final Member member) {
-        return bookService.getMyWishBook(member);
+    @GetMapping("/{id}/wishBook")
+    public ResponseEntity<?> getMemberWishBook(@PathVariable final Long id) {
+        return bookService.getMemberWishBook(id);
     }
 
-    @GetMapping("/readBook")
-    public ResponseEntity<?> getMyReadBook(@LoginMember final Member member) {
-        return bookService.getMyReadBook(member);
+    @GetMapping("/{id}/readBook")
+    public ResponseEntity<?> getMemberReadBook(@PathVariable final Long id) {
+        return bookService.getMemberReadBook(id);
+    }
+
+    @PostMapping("/nickname")
+    public ResponseEntity<?> saveNickname(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody final NicknameRequest request) {
+        return memberService.addNickname(loginMemberDto.getOAuth(), request);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getMemberProfile(@PathVariable Long id) {
+        return memberService.getMemberProfile(id);
     }
 }
+

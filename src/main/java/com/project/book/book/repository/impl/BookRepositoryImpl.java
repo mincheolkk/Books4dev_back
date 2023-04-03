@@ -32,9 +32,9 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     @Override
     public List<AllBookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageRequest) {
         return queryFactory.select(new QAllBookResponseDto(
-                        book.id, book.title, book.authors, book.thumbnail,
-                        book.isbn, book.star.avgStar,
-                        book.count.readCount, book.count.wishCount, book.count.commentCount,book.recommendTime))
+                        book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
+                        book.bookInfo.isbn, book.star.avgStar,
+                        book.count.readCount, book.count.wishCount, book.count.commentCount, book.recommendTime))
                 .from(book)
                 .join(book.readBooks, readBook)
                 .join(readBook.member, member)
@@ -43,8 +43,9 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                         enumEqCheck(readBook.recommendBookTime, condition.getRecommendType())
                 )
                 .orderBy(
+                        getRecommendTime(condition.getRecommendType()),
                         getBookSortType(condition.getSortType()),
-                        getRecommendTime(condition.getRecommendType())
+                        book.id.asc()
                 )
                 .offset(pageRequest.getOffset())
                 .limit(pageRequest.getPageSize())
@@ -53,14 +54,31 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     }
 
     @Override
+    public Long countAllBooks(final AllBookFilterDto condition) {
+        return queryFactory
+                .selectFrom(book)
+                .join(book.readBooks, readBook)
+                .join(readBook.member, member)
+                .where(
+                        enumEqCheck(readBook.member.type, condition.getMemberType()),
+                        enumEqCheck(readBook.recommendBookTime, condition.getRecommendType())
+                )
+                .distinct().fetchCount();
+    }
+
+    @Override
     public List<AllBookResponseDto> findBookBySearch(final String text) {
         return queryFactory.select(new QAllBookResponseDto(
-                        book.id, book.title, book.authors, book.thumbnail,
-                        book.isbn, book.star.avgStar,
+                        book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
+                        book.bookInfo.isbn, book.star.avgStar,
                         book.count.readCount, book.count.wishCount, book.count.commentCount, book.recommendTime))
                 .from(book)
                 .where(
                         bookSearchBooleanBuilder(text)
+                )
+                .orderBy(
+                        book.count.readCount.desc(),
+                        book.star.avgStar.desc()
                 )
                 .distinct()
                 .fetch();
@@ -78,12 +96,12 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
         BooleanBuilder conditionBuilder = new BooleanBuilder();
 
         if (StringUtils.hasText(text)) {
-                conditionBuilder.and(
-                    stringContainsCheck(book.title, text)
-                            .or(stringContainsCheck(book.contents, text))
-                            .or(stringContainsCheck(book.authors, text))
-                            .or(stringContainsCheck(book.translators, text))
-                            .or(stringContainsCheck(book.publisher, text))
+            conditionBuilder.and(
+                    stringContainsCheck(book.bookInfo.title, text)
+                            .or(stringContainsCheck(book.bookInfo.contents, text))
+                            .or(stringContainsCheck(book.bookInfo.authors, text))
+                            .or(stringContainsCheck(book.bookInfo.translators, text))
+                            .or(stringContainsCheck(book.bookInfo.publisher, text))
             );
         }
 

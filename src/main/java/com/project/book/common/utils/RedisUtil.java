@@ -21,11 +21,10 @@ public class RedisUtil {
     private final StringRedisTemplate rankingTemplate;
     private final RedisTemplate<Long, String> keywordTemplate;
 
-    @Autowired
     public RedisUtil(
-                     @Qualifier("redisTemplateBean") StringRedisTemplate loginTemplate,
-                     @Qualifier("rankingRedisTemplateBean") StringRedisTemplate rankingTemplate,
-                     @Qualifier("keywordRedisTemplateBean") RedisTemplate<Long, String> keywordTemplate
+            @Qualifier("redisTemplateBean") StringRedisTemplate loginTemplate,
+            @Qualifier("rankingRedisTemplateBean") StringRedisTemplate rankingTemplate,
+            @Qualifier("keywordRedisTemplateBean") RedisTemplate<Long, String> keywordTemplate
     ) {
         this.loginTemplate = loginTemplate;
         this.rankingTemplate = rankingTemplate;
@@ -40,11 +39,11 @@ public class RedisUtil {
         valueOperations.set(key, value, expireDuration);
     }
 
-    public void deleteRefreshTokenData(final String key) {
+    public void deleteRefreshToken(final String key) {
         loginTemplate.delete(key);
     }
 
-    public String getRefreshTokenData(final String key) {
+    public String getRefreshToken(final String key) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         return valueOperations.get(key);
     }
@@ -55,7 +54,7 @@ public class RedisUtil {
         valueOperations.set(key, value, expireDuration);
     }
 
-    public String getBlackListData(final String key) {
+    public String getBlackList(final String key) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
         return valueOperations.get(key);
     }
@@ -64,17 +63,17 @@ public class RedisUtil {
         rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
     }
 
-    public List<KeywordScoreResponseDto> getTopThree() {
+    public List<KeywordScoreResponseDto> getPopularKeyword() {
         Set<TypedTuple<String>> typedTuples = rankingTemplate.opsForZSet().reverseRangeWithScores(RANKING, 0, 2);
         return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
     }
 
-    public List<KeywordScoreResponseDto> getKeyword(final Long id) {
+    public List<KeywordScoreResponseDto> getRelatedKeyword(final Long id) {
         Set<TypedTuple<String>> typedTuples = keywordTemplate.opsForZSet().reverseRangeWithScores(id, 0, 2);
         return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
     }
 
-    public void incrementKeywordScore(final Long id, final String keyword) {
-        keywordTemplate.opsForZSet().incrementScore(id, keyword, 1);
+    public void incrementKeywordScore(final Long bookId, final String keyword) {
+        keywordTemplate.opsForZSet().incrementScore(bookId, keyword, 1);
     }
 }

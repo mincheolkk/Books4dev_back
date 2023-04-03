@@ -24,10 +24,10 @@ public class ReadBookRepositoryImpl implements ReadBookRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Map<BookTime, List<ReadBookResponseDto>> getMyReadBook(final Member member) {
+    public Map<BookTime, List<ReadBookResponseDto>> getMemberReadBook(final Member member) {
         List<Tuple> tupleList = queryFactory.select(
                         readBook.readBookTime,  new QReadBookResponseDto(
-                                book.id, book.title, book.isbn, book.thumbnail, readBook.star
+                                book.id, book.bookInfo.title, book.bookInfo.isbn, book.bookInfo.thumbnail, readBook.star
                         ))
                 .from(readBook)
                 .innerJoin(readBook.book, book)
@@ -40,7 +40,7 @@ public class ReadBookRepositoryImpl implements ReadBookRepositoryCustom {
                         Collectors.mapping(
                                 t -> t.get(
                                         new QReadBookResponseDto(
-                                                book.id, book.title, book.isbn, book.thumbnail, readBook.star)),
+                                                book.id, book.bookInfo.title, book.bookInfo.isbn, book.bookInfo.thumbnail, readBook.star)),
                                 Collectors.toList()
                         )
                 )
@@ -67,7 +67,7 @@ public class ReadBookRepositoryImpl implements ReadBookRepositoryCustom {
                 .from(readBook)
                 .where(readBook.book.eq(book))
                 .fetchOne();
-        }
+    }
 
     @Override
     public BookTimeCount getReadTime(Book book) {
@@ -83,7 +83,7 @@ public class ReadBookRepositoryImpl implements ReadBookRepositoryCustom {
                 t -> readTime.calculateBookTimeCount(
                         t.get(readBook.readBookTime),
                         t.get(readBook.readBookTime.count()).intValue())
-                );
+        );
 
         return readTime;
     }

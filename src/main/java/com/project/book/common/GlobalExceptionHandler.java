@@ -70,4 +70,16 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorResponse);
     }
+
+    @ExceptionHandler(InvalidLengthException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidLengthException(final Exception e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(1001).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidCharacterException.class)
+    public ResponseEntity<?> handleBadCharacterException(final Exception e) {
+        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+        return ResponseEntity.status(1002).body(errorResponse);
+    }
 }
