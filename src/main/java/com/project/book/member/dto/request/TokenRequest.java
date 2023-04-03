@@ -1,4 +1,4 @@
-package com.project.book.member.dto;
+package com.project.book.member.dto.request;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
