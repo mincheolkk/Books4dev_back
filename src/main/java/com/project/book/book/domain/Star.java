@@ -19,7 +19,6 @@ public class Star {
         return new Star(0.0d);
     }
 
-    //plusRegisterCount 전에 호출할 것
     public void calculateAvgStar(final double star) {
         this.avgStar = star;
         this.avgStar = ((double) Math.round((this.avgStar * 100 )/ 10))/10;
