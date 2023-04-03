@@ -23,4 +23,7 @@ public class AllBookFilterDto {
 
     @Enumerated(value = EnumType.STRING)
     private BookTime recommendType;
+
+    private Long totalCount;
+
 }
