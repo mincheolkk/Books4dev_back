@@ -51,7 +51,7 @@ public class Comment extends BaseEntity {
     }
 
     public boolean isOwner(Member member) {
-        return this.memberId == member.getId();
+        return this.memberId.equals(member.getId());
     }
 
     public void updateContent(String content) {
