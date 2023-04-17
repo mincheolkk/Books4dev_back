@@ -34,6 +34,7 @@ public class SearchController {
                             int bookCount = kakaoBookDto.getDocuments().size();
                             if (bookCount > 0) {
                                 redisUtil.incrementRankingScore(query);
+                                redisUtil.deleteKeywordFromRankingRange();
                         }
             });
 
