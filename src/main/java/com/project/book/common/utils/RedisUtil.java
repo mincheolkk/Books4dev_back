@@ -76,4 +76,8 @@ public class RedisUtil {
     public void incrementKeywordScore(final Long bookId, final String keyword) {
         keywordTemplate.opsForZSet().incrementScore(bookId, keyword, 1);
     }
+
+    public void deleteKeywordFromRankingRange() {
+        rankingTemplate.opsForZSet().removeRange(RANKING, 0, -101);
+    }
 }
