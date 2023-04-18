@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +34,8 @@ public class RedisUtil {
     }
 
     private static final String RANKING = "ranking";
+    private static final int KEYWORD_SIZE = 100;
+    private final List<String> searchKeywords = new ArrayList<>();
 
     public void setRefreshToken(final String key, final String value, final long duration) {
         ValueOperations<String, String> valueOperations = loginTemplate.opsForValue();
@@ -59,7 +63,7 @@ public class RedisUtil {
         return valueOperations.get(key);
     }
 
-    public void incrementRankingScore(final String keyword) {
+    private void incrementRankingScore(final String keyword) {
         rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
     }
 
@@ -77,7 +81,28 @@ public class RedisUtil {
         keywordTemplate.opsForZSet().incrementScore(bookId, keyword, 1);
     }
 
-    public void deleteKeywordFromRankingRange() {
+    private void deleteKeywordFromRankingRange() {
         rankingTemplate.opsForZSet().removeRange(RANKING, 0, -101);
+    }
+
+    @Scheduled(cron = "0 0 3,15 * * *")
+    private void scheduleSearchKeywordToRedis() {
+        searchKeywordToRedis();
+    }
+
+    public void getSearchKeywords(String keyword) {
+        searchKeywords.add(keyword);
+
+        if (searchKeywords.size() >= KEYWORD_SIZE) {
+            searchKeywordToRedis();
+        }
+    }
+
+    private void searchKeywordToRedis() {
+        searchKeywords.forEach(
+                keyword -> incrementRankingScore(keyword)
+        );
+        searchKeywords.clear();
+        deleteKeywordFromRankingRange();
     }
 }
