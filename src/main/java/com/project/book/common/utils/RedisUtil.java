@@ -34,6 +34,7 @@ public class RedisUtil {
     }
 
     private static final String RANKING = "ranking";
+    private static final int KEYWORD_SIZE = 100;
     private final List<String> searchKeywords = new ArrayList<>();
 
     public void setRefreshToken(final String key, final String value, final long duration) {
@@ -85,15 +86,23 @@ public class RedisUtil {
     }
 
     @Scheduled(cron = "0 0 3,15 * * *")
+    private void scheduleSearchKeywordToRedis() {
+        searchKeywordToRedis();
+    }
+
+    public void getSearchKeywords(String keyword) {
+        searchKeywords.add(keyword);
+
+        if (searchKeywords.size() >= KEYWORD_SIZE) {
+            searchKeywordToRedis();
+        }
+    }
+
     private void searchKeywordToRedis() {
         searchKeywords.forEach(
                 keyword -> incrementRankingScore(keyword)
         );
         searchKeywords.clear();
         deleteKeywordFromRankingRange();
-    }
-
-    public void getSearchKeywords(String keyword) {
-        searchKeywords.add(keyword);
     }
 }
