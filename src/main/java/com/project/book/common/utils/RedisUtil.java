@@ -86,7 +86,7 @@ public class RedisUtil {
     }
 
     @Scheduled(cron = "0 0 3,15 * * *")
-    private void scheduleSearchKeywordToRedis() {
+    public void scheduleSearchKeywordToRedis() {
         searchKeywordToRedis();
     }
 
