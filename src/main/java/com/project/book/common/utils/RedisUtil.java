@@ -63,10 +63,6 @@ public class RedisUtil {
         return valueOperations.get(key);
     }
 
-    private void incrementRankingScore(final String keyword) {
-        rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
-    }
-
     public List<KeywordScoreResponseDto> getPopularKeyword() {
         Set<TypedTuple<String>> typedTuples = rankingTemplate.opsForZSet().reverseRangeWithScores(RANKING, 0, 2);
         return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
@@ -79,30 +75,5 @@ public class RedisUtil {
 
     public void incrementKeywordScore(final Long bookId, final String keyword) {
         keywordTemplate.opsForZSet().incrementScore(bookId, keyword, 1);
-    }
-
-    private void deleteKeywordFromRankingRange() {
-        rankingTemplate.opsForZSet().removeRange(RANKING, 0, -101);
-    }
-
-    @Scheduled(cron = "0 0 3,15 * * *")
-    public void scheduleSearchKeywordToRedis() {
-        searchKeywordToRedis();
-    }
-
-    public void getSearchKeywords(String keyword) {
-        searchKeywords.add(keyword);
-
-        if (searchKeywords.size() >= KEYWORD_SIZE) {
-            searchKeywordToRedis();
-        }
-    }
-
-    private void searchKeywordToRedis() {
-        searchKeywords.forEach(
-                keyword -> incrementRankingScore(keyword)
-        );
-        searchKeywords.clear();
-        deleteKeywordFromRankingRange();
     }
 }

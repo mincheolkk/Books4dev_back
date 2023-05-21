@@ -3,7 +3,9 @@ package com.project.book.book.controller;
 import com.project.book.book.domain.Book;
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.BookResponseDto;
+import com.project.book.book.dto.response.KeywordScoreResponseDto;
 import com.project.book.book.service.BookService;
+import com.project.book.book.service.RankingService;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.dto.LoginMemberDto;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 
 @RestController
@@ -22,6 +25,7 @@ import java.net.URI;
 public class BookController {
 
     private final BookService bookService;
+    private final RankingService rankingService;
 
     // 검색을 통한 책 저장
     @PostMapping("/fromSearch")
@@ -71,13 +75,14 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getDetail(@PathVariable final Long id) {
         BookResponseDto bookResponseDto = bookService.getDetailBook(id);
-        return new ResponseEntity<>(bookResponseDto, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(bookResponseDto, HttpStatus.OK);
     }
 
     // 인기 검색어 조회
     @GetMapping("/popular")
     public ResponseEntity<?> getPopularKeyword() {
-        return bookService.getPopularKeyword();
+        List<KeywordScoreResponseDto> popularKeyword = rankingService.getPopularKeyword();
+        return new ResponseEntity<>(popularKeyword, HttpStatus.OK);
     }
 
 }
