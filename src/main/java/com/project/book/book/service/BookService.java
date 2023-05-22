@@ -7,7 +7,6 @@ import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.ReadBookRepository;
 import com.project.book.book.repository.WishBookRepository;
 import com.project.book.common.exception.ContentNotFoundException;
-import com.project.book.common.utils.RedisUtil;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
 import com.project.book.member.repository.MemberRepository;
@@ -31,7 +30,7 @@ public class BookService {
     private final ReadBookRepository readBookRepository;
     private final WishBookRepository wishBookRepository;
     private final MemberRepository memberRepository;
-    private final RedisUtil redisUtil;
+    private final KeywordService keywordService;
 
     // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
     @Transactional
@@ -62,7 +61,7 @@ public class BookService {
     }
 
     public void saveKeyword(final Long bookId, final String keyword) {
-        redisUtil.incrementKeywordScore(bookId, keyword);
+        keywordService.incrementKeywordScore(bookId, keyword);
     }
 
     // 책 등록 (카카오 데이터로 등록 제외)
@@ -192,12 +191,7 @@ public class BookService {
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new ContentNotFoundException());
 //        BookTimeCount readTime = readBookRepository.getReadTime(book);
-        List<KeywordScoreResponseDto> relatedKeyword = redisUtil.getRelatedKeyword(id);
+        List<KeywordScoreResponseDto> relatedKeyword = keywordService.getRelatedKeyword(id);
         return BookResponseDto.from(book, relatedKeyword);
-    }
-
-    public ResponseEntity<?> getPopularKeyword() {
-        List<KeywordScoreResponseDto> topThree = redisUtil.getPopularKeyword();
-        return new ResponseEntity<>(topThree, HttpStatus.ACCEPTED);
     }
 }

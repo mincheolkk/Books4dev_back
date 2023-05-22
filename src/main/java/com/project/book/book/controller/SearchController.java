@@ -2,7 +2,7 @@ package com.project.book.book.controller;
 
 import com.project.book.book.dto.kakao.KakaoBookDto;
 import com.project.book.book.service.BookService;
-import com.project.book.common.utils.RedisUtil;
+import com.project.book.book.service.RankingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 public class SearchController {
 
     private final WebClient kakaoWebClient;
-    private final RedisUtil redisUtil;
     private final BookService bookService;
+    private final RankingService rankingService;
 
     // 책 검색 - 카카오 책검색 api
     @GetMapping("/kakao/search")
@@ -33,7 +33,7 @@ public class SearchController {
                         .doOnSuccess(kakaoBookDto -> {
                             int bookCount = kakaoBookDto.getDocuments().size();
                             if (bookCount > 0) {
-                                redisUtil.getSearchKeywords(query);
+                                rankingService.getSearchKeywords(query);
                         }
             });
 

@@ -2,7 +2,6 @@ package com.project.book.member.service;
 
 import com.project.book.common.config.jwt.AuthorizationExtractor;
 import com.project.book.common.config.jwt.JwtTokenProvider;
-import com.project.book.common.utils.RedisUtil;
 import com.project.book.common.exception.InvalidRefreshTokenException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.Token;
@@ -28,7 +27,7 @@ import static com.project.book.common.config.jwt.JwtTokenProvider.REFRESH_TOKEN_
 public class AuthService {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisUtil redisUtil;
+    private final TokenService tokenService;
     private final AuthorizationExtractor authExtractor;
     private final MemberRepository memberRepository;
 
@@ -39,7 +38,7 @@ public class AuthService {
             throw new InvalidRefreshTokenException();
         }
 
-        String refreshToken = redisUtil.getRefreshToken(oAuth);
+        String refreshToken = tokenService.getRefreshToken(oAuth);
 
         if (!refreshToken.equals(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
@@ -49,15 +48,15 @@ public class AuthService {
 
     public void logOut(final HttpServletRequest request, final String oAuth) {
         String accessToken = authExtractor.extract(request);
-        redisUtil.setBlackList(accessToken, BLACK_LIST, ACCESS_TOKEN_VALID_TIME);
-        redisUtil.deleteRefreshToken(oAuth);
+        tokenService.setBlackList(accessToken, BLACK_LIST, ACCESS_TOKEN_VALID_TIME);
+        tokenService.deleteRefreshToken(oAuth);
     }
 
     public ResponseEntity getRefresh(final String oAuth) {
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
-        redisUtil.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
+        tokenService.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
         return new ResponseEntity(refreshToken.getValue(), HttpStatus.OK);
     }
 
