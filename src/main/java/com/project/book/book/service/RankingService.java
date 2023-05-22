@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class RankingService {
+    // 인기 검색어 서비스
+
     private static final String RANKING = "ranking";
     private static final int KEYWORD_SIZE = 100;
     private final List<String> searchKeywords = new ArrayList<>();
@@ -26,18 +28,8 @@ public class RankingService {
         this.rankingTemplate = rankingTemplate;
     }
 
-
     private void incrementRankingScore(final String keyword) {
         rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
-    }
-//
-//    private void deleteKeywordFromRankingRange() {
-//        rankingTemplate.opsForZSet().removeRange(RANKING, 0, -101);
-//    }
-
-    @Scheduled(cron = "0 0 3,20 * * *")
-    public void scheduleSearchKeywordToRedis() {
-        searchKeywordToRedis();
     }
 
     public void getSearchKeywords(String keyword) {
@@ -48,12 +40,11 @@ public class RankingService {
         }
     }
 
-    private void searchKeywordToRedis() {
+    public void searchKeywordToRedis() {
         searchKeywords.forEach(
                 keyword -> incrementRankingScore(keyword)
         );
         searchKeywords.clear();
-//        deleteKeywordFromRankingRange();
     }
 
     public List<KeywordScoreResponseDto> getPopularKeyword() {
