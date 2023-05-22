@@ -1,19 +1,21 @@
 package com.project.book.book.service;
 
+import com.project.book.common.config.aop.DistributedLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SchedulerRankingService {
 
-    private final LockRankingService lockRankingService;
+    private final RankingService rankingService;
 
-    public SchedulerRankingService(LockRankingService lockRankingService) {
-        this.lockRankingService = lockRankingService;
+    public SchedulerRankingService(RankingService rankingService) {
+        this.rankingService = rankingService;
     }
 
     @Scheduled(cron = "0 0 11,23 * * *")
+    @DistributedLock(key = "ranking")
     public void scheduleSearchKeywordToRedis() {
-        lockRankingService.record();
+        rankingService.searchKeywordToRedis();
     }
 }

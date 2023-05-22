@@ -6,6 +6,7 @@ import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.ReadBookRepository;
 import com.project.book.book.repository.WishBookRepository;
+import com.project.book.common.config.aop.DistributedLock;
 import com.project.book.common.exception.ContentNotFoundException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;
@@ -33,7 +34,7 @@ public class BookService {
     private final KeywordService keywordService;
 
     // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
-    @Transactional
+    @DistributedLock(key = "saveFromSearch")
     public Book saveBookFromSearch(final String oAuth, final SaveBookFromSearchDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
@@ -65,7 +66,7 @@ public class BookService {
     }
 
     // 책 등록 (카카오 데이터로 등록 제외)
-    @Transactional
+    @DistributedLock(key = "saveFromList")
     public Book saveBookFromList(final String oAuth, final SaveBookFromListDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
@@ -118,7 +119,7 @@ public class BookService {
         book.calculateAvgStar(avgStar);
     }
 
-    @Transactional
+    @DistributedLock(key = "saveWishBook")
     public ResponseEntity saveWishBook(final String oAuth, final BookInfoDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
