@@ -27,7 +27,7 @@ public class LockRankingService {
             boolean available = lock.tryLock(WAIT_TIME, LEASE_TIME, TimeUnit.SECONDS);
 
             if (available) {
-                rankingService.scheduleSearchKeywordToRedis();
+                rankingService.searchKeywordToRedis();
             }
 
         } catch (InterruptedException e) {
