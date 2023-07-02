@@ -12,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -31,6 +32,28 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
     @Override
     public List<AllBookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageRequest) {
+        List<Long> ids = queryFactory.select(book.id)
+                .from(book)
+                .join(book.readBooks, readBook)
+                .join(readBook.member, member)
+                .where(
+                        enumEqCheck(readBook.member.type, condition.getMemberType()),
+                        enumEqCheck(readBook.recommendBookTime, condition.getRecommendType())
+                )
+                .orderBy(
+                        getRecommendTime(condition.getRecommendType()),
+                        getBookSortType(condition.getSortType()),
+                        book.id.asc()
+                )
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .distinct()
+                .fetch();
+
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
                         book.bookInfo.isbn, book.star.avgStar,
@@ -39,8 +62,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                 .join(book.readBooks, readBook)
                 .join(readBook.member, member)
                 .where(
-                        enumEqCheck(readBook.member.type, condition.getMemberType()),
-                        enumEqCheck(readBook.recommendBookTime, condition.getRecommendType())
+                        book.id.in(ids)
                 )
                 .orderBy(
                         getRecommendTime(condition.getRecommendType()),
