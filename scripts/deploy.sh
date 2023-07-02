@@ -1,35 +1,19 @@
 #!/bin/bash
-REPOSITORY=/home/ubuntu
-PROJECT_NAME=books4dev
 
-echo "> Build 파일 복사"
+export DOCKER_ID=''
+export DOCKER_PASSWORD=''
 
-cp $REPOSITORY/*.jar $REPOSITORY/
+# 도커 로그인
+echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_ID} --password-stdin
 
-echo "> 현재 구동중인 애플리케이션 pid 확인"
+# 가동중인 books4dev 도커 중단 및 삭제
+sudo docker ps -a -q --filter "name=books4dev" | grep -q . && docker stop books4dev && docker rm books4dev | true
 
-CURRENT_PID=$(pgrep -fl books4dev | grep jar | awk '{print $1}')
+# 기존 이미지 삭제
+sudo docker rmi ${DOCKER_ID}/books4dev-dockerhub
 
-echo "현재 구동중인 어플리케이션 pid: $CURRENT_PID"
+# 도커허브 이미지 pull
+sudo docker pull ${DOCKER_ID}/books4dev-dockerhub
 
-if [ -z "$CURRENT_PID" ]; then
-    echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
-else
-    echo "> kill -15 $CURRENT_PID"
-    kill -15 $CURRENT_PID
-    sleep 5
-fi
-
-echo "> 새 어플리케이션 배포"
-
-JAR_NAME=$(ls -tr $REPOSITORY/*.jar | tail -n 1)
-
-echo "> JAR Name: $JAR_NAME"
-
-echo "> $JAR_NAME 에 실행권한 추가"
-
-chmod +x $JAR_NAME
-
-echo "> $JAR_NAME 실행"
-
-nohup java -jar $JAR_NAME > $REPOSITORY/nohup.out 2>&1 &
+# 도커 run
+docker run -d -p 8080:8080 -e TZ=Asia/Seoul -v /home/ubuntu/logs:/logs --name books4dev ${DOCKER_ID}/books4dev-dockerhub:1.0
