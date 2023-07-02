@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class KaKaoBookInfoDto {
+public class KakaoBookInfoDto {
 
     private String title;
     private List<String> authors;
