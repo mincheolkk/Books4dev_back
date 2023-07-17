@@ -23,5 +23,7 @@ public class Star {
         this.avgStar = star;
         this.avgStar = ((double) Math.round((this.avgStar * 100 )/ 10))/10;
 
+        this.avgStar = Math.max(0, this.avgStar);
+        this.avgStar = Math.min(5, this.avgStar);
     }
 }
