@@ -135,4 +135,19 @@ public class BookTest {
         // then
         assertThat(book.getStar().getAvgStar()).isEqualTo(0);
     }
+
+    @DisplayName("평점은 5를 넘을 수 없다. 넘는 경우엔 5를 반환한다.")
+    @Test
+    void underFive() {
+        // given
+        Book book = Book.builder()
+                .id(1L)
+                .build();
+
+        // when
+        book.calculateAvgStar(10);
+
+        // then
+        assertThat(book.getStar().getAvgStar()).isEqualTo(5);
+    }
 }
