@@ -27,18 +27,23 @@ public class BookTimeCount {
         switch (time) {
             case before:
                 this.beforeCount += count;
+                this.beforeCount = Math.max(0, this.beforeCount);
                 return;
             case after:
                 this.afterCount += count;
+                this.afterCount = Math.max(0, this.afterCount);
                 return;
             case threeYear:
                 this.threeYearCount += count;
+                this.threeYearCount = Math.max(0, this.threeYearCount);
                 return;
             case sixYear:
                 this.sixYearCount += count;
+                this.sixYearCount = Math.max(0, this.sixYearCount);
                 return;
             case anyTime:
                 this.anyTimeCount += count;
+                this.anyTimeCount = Math.max(0, this.anyTimeCount);
                 return;
         }
     }

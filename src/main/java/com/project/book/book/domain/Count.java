@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.validation.constraints.Positive;
 
 @Getter
 @Embeddable
@@ -14,9 +15,7 @@ import javax.persistence.Embeddable;
 public class Count {
 
     private Integer readCount;
-
     private Integer wishCount;
-
     private Integer commentCount;
 
     public static Count init() {
@@ -25,13 +24,22 @@ public class Count {
 
     public void calculateReadCount(final int count) {
         this.readCount += count;
+        if (this.readCount < 0) {
+            this.readCount = 0;
+        }
     }
 
     public void calculateWishCount(final int count) {
         this.wishCount += count;
+        if (this.wishCount < 0) {
+            this.wishCount = 0;
+        }
     }
 
     public void calculateCommentCount(final int count) {
         this.commentCount += count;
+        if (this.commentCount < 0) {
+            this.commentCount = 0;
+        }
     }
 }
