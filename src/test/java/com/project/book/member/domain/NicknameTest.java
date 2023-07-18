@@ -1,8 +1,7 @@
-package com.project.book.member;
+package com.project.book.member.domain;
 
 import com.project.book.common.exception.InvalidCharacterException;
 import com.project.book.common.exception.InvalidLengthException;
-import com.project.book.member.domain.Nickname;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
