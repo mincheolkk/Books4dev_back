@@ -1,7 +1,5 @@
-package com.project.book.member;
+package com.project.book.member.domain;
 
-import com.project.book.member.domain.Member;
-import com.project.book.member.domain.Nickname;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
