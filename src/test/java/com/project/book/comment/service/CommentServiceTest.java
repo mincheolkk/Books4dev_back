@@ -53,13 +53,6 @@ public class CommentServiceTest {
         bookRepository.save(book);
     }
 
-    @AfterEach
-    void tearDown() {
-        commentRepository.deleteAllInBatch();
-        memberRepository.deleteAllInBatch();
-        bookRepository.deleteAllInBatch();
-    }
-
     @DisplayName("댓글을 생성한다.")
     @Test
     void saveComment() {
