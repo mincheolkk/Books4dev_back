@@ -32,7 +32,7 @@ public class CommentService {
     public ResponseEntity<?> getComments(final Long bookId) {
         List<CommentResponseDto> commentList = commentRepository.findCommentListByBook(bookId);
 
-        return new ResponseEntity<>(commentList, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(commentList, HttpStatus.OK);
     }
 
     @Transactional
