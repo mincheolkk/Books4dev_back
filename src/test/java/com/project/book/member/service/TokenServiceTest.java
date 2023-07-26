@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.*;
@@ -36,7 +37,8 @@ class TokenServiceTest {
                 .oAuth("123")
                 .build();
 
-        Token refreshToken = new Token("refreshToken", 1000L);
+        String randonValue = UUID.randomUUID().toString();
+        Token refreshToken = new Token(randonValue, 1000L);
 
         given(loginTemplate.opsForValue()).willReturn(valueOperations);
 
@@ -70,7 +72,8 @@ class TokenServiceTest {
                 .oAuth("123")
                 .build();
 
-        Token refreshToken = new Token("refreshToken", 1000L);
+        String randonValue = UUID.randomUUID().toString();
+        Token refreshToken = new Token(randonValue, 1000L);
 
         given(loginTemplate.opsForValue()).willReturn(valueOperations);
         given(valueOperations.get(member.getOAuth())).willReturn(refreshToken.getValue());
