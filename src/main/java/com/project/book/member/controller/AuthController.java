@@ -28,8 +28,7 @@ public class AuthController {
     @PostMapping(value = "/update/token")
     public ResponseEntity<?> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
         String newAccessToken = authService.updateAccessToken(loginMemberDto.getOAuth(), tokenRequest);
-
-        return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
+        return ResponseEntity.ok(newAccessToken);
     }
 
     @GetMapping(value = "/out")
@@ -41,7 +40,7 @@ public class AuthController {
 
     @GetMapping(value = "/refreshtoken")
     public ResponseEntity<?> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
-        ResponseEntity refresh = authService.getRefresh(loginMemberDto.getOAuth());
+        ResponseEntity refresh = authService.createRefreshToken(loginMemberDto.getOAuth());
         return ResponseEntity.ok(refresh.getBody());
     }
 }
