@@ -10,4 +10,7 @@ public class TokenRequest {
 
     private String refreshToken;
 
+    public TokenRequest(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }

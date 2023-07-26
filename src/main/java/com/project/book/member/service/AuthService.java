@@ -52,7 +52,7 @@ public class AuthService {
         tokenService.deleteRefreshToken(oAuth);
     }
 
-    public ResponseEntity getRefresh(final String oAuth) {
+    public ResponseEntity createRefreshToken(final String oAuth) {
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 

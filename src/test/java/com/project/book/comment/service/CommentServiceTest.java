@@ -9,7 +9,6 @@ import com.project.book.book.service.CommentService;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.Nickname;
 import com.project.book.member.repository.MemberRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.project.book.common.domain.EntityStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
 @SpringBootTest
@@ -65,10 +65,14 @@ public class CommentServiceTest {
 
         // then
         Comment savedComment = commentRepository.findById(commentId).get();
-        assertThat(savedComment.getId()).isEqualTo(commentId);
-        assertThat(savedComment.getContent()).isEqualTo(text);
-        assertThat(savedComment.getOAuth()).isEqualTo(member.getOAuth());
-        assertThat(savedComment.getBookId()).isEqualTo(book.getId());
+        assertAll(
+                () -> {
+                    assertThat(savedComment.getId()).isEqualTo(commentId);
+                    assertThat(savedComment.getContent()).isEqualTo(text);
+                    assertThat(savedComment.getOAuth()).isEqualTo(member.getOAuth());
+                    assertThat(savedComment.getBookId()).isEqualTo(book.getId());
+                }
+        );
     }
 
     @DisplayName("댓글을 생성하면, 책의 댓글 카운트를 올린다.")
@@ -138,8 +142,12 @@ public class CommentServiceTest {
 
         // then
         Comment savedComment = commentRepository.findById(commentId).get();
-        assertThat(savedComment.getContent()).isNotEqualTo(text);
-        assertThat(savedComment.getContent()).isEqualTo(text2);
+        assertAll(
+                () -> {
+                    assertThat(savedComment.getContent()).isNotEqualTo(text);
+                    assertThat(savedComment.getContent()).isEqualTo(text2);
+                }
+        );
     }
 
     @DisplayName("댓글을 수정해도, 책의 댓글 카운트는 바뀌지 않는다.")
