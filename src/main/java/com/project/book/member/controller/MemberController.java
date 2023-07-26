@@ -1,6 +1,8 @@
 package com.project.book.member.controller;
 
 import com.project.book.book.service.BookService;
+import com.project.book.book.service.ReadBookService;
+import com.project.book.book.service.WishBookService;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.dto.LoginMemberDto;
 import com.project.book.member.dto.request.NicknameRequest;
@@ -19,6 +21,8 @@ public class MemberController {
 
     private final MemberService memberService;
     private final BookService bookService;
+    private final ReadBookService readBookService;
+    private final WishBookService wishBookService;
 
     @GetMapping(value = "/checkPosition")
     public ResponseEntity<?> checkPosition(@LoginMember final LoginMemberDto loginMemberDto) {
@@ -32,12 +36,12 @@ public class MemberController {
 
     @GetMapping("/{id}/wishBook")
     public ResponseEntity<?> getMemberWishBook(@PathVariable final Long id) {
-        return bookService.getMemberWishBook(id);
+        return wishBookService.getMemberWishBook(id);
     }
 
     @GetMapping("/{id}/readBook")
     public ResponseEntity<?> getMemberReadBook(@PathVariable final Long id) {
-        return bookService.getMemberReadBook(id);
+        return readBookService.getMemberReadBook(id);
     }
 
     @PostMapping("/nickname")

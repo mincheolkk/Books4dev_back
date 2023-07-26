@@ -6,6 +6,7 @@ import com.project.book.book.dto.response.BookResponseDto;
 import com.project.book.book.dto.response.KeywordScoreResponseDto;
 import com.project.book.book.service.BookService;
 import com.project.book.book.service.RankingService;
+import com.project.book.book.service.WishBookService;
 import com.project.book.common.config.jwt.LoginMember;
 import com.project.book.member.dto.LoginMemberDto;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.List;
 public class BookController {
 
     private final BookService bookService;
+    private final WishBookService wishBookService;
     private final RankingService rankingService;
 
     // 검색을 통한 책 저장
@@ -59,7 +61,7 @@ public class BookController {
         if (!request.validate()) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return bookService.saveWishBook(loginMemberDto.getOAuth(), request);
+        return wishBookService.saveWishBook(loginMemberDto.getOAuth(), request);
     }
 
     // 전체 책 조회

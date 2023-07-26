@@ -69,8 +69,6 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
                         getBookSortType(condition.getSortType()),
                         book.id.asc()
                 )
-                .offset(pageRequest.getOffset())
-                .limit(pageRequest.getPageSize())
                 .distinct()
                 .fetch();
     }
