@@ -64,9 +64,10 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             InvalidOwnerException.class,
-            ExistNicknameException.class
+            ExistNicknameException.class,
+            AlreadyExistException.class
     })
-    public ResponseEntity<ErrorResponse> handleInvalidOwnerException(final Exception e) {
+    public ResponseEntity<ErrorResponse> handleNotAcceptableException(final Exception e) {
         ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(errorResponse);
     }
