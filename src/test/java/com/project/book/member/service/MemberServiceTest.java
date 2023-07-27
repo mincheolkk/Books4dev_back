@@ -11,8 +11,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
 import javax.transaction.Transactional;
 
@@ -40,10 +38,10 @@ class MemberServiceTest {
         memberRepository.save(member);
 
         // when
-        ResponseEntity<?> response = memberService.hasPosition(member.getOAuth());
+        MemberType memberType = memberService.hasPosition(member.getOAuth());
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(memberType).isEqualTo(member.getType());
     }
 
     @DisplayName("유저가 직군을 선택하지 않았다면, HttpStatus를 NO_CONTENT로 보낸다.")
@@ -56,10 +54,10 @@ class MemberServiceTest {
         memberRepository.save(member);
 
         // when
-        ResponseEntity<?> response = memberService.hasPosition(member.getOAuth());
+        MemberType memberType = memberService.hasPosition(member.getOAuth());
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+        assertThat(memberType).isEqualTo(null);
     }
 
     @DisplayName("유저의 직군을 추가한다.")
@@ -160,10 +158,9 @@ class MemberServiceTest {
         memberRepository.save(member);
 
         // when
-        ResponseEntity<?> response = memberService.getMemberProfile(Long.parseLong(oAuth));
+        MemberResponse memberResponse = memberService.getMemberProfile(Long.parseLong(oAuth));
 
         // then
-        MemberResponse memberResponse = (MemberResponse) response.getBody();
         assertThat(memberResponse.getNickname()).isEqualTo(nickName);
         assertThat(memberResponse.getOAuth()).isEqualTo(oAuth);
     }

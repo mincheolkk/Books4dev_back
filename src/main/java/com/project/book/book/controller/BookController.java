@@ -31,7 +31,7 @@ public class BookController {
 
     // 검색을 통한 책 저장
     @PostMapping("/fromSearch")
-    public ResponseEntity saveBookFromSearch(
+    public ResponseEntity<Void> saveBookFromSearch(
                                             @LoginMember final LoginMemberDto loginMemberDto,
                                             @RequestBody @Valid final SaveBookFromSearchDto request
     ) {
@@ -54,37 +54,38 @@ public class BookController {
     }
 
     @PostMapping("/wish")
-    public ResponseEntity<?> saveWishBook(
+    public ResponseEntity<Void> saveWishBook(
                                             @LoginMember final LoginMemberDto loginMemberDto,
                                             @RequestBody @Valid final BookInfoDto request
     ) {
         if (!request.validate()) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
-        return wishBookService.saveWishBook(loginMemberDto.getOAuth(), request);
+        wishBookService.saveWishBook(loginMemberDto.getOAuth(), request);
+        return ResponseEntity.ok().build();
     }
 
     // 전체 책 조회
     @GetMapping("/all")
-    public ResponseEntity<?> getAllBooks(
+    public ResponseEntity<Page<?>> getAllBooks(
                                         @ModelAttribute final AllBookFilterDto condition,
                                         @ModelAttribute CustomPageRequest customPageRequest) {
         Page<?> allBook = bookService.getAllBook(condition, customPageRequest.toPageable());
 
-        return new ResponseEntity<>(allBook, HttpStatus.OK);
+        return ResponseEntity.ok(allBook);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDetail(@PathVariable final Long id) {
+    public ResponseEntity<BookResponseDto> getDetail(@PathVariable final Long id) {
         BookResponseDto bookResponseDto = bookService.getDetailBook(id);
-        return new ResponseEntity<>(bookResponseDto, HttpStatus.OK);
+        return ResponseEntity.ok(bookResponseDto);
     }
 
     // 인기 검색어 조회
     @GetMapping("/popular")
-    public ResponseEntity<?> getPopularKeyword() {
+    public ResponseEntity<List<KeywordScoreResponseDto>> getPopularKeyword() {
         List<KeywordScoreResponseDto> popularKeyword = rankingService.getPopularKeyword();
-        return new ResponseEntity<>(popularKeyword, HttpStatus.OK);
+        return ResponseEntity.ok(popularKeyword);
     }
 
 }

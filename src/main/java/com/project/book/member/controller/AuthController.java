@@ -22,25 +22,26 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> getMyProfile(@LoginMember final LoginMemberDto loginMemberDto) {
-        return authService.getMyProfile(loginMemberDto.getOAuth());
+        MemberResponse memberResponse = authService.getMyProfile(loginMemberDto.getOAuth());
+        return ResponseEntity.ok(memberResponse);
     }
 
     @PostMapping(value = "/update/token")
-    public ResponseEntity<?> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
+    public ResponseEntity<String> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
         String newAccessToken = authService.updateAccessToken(loginMemberDto.getOAuth(), tokenRequest);
         return ResponseEntity.ok(newAccessToken);
     }
 
     @GetMapping(value = "/out")
-    public ResponseEntity<?> logOut(final HttpServletRequest request, @LoginMember final LoginMemberDto loginMemberDto) {
+    public ResponseEntity<Void> logOut(final HttpServletRequest request, @LoginMember final LoginMemberDto loginMemberDto) {
         authService.logOut(request, loginMemberDto.getOAuth());
         return ResponseEntity.noContent().build();
     }
 
 
     @GetMapping(value = "/refreshtoken")
-    public ResponseEntity<?> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
-        ResponseEntity refresh = authService.createRefreshToken(loginMemberDto.getOAuth());
-        return ResponseEntity.ok(refresh.getBody());
+    public ResponseEntity<String> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
+        String refreshToken = authService.createRefreshToken(loginMemberDto.getOAuth());
+        return ResponseEntity.ok(refreshToken);
     }
 }

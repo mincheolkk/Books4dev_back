@@ -7,6 +7,7 @@ import com.project.book.book.dto.response.WishBookResponseDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.WishBookRepository;
 import com.project.book.common.config.aop.DistributedLock;
+import com.project.book.common.exception.AlreadyExistException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class WishBookService {
     private final WishBookRepository wishBookRepository;
 
     @DistributedLock(key = "saveWishBook")
-    public ResponseEntity saveWishBook(final String oAuth, final BookInfoDto request) {
+    public void saveWishBook(final String oAuth, final BookInfoDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         String isbn = request.getIsbn();
@@ -39,26 +40,25 @@ public class WishBookService {
             Book newBook = bookRepository.save(tempBook);
             WishBook wishBook = new WishBook(member, newBook);
             wishBookRepository.save(wishBook);
-            return new ResponseEntity(HttpStatus.OK);
+            return;
         }
 
         // 이미 등록됐을 때, 예외 던짐
         if (wishBookRepository.existByBookAndMember(savedBook, member)) {
-            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+            throw new AlreadyExistException();
         }
 
         savedBook.calculateWishCount(1);
         WishBook wishBook = new WishBook(member, savedBook);
         wishBookRepository.save(wishBook);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     // 유저 관심있는 책 조회
     @Transactional(readOnly = true)
-    public ResponseEntity<?> getMemberWishBook(final Long id) {
+    public List<WishBookResponseDto> getMemberWishBook(final Long id) {
         String oauth = String.valueOf(id);
         Member member = memberRepository.findByoAuth(oauth);
-        List<WishBookResponseDto> wishBook = wishBookRepository.getAllWishBook(member);
-        return new ResponseEntity<>(wishBook, HttpStatus.OK);
+        List<WishBookResponseDto> wishBooks = wishBookRepository.getAllWishBook(member);
+        return wishBooks;
     }
 }

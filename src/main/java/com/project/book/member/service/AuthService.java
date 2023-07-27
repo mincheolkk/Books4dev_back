@@ -52,16 +52,16 @@ public class AuthService {
         tokenService.deleteRefreshToken(oAuth);
     }
 
-    public ResponseEntity createRefreshToken(final String oAuth) {
+    public String createRefreshToken(final String oAuth) {
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
         tokenService.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
-        return new ResponseEntity(refreshToken.getValue(), HttpStatus.OK);
+        return refreshToken.getValue();
     }
 
-    public ResponseEntity<MemberResponse> getMyProfile(final String oAuth) {
+    public MemberResponse getMyProfile(final String oAuth) {
         Member member = memberRepository.findByoAuth(oAuth);
-        return ResponseEntity.ok(MemberResponse.from(member));
+        return MemberResponse.from(member);
     }
 }

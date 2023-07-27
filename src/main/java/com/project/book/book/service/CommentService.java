@@ -29,10 +29,8 @@ public class CommentService {
     private final BookRepository bookRepository;
     private final MemberRepository memberRepository;
 
-    public ResponseEntity<?> getComments(final Long bookId) {
-        List<CommentResponseDto> commentList = commentRepository.findCommentListByBook(bookId);
-
-        return new ResponseEntity<>(commentList, HttpStatus.OK);
+    public List<CommentResponseDto> getComments(final Long bookId) {
+        return commentRepository.findCommentListByBook(bookId);
     }
 
     @Transactional
@@ -49,7 +47,7 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteComment(final String oAuth, final Long commentId) {
+    public void deleteComment(final String oAuth, final Long commentId) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         Comment comment = validateOwner(member, commentId);
@@ -59,19 +57,15 @@ public class CommentService {
         Book book = bookRepository.findById(bookId).orElseThrow(
                 () -> new ContentNotFoundException());
         book.calculateCommentCount(-1);
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @Transactional
-    public ResponseEntity<?> updateComment(final String oAuth, final Long commentId,
+    public void updateComment(final String oAuth, final Long commentId,
                                            final SaveCommentRequestDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         Comment comment = validateOwner(member, commentId);
         comment.updateContent(request.getContent());
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     private Comment validateOwner(final Member member, final Long commentId) {
