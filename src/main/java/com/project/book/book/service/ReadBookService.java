@@ -57,11 +57,11 @@ public class ReadBookService {
     }
 
     // 유저의 읽은 책 조회
-    public ResponseEntity<?> getMemberReadBook(final Long id) {
+    public Map<BookTime, List<ReadBookResponseDto>> getMemberReadBook(final Long id) {
         String oauth = String.valueOf(id);
         Member member = memberRepository.findByoAuth(oauth);
         Map<BookTime, List<ReadBookResponseDto>> bookTimeListMap = readBookRepository.getMemberReadBook(member);
-        return new ResponseEntity<>(bookTimeListMap, HttpStatus.OK);
+        return bookTimeListMap;
     }
 
 }

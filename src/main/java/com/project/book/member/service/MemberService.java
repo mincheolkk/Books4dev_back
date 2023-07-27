@@ -20,26 +20,21 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    public ResponseEntity<?> hasPosition(final String oAuth) {
+    public MemberType hasPosition(final String oAuth) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         MemberType type = member.getType();
-        if (type == null) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return type;
     }
 
     @Transactional
-    public ResponseEntity<?> addPosition(final String oAuth, final MemberType position) {
+    public void addPosition(final String oAuth, final MemberType position) {
         Member member = memberRepository.findByoAuth(oAuth);
         member.updateMemberPosition(position);
-
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Transactional
-    public ResponseEntity<?> addNickname(final String oAuth, final NicknameRequest request) {
+    public void addNickname(final String oAuth, final NicknameRequest request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         Nickname nickname = new Nickname(request.getNickname());
@@ -48,12 +43,11 @@ public class MemberService {
         }
 
         member.updateMemberNickname(nickname);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    public ResponseEntity<?> getMemberProfile(final Long id) {
+    public MemberResponse getMemberProfile(final Long id) {
         String oauth = String.valueOf(id);
         Member member = memberRepository.findByoAuth(oauth);
-        return ResponseEntity.ok(MemberResponse.from(member));
+        return MemberResponse.from(member);
     }
 }

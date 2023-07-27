@@ -125,10 +125,10 @@ class AuthServiceTest {
         given(jwtTokenProvider.createToken(anyString(), eq(REFRESH_TOKEN_VALID_TIME))).willReturn(refreshToken);
 
         // when
-        ResponseEntity<String> result = authService.createRefreshToken(member.getOAuth());
+        String result = authService.createRefreshToken(member.getOAuth());
 
         // then
-        assertThat(result.getBody()).isEqualTo(refreshToken.getValue());
+        assertThat(result).isEqualTo(refreshToken.getValue());
         verify(jwtTokenProvider, times(1)).createToken(anyString(), eq(REFRESH_TOKEN_VALID_TIME));
         verify(tokenService, times(1)).setRefreshToken(member.getOAuth(), refreshToken.getValue(), refreshToken.getExpiredTime());
     }
@@ -146,14 +146,14 @@ class AuthServiceTest {
         given(memberRepository.findByoAuth(member.getOAuth())).willReturn(member);
 
         // when
-        ResponseEntity<MemberResponse> result = authService.getMyProfile(member.getOAuth());
+        MemberResponse memberResponse = authService.getMyProfile(member.getOAuth());
 
         // then
         assertAll(
                 () -> {
-                    assertThat(result.getBody().getOAuth()).isEqualTo(MemberResponse.from(member).getOAuth());
-                    assertThat(result.getBody().getNickname()).isEqualTo(MemberResponse.from(member).getNickname());
-                    assertThat(result.getBody().getMemberType()).isEqualTo(MemberResponse.from(member).getMemberType());
+                    assertThat(memberResponse.getOAuth()).isEqualTo(member.getOAuth());
+                    assertThat(memberResponse.getNickname()).isEqualTo(member.getNickname().getNickname());
+                    assertThat(memberResponse.getMemberType()).isEqualTo(member.getType());
                 }
         );
     }
