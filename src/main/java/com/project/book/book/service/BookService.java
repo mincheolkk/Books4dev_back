@@ -4,8 +4,6 @@ import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
-import com.project.book.book.repository.ReadBookRepository;
-import com.project.book.book.repository.WishBookRepository;
 import com.project.book.common.config.aop.DistributedLock;
 import com.project.book.common.exception.ContentNotFoundException;
 import com.project.book.member.domain.Member;
@@ -15,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
