@@ -21,6 +21,7 @@ import java.util.Map;
 
 import static com.project.book.book.domain.BookTime.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -252,6 +253,7 @@ class ReadBookServiceTest {
         memberRepository.save(member);
 
         BookInfo bookInfo1 = BookInfo.builder()
+                .isbn("1")
                 .title("ProGit")
                 .build();
         Book book = Book.builder()
@@ -269,6 +271,7 @@ class ReadBookServiceTest {
         readBookRepository.save(readBook);
 
         BookInfo bookInfo2 = BookInfo.builder()
+                .isbn("2")
                 .title("MySQL8.0")
                 .build();
         Book book2 = Book.builder()
@@ -291,10 +294,17 @@ class ReadBookServiceTest {
         // then
         assertAll(
                 () -> {
-                    assertThat(result.get(before)).hasSize(1);
-                    assertThat(result.get(before).get(0).getTitle()).isEqualTo("ProGit");
-                    assertThat(result.get(after)).hasSize(1);
-                    assertThat(result.get(after).get(0).getTitle()).isEqualTo("MySQL8.0");
+                    assertThat(result.get(before)).hasSize(1)
+                            .extracting("isbn", "title")
+                            .containsExactlyInAnyOrder(
+                                    tuple("1", "ProGit")
+                            );
+                    assertThat(result.get(after)).hasSize(1).extracting("isbn", "title")
+                            .containsExactlyInAnyOrder(
+                                    tuple("2", "MySQL8.0")
+                            );
+                    assertThat(result.get(threeYear)).isNull();
+                    assertThat(result.get(sixYear)).isNull();
                 }
         );
     }

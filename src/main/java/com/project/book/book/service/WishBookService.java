@@ -11,8 +11,6 @@ import com.project.book.common.exception.AlreadyExistException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,7 +41,7 @@ public class WishBookService {
             return;
         }
 
-        // 이미 등록됐을 때, 예외 던짐
+        // 이미 관심있는 책 저장됐을 때, 예외 던짐
         if (wishBookRepository.existByBookAndMember(savedBook, member)) {
             throw new AlreadyExistException();
         }
