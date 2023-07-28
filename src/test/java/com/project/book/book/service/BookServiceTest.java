@@ -27,8 +27,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -51,9 +50,9 @@ public class BookServiceTest {
     @InjectMocks
     private BookService bookService;
 
-    @DisplayName("DB에 저장되지 않은 책을 <읽은 책>으로 저장한다.")
+    @DisplayName("Kakao 데이터로 <읽은 책>을 저장할 때는, 해당 책을 books4dev(내 서비스)에 먼저 저장시킨 후 저장한다.")
     @Test
-    void saveBookFromSearch() {
+    void saveBookFromKakao() {
         // given
         Member member = Member.builder()
                 .oAuth("123")
@@ -79,13 +78,11 @@ public class BookServiceTest {
         given(bookRepository.save(any(Book.class))).willReturn(request.getInfo().toBook());
 
         // when
-        Book book = bookService.saveBookFromSearch(member.getOAuth(), request);
+        bookService.saveBookFromKakao(member.getOAuth(), request);
 
         // then
         assertAll(
                 () -> {
-                    assertThat(book.getBookInfo().getTitle()).isEqualTo(bookInfoDto.getTitle());
-                    assertThat(book.getBookInfo().getIsbn()).isEqualTo(bookInfoDto.getIsbn());
                     verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
                     verify(bookRepository, times(1)).findByIsbn(anyString());
                     verify(bookRepository, times(1)).save(any(Book.class));
@@ -93,9 +90,9 @@ public class BookServiceTest {
         );
     }
 
-    @DisplayName("DB에 저장되어 있는 책을 <읽은 책>으로 저장한다.")
+    @DisplayName("Books4dev(내 서비스)에 저장된 책을 <읽은 책>으로 저장한다.")
     @Test
-    void saveBookFromList() {
+    void saveBookFromBooks4dev() {
         // given
         Member member = Member.builder()
                 .oAuth("123")
@@ -127,12 +124,11 @@ public class BookServiceTest {
         given(bookRepository.findByIsbn(testIsbn)).willReturn(book);
 
         // when
-        Book savedBook = bookService.saveBookFromList(member.getOAuth(), request);
+        bookService.saveBookFromBooks4dev(member.getOAuth(), request);
 
         // then
         assertAll(
                 () -> {
-                    assertThat(savedBook).isSameAs(book);
                     verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
                     verify(bookRepository, times(1)).findByIsbn(testIsbn);
                 }

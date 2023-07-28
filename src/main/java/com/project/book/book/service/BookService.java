@@ -28,9 +28,9 @@ public class BookService {
     private final KeywordService keywordService;
     private final ReadBookService readBookService;
 
-    // Book 엔티티 처음 등록할 때는 카카오에서 보내준 데이터로 등록
-    @DistributedLock(key = "saveFromSearch")
-    public Book saveBookFromSearch(final String oAuth, final SaveBookFromSearchDto request) {
+    // 카카오에서 보내준 데이터로 <읽은 책> 저장.
+    @DistributedLock(key = "saveFromKakao")
+    public Long saveBookFromKakao(final String oAuth, final SaveBookFromSearchDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         String isbn = request.getInfo().getIsbn();
@@ -43,7 +43,7 @@ public class BookService {
             readBookService.saveReadBook(member, savedBook, request.getReview());
             readBookService.calculateAvgStar(savedBook);
             keywordService.incrementKeywordScore(savedBook.getId(), request.getReview().getSearchKeyword());
-            return savedBook;
+            return savedBook.getId();
         }
 
         Book tempbook = request.getInfo().toBook();
@@ -53,12 +53,12 @@ public class BookService {
 
         readBookService.saveReadBook(member, newBook, request.getReview());
         keywordService.incrementKeywordScore(newBook.getId(), request.getReview().getSearchKeyword());
-        return newBook;
+        return newBook.getId();
     }
 
-    // 책 등록 (카카오 데이터로 등록 제외)
-    @DistributedLock(key = "saveFromList")
-    public Book saveBookFromList(final String oAuth, final SaveBookFromListDto request) {
+    // 내 서비스에 저장된 데이터로 <읽은 책> 저장.
+    @DistributedLock(key = "saveFromBooks4dev")
+    public void saveBookFromBooks4dev(final String oAuth, final SaveBookFromListDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         String isbn = request.getIsbn();
@@ -67,11 +67,10 @@ public class BookService {
         readBookService.saveReadBook(member, savedBook, request.getReview());
         readBookService.calculateAvgStar(savedBook);
 
+        // 책 검색 후에 등록한 경우, 검색어 저장
         if (request.getReview().getSearchKeyword() != null) {
             keywordService.incrementKeywordScore(savedBook.getId(), request.getReview().getSearchKeyword());
         }
-
-        return savedBook;
     }
 
     public Page<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {

@@ -53,8 +53,4 @@ public class BookInfoDto {
                         .build())
                 .build();
     }
-
-    public Boolean validate() {
-        return this.isbn.length() < 1 ? false : true;
-    }
 }
