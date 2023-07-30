@@ -31,7 +31,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<AllBookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageRequest) {
+    public List<BookResponseDto> getAllBooks(final AllBookFilterDto condition, final Pageable pageRequest) {
         List<Long> ids = queryFactory.select(book.id)
                 .from(book)
                 .join(book.readBooks, readBook)
@@ -87,7 +87,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
     }
 
     @Override
-    public List<AllBookResponseDto> findBookBySearch(final String text) {
+    public List<BookResponseDto> findBookBySearch(final String text) {
         return queryFactory.select(new QAllBookResponseDto(
                         book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
                         book.bookInfo.isbn, book.star.avgStar,

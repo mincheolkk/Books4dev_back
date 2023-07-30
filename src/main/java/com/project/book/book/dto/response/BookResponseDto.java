@@ -1,83 +1,38 @@
 package com.project.book.book.dto.response;
 
-import com.project.book.book.domain.*;
-import lombok.Builder;
+import com.project.book.book.domain.BookTimeCount;
+import com.querydsl.core.annotations.QueryProjection;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-@NoArgsConstructor
 @Getter
+@NoArgsConstructor
 public class BookResponseDto {
 
     private Long id;
-
+    private String title;
+    private String authors;
+    private String thumbnail;
     private String isbn;
 
-    private String title;
-
-    private String publisher;
-
-    private LocalDateTime releaseDate;
-
-    private Long price;
-
-    private String thumbnail;
-
-    private String authors;
-
-    private String translators;
-
-    private String contents;
-
-    private Star star;
-
-    private Count count;
-
-    private BookTimeCount readTime;
-
+    private double avgStar;
+    private Integer readCount;
+    private Integer wishCount;
+    private Integer commentCount;
     private BookTimeCount recommendTime;
 
-    private List<KeywordScoreResponseDto> topKeywordList;
-
-    @Builder
-    public BookResponseDto(Long id, String isbn, String title, String publisher, LocalDateTime releaseDate, Long price, String thumbnail, String authors, String translators, String contents, Star star, Count count, BookTimeCount readTime, BookTimeCount recommendTime, List<KeywordScoreResponseDto> topKeywordList) {
+    @QueryProjection
+    public BookResponseDto(Long id, String title, String authors, String thumbnail, String isbn, double avgStar, Integer readCount, Integer wishCount, Integer commentCount, BookTimeCount recommendTime) {
         this.id = id;
-        this.isbn = isbn;
         this.title = title;
-        this.publisher = publisher;
-        this.releaseDate = releaseDate;
-        this.price = price;
-        this.thumbnail = thumbnail;
         this.authors = authors;
-        this.translators = translators;
-        this.contents = contents;
-        this.star = star;
-        this.count = count;
-        this.readTime = readTime;
+        this.thumbnail = thumbnail;
+        this.isbn = isbn;
+        this.avgStar = avgStar;
+        this.readCount = readCount;
+        this.wishCount = wishCount;
+        this.commentCount = commentCount;
         this.recommendTime = recommendTime;
-        this.topKeywordList = topKeywordList;
-    }
-
-    public static BookResponseDto from(final Book book, final List<KeywordScoreResponseDto> topKeywordList) {
-        return BookResponseDto.builder()
-                .id(book.getId())
-                .title(book.getBookInfo().getTitle())
-                .contents(book.getBookInfo().getContents())
-                .authors(book.getBookInfo().getAuthors())
-                .translators(book.getBookInfo().getTranslators())
-                .thumbnail(book.getBookInfo().getThumbnail())
-                .publisher(book.getBookInfo().getPublisher())
-                .price(book.getBookInfo().getPrice())
-                .isbn(book.getBookInfo().getIsbn())
-                .count(book.getCount())
-//                .readTime(readTime)
-                .recommendTime(book.getRecommendTime())
-                .releaseDate(book.getBookInfo().getReleaseDate())
-                .star(book.getStar())
-                .topKeywordList(topKeywordList)
-                .build();
     }
 }
