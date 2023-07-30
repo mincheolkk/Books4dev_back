@@ -2,6 +2,7 @@ package com.project.book.book.controller;
 
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.BookResponseDto;
+import com.project.book.book.dto.response.DetailBookResponseDto;
 import com.project.book.book.dto.response.KeywordScoreResponseDto;
 import com.project.book.book.service.BookService;
 import com.project.book.book.service.RankingService;
@@ -41,7 +42,7 @@ public class BookController {
 
     // 내 서비스에 저장된 책 데이터를 통한 <읽은 책> 저장
     @PostMapping("/fromList")
-    public ResponseEntity saveBookFromBooks4dev(
+    public ResponseEntity<Void> saveBookFromBooks4dev(
                                             @LoginMember final LoginMemberDto loginMemberDto,
                                             @RequestBody @Valid final SaveBookFromListDto request
     ) {
@@ -60,17 +61,18 @@ public class BookController {
 
     // 전체 책 조회
     @GetMapping("/all")
-    public ResponseEntity<Page<?>> getAllBooks(
+    public ResponseEntity<Page<BookResponseDto>> getAllBooks(
                                         @ModelAttribute final AllBookFilterDto condition,
-                                        @ModelAttribute CustomPageRequest customPageRequest) {
-        Page<?> allBook = bookService.getAllBook(condition, customPageRequest.toPageable());
+                                        @ModelAttribute CustomPageRequest customPageRequest
+    ) {
+        Page<BookResponseDto> allBook = bookService.getAllBook(condition, customPageRequest.toPageable());
         return ResponseEntity.ok(allBook);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookResponseDto> getDetail(@PathVariable final Long id) {
-        BookResponseDto bookResponseDto = bookService.getDetailBook(id);
-        return ResponseEntity.ok(bookResponseDto);
+    public ResponseEntity<DetailBookResponseDto> getDetail(@PathVariable final Long id) {
+        DetailBookResponseDto detailBookResponseDto = bookService.getDetailBook(id);
+        return ResponseEntity.ok(detailBookResponseDto);
     }
 
     // 인기 검색어 조회
@@ -79,6 +81,5 @@ public class BookController {
         List<KeywordScoreResponseDto> popularKeyword = rankingService.getPopularKeyword();
         return ResponseEntity.ok(popularKeyword);
     }
-
 }
 

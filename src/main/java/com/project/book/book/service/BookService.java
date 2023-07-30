@@ -30,7 +30,8 @@ public class BookService {
 
     // 카카오에서 보내준 데이터로 <읽은 책> 저장.
     @DistributedLock(key = "saveFromKakao")
-    public Long saveBookFromKakao(final String oAuth, final SaveBookFromSearchDto request) {
+    public Long
+    saveBookFromKakao(final String oAuth, final SaveBookFromSearchDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         String isbn = request.getInfo().getIsbn();
@@ -73,7 +74,7 @@ public class BookService {
         }
     }
 
-    public Page<?> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
+    public Page<BookResponseDto> getAllBook(final AllBookFilterDto condition, Pageable pageRequest) {
         if (condition.getMemberType() == null || condition.getMemberType().equals(MemberType.All)) {
             condition.setMemberType(null);
         }
@@ -81,7 +82,7 @@ public class BookService {
             condition.setRecommendType(null);
         }
 
-        List<AllBookResponseDto> allBooks = bookRepository.getAllBooks(condition, pageRequest);
+        List<BookResponseDto> allBooks = bookRepository.getAllBooks(condition, pageRequest);
         Long totalCount = fetchTotalCount(condition);
 
         return new PageImpl<>(allBooks, pageRequest, totalCount);
@@ -94,15 +95,15 @@ public class BookService {
         return condition.getTotalCount();
     }
 
-    public List<AllBookResponseDto> findBookBySearch(final String text) {
+    public List<BookResponseDto> findBookBySearch(final String text) {
         return bookRepository.findBookBySearch(text);
     }
 
-    public BookResponseDto getDetailBook(final Long id) {
+    public DetailBookResponseDto getDetailBook(final Long id) {
         Book book = bookRepository.findById(id).orElseThrow(
                 () -> new ContentNotFoundException());
 //        BookTimeCount readTime = readBookRepository.getReadTime(book);
         List<KeywordScoreResponseDto> relatedKeyword = keywordService.getRelatedKeyword(id);
-        return BookResponseDto.from(book, relatedKeyword);
+        return DetailBookResponseDto.from(book, relatedKeyword);
     }
 }

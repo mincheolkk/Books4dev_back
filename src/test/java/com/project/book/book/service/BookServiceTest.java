@@ -4,8 +4,8 @@ import com.project.book.book.domain.Book;
 import com.project.book.book.domain.BookInfo;
 import com.project.book.book.domain.BookTime;
 import com.project.book.book.dto.request.*;
-import com.project.book.book.dto.response.AllBookResponseDto;
 import com.project.book.book.dto.response.BookResponseDto;
+import com.project.book.book.dto.response.DetailBookResponseDto;
 import com.project.book.book.dto.response.KeywordScoreResponseDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.common.exception.ContentNotFoundException;
@@ -143,9 +143,9 @@ public class BookServiceTest {
 
         Pageable pageable = new CustomPageRequest().toPageable();
 
-        List<AllBookResponseDto> allBooks = Arrays.asList(
-                new AllBookResponseDto(),
-                new AllBookResponseDto()
+        List<BookResponseDto> allBooks = Arrays.asList(
+                new BookResponseDto(),
+                new BookResponseDto()
         );
 
         Long totalCount = 2L;
@@ -177,9 +177,9 @@ public class BookServiceTest {
 
         Pageable pageable = new CustomPageRequest().toPageable();
 
-        List<AllBookResponseDto> allBooks = Arrays.asList(
-                new AllBookResponseDto(),
-                new AllBookResponseDto()
+        List<BookResponseDto> allBooks = Arrays.asList(
+                new BookResponseDto(),
+                new BookResponseDto()
         );
 
         given(bookRepository.getAllBooks(condition, pageable)).willReturn(allBooks);
@@ -205,15 +205,15 @@ public class BookServiceTest {
         // given
         String text = "jpa";
 
-        List<AllBookResponseDto> bookList = Arrays.asList(
-                new AllBookResponseDto(),
-                new AllBookResponseDto()
+        List<BookResponseDto> bookList = Arrays.asList(
+                new BookResponseDto(),
+                new BookResponseDto()
         );
 
         given(bookRepository.findBookBySearch(text)).willReturn(bookList);
 
         // when
-        List<AllBookResponseDto> result = bookService.findBookBySearch(text);
+        List<BookResponseDto> result = bookService.findBookBySearch(text);
 
         // then
         assertAll(
@@ -249,7 +249,7 @@ public class BookServiceTest {
         given(keywordService.getRelatedKeyword(id)).willReturn(relatedKeywordList);
 
         // when
-        BookResponseDto result = bookService.getDetailBook(id);
+        DetailBookResponseDto result = bookService.getDetailBook(id);
 
         // then
         assertAll(
