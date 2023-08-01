@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class BookControllerTest extends ControllerTest {
 
+    private static final long BOOK_ID = 1L;
+
     @DisplayName("로그인한 유저가 <읽은 책>을 등록한다")
     @Test
     void saveBook() throws Exception {
@@ -107,7 +109,7 @@ public class BookControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/book/" + 1)
+                        get("/book/" + BOOK_ID)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(title))
@@ -142,6 +144,4 @@ public class BookControllerTest extends ControllerTest {
         }
         return responseDtos;
     }
-
-
 }
