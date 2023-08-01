@@ -30,8 +30,7 @@ public class BookService {
 
     // 카카오에서 보내준 데이터로 <읽은 책> 저장.
     @DistributedLock(key = "saveFromKakao")
-    public Long
-    saveBookFromKakao(final String oAuth, final SaveBookFromSearchDto request) {
+    public Long saveBookFromKakao(final String oAuth, final SaveBookFromSearchDto request) {
         Member member = memberRepository.findByoAuth(oAuth);
 
         String isbn = request.getInfo().getIsbn();
