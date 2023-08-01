@@ -16,7 +16,7 @@ public class KeywordService {
 
     private final RedisTemplate<Long, String> keywordTemplate;
 
-    public KeywordService(@Qualifier("keywordRedisTemplateBean")  RedisTemplate<Long, String> keywordTemplate) {
+    public KeywordService(@Qualifier("keywordRedisTemplateBean") RedisTemplate<Long, String> keywordTemplate) {
         this.keywordTemplate = keywordTemplate;
     }
 
