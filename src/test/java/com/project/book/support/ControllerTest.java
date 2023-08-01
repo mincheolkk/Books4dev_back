@@ -3,10 +3,8 @@ package com.project.book.support;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.book.book.controller.BookController;
-import com.project.book.book.service.BookService;
-import com.project.book.book.service.RankingService;
-import com.project.book.book.service.ReadBookService;
-import com.project.book.book.service.WishBookService;
+import com.project.book.book.controller.CommentController;
+import com.project.book.book.service.*;
 import com.project.book.common.config.QuerydslConfiguration;
 import com.project.book.common.config.jwt.JwtTokenProvider;
 import com.project.book.member.controller.MemberController;
@@ -32,7 +30,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @WebMvcTest(
         controllers = {
                 BookController.class,
-                MemberController.class
+                MemberController.class,
+                CommentController.class
         }
 )
 @Import({QuerydslConfiguration.class})
@@ -72,10 +71,13 @@ public abstract class ControllerTest {
     protected RankingService rankingService;
 
     @MockBean
-    protected CustomOAuth2UserService customOAuth2UserService;
+    protected ReadBookService readBookService;
 
     @MockBean
-    protected ReadBookService readBookService;
+    protected CommentService commentService;
+
+    @MockBean
+    protected CustomOAuth2UserService customOAuth2UserService;
 
     @MockBean
     protected JwtTokenProvider jwtTokenProvider;

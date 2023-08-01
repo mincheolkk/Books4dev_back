@@ -27,7 +27,6 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
-    private final BookService bookService;
     private final ReadBookService readBookService;
     private final WishBookService wishBookService;
 

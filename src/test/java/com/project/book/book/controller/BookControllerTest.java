@@ -24,6 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class BookControllerTest extends ControllerTest {
 
+    private static final long BOOK_ID = 1L;
+
     @DisplayName("로그인한 유저가 <읽은 책>을 등록한다")
     @Test
     void saveBook() throws Exception {
@@ -36,7 +38,7 @@ public class BookControllerTest extends ControllerTest {
 
         given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
         given(jwtTokenProvider.getPayload(anyString())).willReturn(oAuth);
-        given(bookService.saveBookFromKakao(any(), any(SaveBookFromSearchDto.class))).willReturn(1L);
+        given(bookService.saveBookFromKakao(any(), any(SaveBookFromSearchDto.class))).willReturn(BOOK_ID);
 
         // when & then
         mockMvc.perform(
@@ -45,7 +47,7 @@ public class BookControllerTest extends ControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/book/1"));
+                .andExpect(header().string("Location", "/book/" + BOOK_ID));
     }
 
     @DisplayName("로그인하지 않은 유저가 <읽은 책>을 등록하면 예외가 발생한다.")
@@ -107,7 +109,7 @@ public class BookControllerTest extends ControllerTest {
 
         // when & then
         mockMvc.perform(
-                        get("/book/" + 1)
+                        get("/book/" + BOOK_ID)
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value(title))
@@ -142,6 +144,4 @@ public class BookControllerTest extends ControllerTest {
         }
         return responseDtos;
     }
-
-
 }
