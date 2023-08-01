@@ -1,6 +1,7 @@
 package com.project.book.book.dto.response;
 
 import com.querydsl.core.annotations.QueryProjection;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ public class ReadBookResponseDto {
     private String thumbnail;
     private double star;
 
+    @Builder
     @QueryProjection
     public ReadBookResponseDto(Long id, String title, String isbn, String thumbnail, double star) {
         this.id = id;
