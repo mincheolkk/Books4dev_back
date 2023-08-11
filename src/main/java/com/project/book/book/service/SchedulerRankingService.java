@@ -16,6 +16,6 @@ public class SchedulerRankingService {
     @Scheduled(cron = "0 0 11,23 * * *")
     @DistributedLock(key = "ranking")
     public void scheduleSearchKeywordToRedis() {
-        rankingService.searchKeywordToRedis();
+        rankingService.saveSearchKeywordToRedis();
     }
 }
