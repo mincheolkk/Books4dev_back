@@ -8,7 +8,7 @@ import static com.project.book.member.domain.MemberType.*;
 import static org.assertj.core.api.Assertions.*;
 
 
-public class MemberTest {
+class MemberTest {
 
     private Member member;
 

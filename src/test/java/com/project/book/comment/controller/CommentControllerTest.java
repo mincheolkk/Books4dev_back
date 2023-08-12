@@ -16,7 +16,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-public class CommentControllerTest extends ControllerTest {
+class CommentControllerTest extends ControllerTest {
 
     private static final long BOOK_ID = 1L;
     private static final long COMMENT_ID = 1L;

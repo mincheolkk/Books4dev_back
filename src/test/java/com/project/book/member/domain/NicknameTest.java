@@ -9,7 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class NicknameTest {
+class NicknameTest {
 
     @DisplayName("가능한 닉네임 테스트")
     @ParameterizedTest
