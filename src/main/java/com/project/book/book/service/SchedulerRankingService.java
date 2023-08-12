@@ -13,7 +13,7 @@ public class SchedulerRankingService {
         this.rankingService = rankingService;
     }
 
-    @Scheduled(cron = "0 0 11,23 * * *")
+    @Scheduled(cron = "${schedules.cron.reward.publish}")
     @DistributedLock(key = "ranking")
     public void scheduleSearchKeywordToRedis() {
         rankingService.saveSearchKeywordToRedis();
