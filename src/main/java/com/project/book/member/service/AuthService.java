@@ -7,6 +7,7 @@ import com.project.book.member.domain.Member;
 import com.project.book.member.domain.Token;
 import com.project.book.member.dto.request.TokenRequest;
 import com.project.book.member.dto.response.MemberResponse;
+import com.project.book.member.dto.response.TokenResponse;
 import com.project.book.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class AuthService {
 
     private static final String BLACK_LIST = "blackList";
 
-    public String updateAccessToken(final String oAuth, final TokenRequest tokenRequest) {
+    public TokenResponse updateAccessToken(final String oAuth, final TokenRequest tokenRequest) {
         if (!jwtTokenProvider.validateToken(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
         }
@@ -43,7 +44,8 @@ public class AuthService {
         if (!refreshToken.equals(tokenRequest.getRefreshToken())) {
             throw new InvalidRefreshTokenException();
         }
-        return jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
+        String newAccessToken = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
+        return new TokenResponse(newAccessToken);
     }
 
     public void logOut(final HttpServletRequest request, final String oAuth) {
@@ -52,12 +54,12 @@ public class AuthService {
         tokenService.deleteRefreshToken(oAuth);
     }
 
-    public String createRefreshToken(final String oAuth) {
+    public TokenResponse createRefreshToken(final String oAuth) {
         String randomValue = UUID.randomUUID().toString();
         Token refreshToken = jwtTokenProvider.createToken(randomValue, REFRESH_TOKEN_VALID_TIME);
 
         tokenService.setRefreshToken(oAuth, refreshToken.getValue(), refreshToken.getExpiredTime());
-        return refreshToken.getValue();
+        return new TokenResponse(refreshToken.getValue());
     }
 
     public MemberResponse getMyProfile(final String oAuth) {

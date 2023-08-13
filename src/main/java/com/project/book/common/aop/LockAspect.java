@@ -1,4 +1,4 @@
-package com.project.book.common.config.aop;
+package com.project.book.common.aop;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class LockAspect {
     private final RedissonClient redissonClient;
     private final Transaction4Aop transaction4Aop;
 
-    @Around("@annotation(com.project.book.common.config.aop.DistributedLock)")
+    @Around("@annotation(com.project.book.common.aop.DistributedLock)")
     public Object lock(final ProceedingJoinPoint joinPoint) throws Throwable {
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();

@@ -4,7 +4,7 @@ import com.project.book.book.domain.*;
 import com.project.book.book.dto.request.*;
 import com.project.book.book.dto.response.*;
 import com.project.book.book.repository.BookRepository;
-import com.project.book.common.config.aop.DistributedLock;
+import com.project.book.common.aop.DistributedLock;
 import com.project.book.common.exception.ContentNotFoundException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.domain.MemberType;

@@ -1,4 +1,4 @@
-package com.project.book.common.config.aop;
+package com.project.book.common.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,10 +1,10 @@
 package com.project.book.book.service;
 
 import com.project.book.book.dto.response.KeywordScoreResponseDto;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 @Service
 public class RankingService {
     // 인기 검색어 서비스
@@ -28,19 +29,14 @@ public class RankingService {
         this.rankingTemplate = rankingTemplate;
     }
 
-    private void incrementRankingScore(final String keyword) {
-        rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
-    }
-
-    public void getSearchKeywords(String keyword) {
+    public void addSearchKeyword(String keyword) {
         searchKeywords.add(keyword);
-
         if (searchKeywords.size() >= KEYWORD_SIZE) {
-            searchKeywordToRedis();
+            saveSearchKeywordToRedis();
         }
     }
 
-    public void searchKeywordToRedis() {
+    public void saveSearchKeywordToRedis() {
         searchKeywords.forEach(
                 keyword -> incrementRankingScore(keyword)
         );
@@ -50,6 +46,10 @@ public class RankingService {
     public List<KeywordScoreResponseDto> getPopularKeyword() {
         Set<ZSetOperations.TypedTuple<String>> typedTuples = rankingTemplate.opsForZSet().reverseRangeWithScores(RANKING, 0, 2);
         return typedTuples.stream().map(KeywordScoreResponseDto::convertFromRedisRankingData).collect(Collectors.toList());
+    }
+
+    private void incrementRankingScore(final String keyword) {
+        rankingTemplate.opsForZSet().incrementScore(RANKING, keyword, 1);
     }
 }
 

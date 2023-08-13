@@ -33,7 +33,7 @@ public class SearchController {
                         .doOnSuccess(kakaoBookDto -> {
                             int bookCount = kakaoBookDto.getDocuments().size();
                             if (bookCount > 0) {
-                                rankingService.getSearchKeywords(query);
+                                rankingService.addSearchKeyword(query);
                         }
             });
 

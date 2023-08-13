@@ -1,4 +1,4 @@
-package com.project.book.common.config.aop;
+package com.project.book.common.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;

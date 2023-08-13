@@ -15,13 +15,10 @@ import javax.persistence.Enumerated;
 @NoArgsConstructor
 public class AllBookFilterDto {
 
-    @Enumerated(value = EnumType.STRING)
     private MemberType memberType;
 
-    @Enumerated(value = EnumType.STRING)
     private BookSortType sortType;
 
-    @Enumerated(value = EnumType.STRING)
     private BookTime recommendType;
 
     private Long totalCount;

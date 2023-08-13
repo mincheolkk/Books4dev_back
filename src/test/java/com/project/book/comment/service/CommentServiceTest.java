@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Transactional
 @SpringBootTest
-public class CommentServiceTest {
+class CommentServiceTest {
 
     @Autowired
     private CommentRepository commentRepository;

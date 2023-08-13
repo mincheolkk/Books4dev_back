@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class MemberControllerTest extends ControllerTest {
+class MemberControllerTest extends ControllerTest {
 
     private static final long MEMBER_ID = 1L;
 

@@ -20,7 +20,6 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     private final TokenService tokenService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthorizationExtractor authExtractor;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -34,7 +33,7 @@ public class MemberArgumentResolver implements HandlerMethodArgumentResolver {
 
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        String token = authExtractor.extract(request);
+        String token = AuthorizationExtractor.extract(request);
         if (tokenService.getBlackList(token) != null) {
             return new InvalidAccessTokenException();
         }

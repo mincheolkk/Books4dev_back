@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class CommentTest {
+class CommentTest {
 
     private Member member;
     private Book book;

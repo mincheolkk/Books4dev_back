@@ -4,9 +4,9 @@ import com.project.book.common.config.jwt.LoginMember;
  import com.project.book.member.dto.LoginMemberDto;
 import com.project.book.member.dto.request.TokenRequest;
 import com.project.book.member.dto.response.MemberResponse;
+import com.project.book.member.dto.response.TokenResponse;
 import com.project.book.member.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,9 +27,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/update/token")
-    public ResponseEntity<String> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
-        String newAccessToken = authService.updateAccessToken(loginMemberDto.getOAuth(), tokenRequest);
-        return ResponseEntity.ok(newAccessToken);
+    public ResponseEntity<TokenResponse> updateAccessToken(@LoginMember final LoginMemberDto loginMemberDto, @RequestBody @Valid final TokenRequest tokenRequest) {
+        TokenResponse tokenResponse = authService.updateAccessToken(loginMemberDto.getOAuth(), tokenRequest);
+        return ResponseEntity.ok(tokenResponse);
     }
 
     @GetMapping(value = "/out")
@@ -40,8 +40,8 @@ public class AuthController {
 
 
     @GetMapping(value = "/refreshtoken")
-    public ResponseEntity<String> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
-        String refreshToken = authService.createRefreshToken(loginMemberDto.getOAuth());
-        return ResponseEntity.ok(refreshToken);
+    public ResponseEntity<TokenResponse> getRefreshToken(@LoginMember final LoginMemberDto loginMemberDto) {
+        TokenResponse tokenResponse = authService.createRefreshToken(loginMemberDto.getOAuth());
+        return ResponseEntity.ok(tokenResponse);
     }
 }

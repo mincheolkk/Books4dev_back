@@ -6,7 +6,9 @@ import com.project.book.book.controller.BookController;
 import com.project.book.book.controller.CommentController;
 import com.project.book.book.service.*;
 import com.project.book.common.config.QuerydslConfiguration;
+import com.project.book.common.config.jwt.AuthorizationExtractor;
 import com.project.book.common.config.jwt.JwtTokenProvider;
+import com.project.book.member.controller.AuthController;
 import com.project.book.member.controller.MemberController;
 import com.project.book.member.service.AuthService;
 import com.project.book.member.service.CustomOAuth2UserService;
@@ -31,7 +33,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
         controllers = {
                 BookController.class,
                 MemberController.class,
-                CommentController.class
+                CommentController.class,
+                AuthController.class
         }
 )
 @Import({QuerydslConfiguration.class})
@@ -81,4 +84,8 @@ public abstract class ControllerTest {
 
     @MockBean
     protected JwtTokenProvider jwtTokenProvider;
+
+    @MockBean
+    protected AuthorizationExtractor authExtractor;
+
 }

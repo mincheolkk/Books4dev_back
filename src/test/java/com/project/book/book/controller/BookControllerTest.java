@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class BookControllerTest extends ControllerTest {
+class BookControllerTest extends ControllerTest {
 
     private static final long BOOK_ID = 1L;
 
