@@ -8,6 +8,7 @@ import com.project.book.member.domain.Nickname;
 import com.project.book.member.domain.Token;
 import com.project.book.member.dto.request.TokenRequest;
 import com.project.book.member.dto.response.MemberResponse;
+import com.project.book.member.dto.response.TokenResponse;
 import com.project.book.member.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,17 +99,18 @@ class AuthServiceTest {
         String randomString = UUID.randomUUID().toString();
         Token refreshToken = new Token(randomString, 1000L);
         TokenRequest tokenRequest = new TokenRequest(refreshToken.getValue());
+        String newAccessToken = "newAccessToken";
 
         given(jwtTokenProvider.validateToken(tokenRequest.getRefreshToken())).willReturn(true);
         given(tokenService.getRefreshToken(member.getOAuth())).willReturn(randomString);
         given(jwtTokenProvider.createToken(member.getOAuth(), ACCESS_TOKEN_VALID_TIME))
-                .willReturn(new Token("newAccessToken", ACCESS_TOKEN_VALID_TIME));
+                .willReturn(new Token(newAccessToken, ACCESS_TOKEN_VALID_TIME));
 
         // when
-        String updateAccessToken = authService.updateAccessToken(member.getOAuth(), tokenRequest);
+        TokenResponse tokenResponse = authService.updateAccessToken(member.getOAuth(), tokenRequest);
 
         // then
-        assertThat(updateAccessToken).isEqualTo("newAccessToken");
+        assertThat(tokenResponse.getAccessToken()).isEqualTo(newAccessToken);
     }
 
     @DisplayName("refresh토큰을 생성하고 tokenService에 넘겨준다.")
@@ -125,10 +127,10 @@ class AuthServiceTest {
         given(jwtTokenProvider.createToken(anyString(), eq(REFRESH_TOKEN_VALID_TIME))).willReturn(refreshToken);
 
         // when
-        String result = authService.createRefreshToken(member.getOAuth());
+        TokenResponse response = authService.createRefreshToken(member.getOAuth());
 
         // then
-        assertThat(result).isEqualTo(refreshToken.getValue());
+        assertThat(response.getAccessToken()).isEqualTo(refreshToken.getValue());
         verify(jwtTokenProvider, times(1)).createToken(anyString(), eq(REFRESH_TOKEN_VALID_TIME));
         verify(tokenService, times(1)).setRefreshToken(member.getOAuth(), refreshToken.getValue(), refreshToken.getExpiredTime());
     }
