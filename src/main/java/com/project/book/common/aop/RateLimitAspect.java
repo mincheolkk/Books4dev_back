@@ -1,4 +1,4 @@
-package com.project.book.common.config.aop;
+package com.project.book.common.aop;
 
 import com.project.book.common.exception.TooManyRequestException;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,7 +10,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 
 @Aspect
 @Component

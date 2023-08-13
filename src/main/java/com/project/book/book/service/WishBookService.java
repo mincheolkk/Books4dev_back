@@ -6,7 +6,7 @@ import com.project.book.book.dto.request.BookInfoDto;
 import com.project.book.book.dto.response.WishBookResponseDto;
 import com.project.book.book.repository.BookRepository;
 import com.project.book.book.repository.WishBookRepository;
-import com.project.book.common.config.aop.DistributedLock;
+import com.project.book.common.aop.DistributedLock;
 import com.project.book.common.exception.AlreadyExistException;
 import com.project.book.member.domain.Member;
 import com.project.book.member.repository.MemberRepository;

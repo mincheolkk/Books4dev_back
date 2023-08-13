@@ -1,6 +1,6 @@
 package com.project.book.book.service;
 
-import com.project.book.common.config.aop.DistributedLock;
+import com.project.book.common.aop.DistributedLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

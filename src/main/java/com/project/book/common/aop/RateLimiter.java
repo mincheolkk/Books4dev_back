@@ -1,4 +1,4 @@
-package com.project.book.common.config.aop;
+package com.project.book.common.aop;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
