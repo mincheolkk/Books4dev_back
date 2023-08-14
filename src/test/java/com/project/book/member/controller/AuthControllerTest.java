@@ -77,11 +77,8 @@ class AuthControllerTest extends ControllerTest {
     void logOut() throws Exception {
         // given
         String oAuth = "123";
-        String accessToken = "accessToken";
         given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
         given(jwtTokenProvider.getPayload(anyString())).willReturn(oAuth);
-
-        given(authExtractor.extract(any(HttpServletRequest.class))).willReturn(accessToken);
 
         willDoNothing().given(authService).logOut(any(HttpServletRequest.class), anyString());
 
