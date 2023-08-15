@@ -54,7 +54,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
             return new ArrayList<>();
         }
 
-        return queryFactory.select(new QAllBookResponseDto(
+        return queryFactory.select(new QBookResponseDto(
                         book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
                         book.bookInfo.isbn, book.star.avgStar,
                         book.count.readCount, book.count.wishCount, book.count.commentCount, book.recommendTime))
@@ -88,7 +88,7 @@ public class BookRepositoryImpl implements BookRepositoryCustom {
 
     @Override
     public List<BookResponseDto> findBookBySearch(final String text) {
-        return queryFactory.select(new QAllBookResponseDto(
+        return queryFactory.select(new QBookResponseDto(
                         book.id, book.bookInfo.title, book.bookInfo.authors, book.bookInfo.thumbnail,
                         book.bookInfo.isbn, book.star.avgStar,
                         book.count.readCount, book.count.wishCount, book.count.commentCount, book.recommendTime))

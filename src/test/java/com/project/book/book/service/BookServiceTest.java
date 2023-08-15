@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -73,9 +74,21 @@ class BookServiceTest {
                 .info(bookInfoDto)
                 .review(bookReviewDto).build();
 
+        BookInfo bookInfo = BookInfo.builder()
+                .isbn(bookInfoDto.getIsbn())
+                .title(bookInfoDto.getTitle())
+                .build();
+
+        Book newBook = Book.builder()
+                .id(1L)
+                .bookInfo(bookInfo)
+                .build();
+
+
         given(memberRepository.findByoAuth(member.getOAuth())).willReturn(member);
         given(bookRepository.findByIsbn(anyString())).willReturn(null);
-        given(bookRepository.save(any(Book.class))).willReturn(request.getInfo().toBook());
+        given(bookRepository.save(any(Book.class))).willReturn(newBook);
+        willDoNothing().given(keywordService).incrementKeywordScore(anyLong(), anyString());
 
         // when
         bookService.saveBookFromKakao(member.getOAuth(), request);
@@ -86,6 +99,55 @@ class BookServiceTest {
                     verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
                     verify(bookRepository, times(1)).findByIsbn(anyString());
                     verify(bookRepository, times(1)).save(any(Book.class));
+                    verify(keywordService, times(1)).incrementKeywordScore(newBook.getId(), bookReviewDto.getSearchKeyword());
+                }
+        );
+    }
+
+    @DisplayName("Kakao 데이터로 <읽은 책>을 저장을 시도하지만 이미 내 서비스에 저장된 경우, <읽은 책>만 저장한다.")
+    @Test
+    void saveBookFromKakao2() {
+        // given
+        Member member = Member.builder()
+                .oAuth("123")
+                .build();
+
+        BookInfoDto bookInfoDto = BookInfoDto.builder()
+                .isbn("11")
+                .title("RealMySQL")
+                .build();
+
+        BookReviewDto bookReviewDto = BookReviewDto.builder()
+                .searchKeyword("MySQL")
+                .readTime(BookTime.threeYear)
+                .recommendTime(BookTime.anyTime)
+                .star(5).build();
+
+        SaveBookFromSearchDto request = SaveBookFromSearchDto.builder()
+                .info(bookInfoDto)
+                .review(bookReviewDto).build();
+
+        Book savedBook = Book.builder()
+                .id(1L)
+                .build();
+
+        given(memberRepository.findByoAuth(member.getOAuth())).willReturn(member);
+        given(bookRepository.findByIsbn(anyString())).willReturn(savedBook);
+        willDoNothing().given(readBookService).saveReadBook(any(), any(), any());
+        willDoNothing().given(readBookService).calculateAvgStar(any());
+        willDoNothing().given(keywordService).incrementKeywordScore(anyLong(), anyString());
+
+        // when
+        bookService.saveBookFromKakao(member.getOAuth(), request);
+
+        // then
+        assertAll(
+                () -> {
+                    verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
+                    verify(bookRepository, times(1)).findByIsbn(anyString());
+                    verify(readBookService, times(1)).saveReadBook(member, savedBook, bookReviewDto);
+                    verify(readBookService, times(1)).calculateAvgStar(savedBook);
+                    verify(keywordService, times(1)).incrementKeywordScore(savedBook.getId(), bookReviewDto.getSearchKeyword());
                 }
         );
     }
@@ -105,10 +167,9 @@ class BookServiceTest {
                 .build();
 
         Book book = Book.builder()
+                .id(1L)
                 .bookInfo(bookInfo)
                 .build();
-
-        bookRepository.save(book);
 
         BookReviewDto bookReviewDto = BookReviewDto.builder()
                 .readTime(BookTime.threeYear)
@@ -131,6 +192,53 @@ class BookServiceTest {
                 () -> {
                     verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
                     verify(bookRepository, times(1)).findByIsbn(testIsbn);
+                }
+        );
+    }
+
+    @DisplayName("Books4dev(내 서비스)에 저장된 책을 <읽은 책>으로 저장한다. 검색어가 존재할 경우, 검색어를 따로 저장한다")
+    @Test
+    void saveBookFromBooks4dev2() {
+        // given
+        Member member = Member.builder()
+                .oAuth("123")
+                .build();
+
+        String testIsbn = "00000";
+
+        BookInfo bookInfo = BookInfo.builder()
+                .isbn(testIsbn)
+                .build();
+
+        Book book = Book.builder()
+                .id(1L)
+                .bookInfo(bookInfo)
+                .build();
+
+        BookReviewDto bookReviewDto = BookReviewDto.builder()
+                .searchKeyword("MySQL")
+                .readTime(BookTime.threeYear)
+                .recommendTime(BookTime.anyTime)
+                .star(5).build();
+
+        SaveBookFromListDto request = SaveBookFromListDto.builder()
+                .isbn(testIsbn)
+                .review(bookReviewDto)
+                .build();
+
+        given(memberRepository.findByoAuth(member.getOAuth())).willReturn(member);
+        given(bookRepository.findByIsbn(testIsbn)).willReturn(book);
+        willDoNothing().given(keywordService).incrementKeywordScore(anyLong(), anyString());
+
+        // when
+        bookService.saveBookFromBooks4dev(member.getOAuth(), request);
+
+        // then
+        assertAll(
+                () -> {
+                    verify(memberRepository, times(1)).findByoAuth(member.getOAuth());
+                    verify(bookRepository, times(1)).findByIsbn(testIsbn);
+                    verify(keywordService, times(1)).incrementKeywordScore(book.getId(), bookReviewDto.getSearchKeyword());
                 }
         );
     }

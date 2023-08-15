@@ -14,8 +14,9 @@ import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.project.book.book.domain.BookTime.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -26,9 +27,9 @@ class BookControllerTest extends ControllerTest {
 
     private static final long BOOK_ID = 1L;
 
-    @DisplayName("로그인한 유저가 <읽은 책>을 등록한다")
+    @DisplayName("로그인한 유저가 카카오 데이터를 이용해 <읽은 책>을 등록한다")
     @Test
-    void saveBook() throws Exception {
+    void saveBookFromKakao() throws Exception {
         // given
         String oAuth = "123";
         SaveBookFromSearchDto request = SaveBookFromSearchDto.builder()
@@ -67,6 +68,63 @@ class BookControllerTest extends ControllerTest {
                 )
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("유효하지 않은 Access 토큰입니다."));
+    }
+
+    @DisplayName("로그인한 유저가 books4dev(내 서비스)에 등록되어 있는 책을 <읽은 책>을 등록한다")
+    @Test
+    void saveBookFromBooks4dev() throws Exception {
+        // given
+        String oAuth = "123";
+
+        String isbn = "12345";
+        BookReviewDto bookReviewDto = BookReviewDto.builder()
+                .readTime(before)
+                .recommendTime(anyTime)
+                .star(5)
+                .build();
+
+        SaveBookFromListDto request = SaveBookFromListDto.builder()
+                .isbn(isbn)
+                .review(bookReviewDto)
+                .build();
+
+        given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+        given(jwtTokenProvider.getPayload(anyString())).willReturn(oAuth);
+        willDoNothing().given(bookService).saveBookFromBooks4dev(any(), any(SaveBookFromListDto.class));
+
+
+        // when & then
+        mockMvc.perform(
+                        post("/book/fromList")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("로그인한 유저가 <관심있는 책>을 등록한다")
+    @Test
+    void saveWishBook() throws Exception {
+        // given
+        String oAuth = "123";
+
+        String isbn = "12345";
+        BookInfoDto request = BookInfoDto.builder()
+                .isbn(isbn)
+                .build();
+
+        given(jwtTokenProvider.validateToken(anyString())).willReturn(true);
+        given(jwtTokenProvider.getPayload(anyString())).willReturn(oAuth);
+        willDoNothing().given(wishBookService).saveWishBook(any(), any(BookInfoDto.class));
+
+
+        // when & then
+        mockMvc.perform(
+                        post("/book/wish")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk());
     }
 
     @DisplayName("책 리스트 전체를 페이징 조회한다.")
