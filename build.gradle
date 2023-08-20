@@ -44,6 +44,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'org.awaitility:awaitility:4.1.0'
+	testImplementation 'io.rest-assured:rest-assured:4.4.0'
 
 
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
