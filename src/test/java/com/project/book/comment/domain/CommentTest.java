@@ -114,6 +114,7 @@ class CommentTest {
         //then
         assertAll(
                 () -> {
+                    assertThat(comment.getMemberId()).isEqualTo(1L);
                     assertThat(comment.getContent()).isEqualTo(updatedContent);
                     assertThat(comment.getContent()).isNotEqualTo(originalContent);
                 }
