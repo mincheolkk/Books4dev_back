@@ -32,6 +32,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
         String oAuth = String.valueOf(oauth2User.getAttributes().get("id"));
         String accessToken = jwtTokenProvider.createToken(oAuth, ACCESS_TOKEN_VALID_TIME).getValue();
 
-        redirectStrategy.sendRedirect(request,response,"http://localhost:8081/init?token="+accessToken);
+        redirectStrategy.sendRedirect(request,response,"http://localhost:8080/init?token="+accessToken);
     }
 }

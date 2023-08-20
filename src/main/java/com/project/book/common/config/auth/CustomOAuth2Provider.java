@@ -19,7 +19,7 @@ public enum CustomOAuth2Provider {
         }
     };
 
-    private static final String BASE_URL = "http://localhost:8084";
+    private static final String BASE_URL = "http://localhost:8080";
     private static final String DEFAULT_REDIRECT_URL = BASE_URL + "/login/oauth2/code/kakao";
 
     protected final Builder getBuilder(String registrationId, ClientAuthenticationMethod method, String redirectUri) {
